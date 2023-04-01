@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://c4plfbktdna17"]
+
+[ext_resource type="PackedScene" uid="uid://6le4rjsq7xnf" path="res://History/History.tscn" id="1_f34vi"]
+[ext_resource type="Script" path="res://Statistics/Statistics.gd" id="1_gj66t"]
+[ext_resource type="PackedScene" uid="uid://dff50136u5eac" path="res://Statistics/Wins/Wins.tscn" id="3_hejge"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_138mp"]
+
+[node name="Statistics" type="TabContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_138mp")
+script = ExtResource("1_gj66t")
+
+[node name="History" parent="." instance=ExtResource("1_f34vi")]
+layout_mode = 2
+
+[node name="Wins" parent="." instance=ExtResource("3_hejge")]
+visible = false
+layout_mode = 2

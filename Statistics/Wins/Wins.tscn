@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://dff50136u5eac"]
+
+[ext_resource type="Script" path="res://Statistics/Wins/Wins.gd" id="1_k2c8t"]
+[ext_resource type="PackedScene" uid="uid://biolv5rv2iuvs" path="res://Statistics/Wins/WinsProfile.tscn" id="2_rq33t"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w5gnb"]
+
+[node name="Wins" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_k2c8t")
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_w5gnb")
+
+[node name="Global" parent="TabContainer" instance=ExtResource("2_rq33t")]
+unique_name_in_owner = true
+layout_mode = 2
