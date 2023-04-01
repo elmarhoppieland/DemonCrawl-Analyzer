@@ -1,4 +1,7 @@
 extends Control
+class_name WinsProfile
+
+## A tab for the [Wins] scene.
 
 # ==============================================================================
 @onready var tree: Tree = %Tree
