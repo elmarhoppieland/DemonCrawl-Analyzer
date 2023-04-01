@@ -46,3 +46,20 @@ var in_stage := false
 ## Whether the quest is finished.
 var finished := false
 # ==============================================================================
+
+static func _from_dict(dict: Dictionary) -> Quest:
+	var quest := Quest.new()
+	
+	# check if all Quest properties are in dict
+	if quest.get_script().get_script_property_list().any(func(property): return property.usage & PROPERTY_USAGE_SCRIPT_VARIABLE and not property.name in dict):
+		return null
+	
+	for property in ["name", "difficulty", "mastery", "mastery_tier", "duration", "creation_timestamp", "victory", "in_stage", "finished"]:
+		quest.set(property, dict[property])
+	
+	for stage_dict in dict.stages:
+		quest.stages.append(Stage._from_dict(stage_dict))
+	
+	quest.inventory = Inventory._from_array(dict.inventory.items)
+	
+	return quest

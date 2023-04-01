@@ -6,13 +6,17 @@ enum LogError {
 	OK, ## No error.
 	EOF_REACHED, ## End of file reached.
 	PLAYER_DIED, ## Player died.
-	QUEST_COMPLETE ## Quest complete.
+	QUEST_COMPLETE, ## Quest complete.
+	INVALID_TIMESTAMP ## Does not contain logs after the specified timestamp.
 }
 # ==============================================================================
+const SAVE_DATA_PATH := "user://profiles.dcstat"
+# ==============================================================================
 var default_log_dir := OS.get_data_dir().get_base_dir().path_join("Local/demoncrawl/logs")
-
+# ------------------------------------------------------------------------------
 var profiles := {}
-
+var latest_recorded_time_utc := 0.0
+# ------------------------------------------------------------------------------
 var previous_read_quest: Quest = null
 
 var current_profile: Profile
@@ -21,24 +25,65 @@ var current_profile: Profile
 func _enter_tree() -> void:
 	current_tab = 0
 	
+	read_saved_data()
+	
 	read_logs_dir()
+	
+	save_data_to_disk()
+
+
+func read_saved_data() -> void:
+	if not FileAccess.file_exists(SAVE_DATA_PATH):
+		FileAccess.open(SAVE_DATA_PATH, FileAccess.WRITE)
+	
+	var file := FileAccess.open(SAVE_DATA_PATH, FileAccess.READ)
+	if not file:
+		push_error("Error '%s' occurred during read operation. Aborting process..." % error_string(FileAccess.get_open_error()))
+		return
+	
+	var parse = JSON.parse_string(file.get_as_text())
+	if parse is Dictionary:
+		for property in parse:
+			match property:
+				"profiles":
+					for profile in parse.profiles:
+						profiles[profile] = Profile._from_dict(parse.profiles[profile])
+				"time":
+					latest_recorded_time_utc = parse.time
 
 
 func read_logs_dir() -> void:
 	for index in range(1, 101):
 #		var error := read_log("log%s.txt" % index, previous_read_quest)
-		var error := read_log2("log%s.txt" % index)
+		var error := read_log2("log%s.txt" % index, int(latest_recorded_time_utc))
 		if error != LogError.EOF_REACHED:
 			return
 
 
-func read_log2(log_name: String) -> LogError:
-	var log_reader := LogFileReader.read(default_log_dir.path_join(log_name))
+func save_data_to_disk() -> void:
+	var file := FileAccess.open(SAVE_DATA_PATH, FileAccess.WRITE)
+	if not file:
+		push_error("Error '%s' occurred during write operation. Aborting process..." % error_string(FileAccess.get_open_error()))
+		return
+	
+	var dict := {"profiles": {}, "time": latest_recorded_time_utc}
+	for profile in get_profiles():
+		dict.profiles[profile.name] = profile._to_dict()
+	
+	file.store_line(JSON.stringify(dict))
+
+
+func read_log2(log_name: String, after_unix: int) -> LogError:
+	var log_reader := LogFileReader.read(default_log_dir.path_join(log_name), after_unix)
+	if not log_reader:
+		return LogError.INVALID_TIMESTAMP
 	
 	log_reader.next_line()
 	
 	while not log_reader.get_current_line().is_empty():
-		parse_line(log_reader)
+		if Time.get_unix_time_from_datetime_string(log_reader.get_date() + "T" + log_reader.get_time()) > after_unix:
+			parse_line(log_reader)
+			latest_recorded_time_utc = Time.get_unix_time_from_datetime_string(log_reader.get_date() + "T" + log_reader.get_time())
 		
 		log_reader.next_line()
 	

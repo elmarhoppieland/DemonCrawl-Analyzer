@@ -52,7 +52,7 @@ var _last_line := ""
 # ==============================================================================
 
 ## Returns a new [LogFileReader] that reads the file at [code]log_path[/code].
-static func read(log_path: String, include_text: bool = false) -> LogFileReader:
+static func read(log_path: String, after_unix: int = 0, include_text: bool = false) -> LogFileReader:
 	var reader := LogFileReader.new()
 	
 	reader.file = FileAccess.open(log_path, FileAccess.READ)
@@ -63,7 +63,12 @@ static func read(log_path: String, include_text: bool = false) -> LogFileReader:
 	if include_text:
 		reader.file_text = reader.file.get_as_text()
 	
-	for line in reader.file.get_as_text().split("\n"):
+	var split := reader.file.get_as_text().split("\n")
+	var last_timestamp := split[-2].get_slice("]", 0).trim_prefix("[")
+	if Time.get_unix_time_from_datetime_string(last_timestamp.get_slice(" @", 0) + "T" + last_timestamp.get_slice("@ ", 1)) < after_unix:
+		return null
+	
+	for line in split:
 		if get_line_type(line) != Line.NONE:
 			reader._lines.append(line.strip_edges())
 	
