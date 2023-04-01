@@ -25,3 +25,18 @@ func new_quest() -> Quest:
 	in_quest = true
 	
 	return quest
+
+
+static func _from_dict(dict: Dictionary) -> Profile:
+	if ["name", "in_quest", "quests"].any(func(key): return not key in dict.keys()):
+		return null
+	
+	var profile := Profile.new()
+	
+	profile.name = dict.name
+	profile.in_quest = dict.in_quest
+	
+	for quest_dict in dict.quests:
+		profile.quests.append(Quest._from_dict(quest_dict))
+	
+	return profile

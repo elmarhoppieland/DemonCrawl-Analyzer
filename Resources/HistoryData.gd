@@ -11,7 +11,9 @@ func _to_dict() -> Dictionary:
 			continue
 		
 		var value = get(property.name)
-		if value is HistoryData:
+		if value is PlayerStats:
+			dict[property.name] = str(value)
+		elif value is HistoryData:
 			dict[property.name] = value._to_dict()
 		elif value is Array:
 			dict[property.name] = []
