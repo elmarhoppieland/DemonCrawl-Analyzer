@@ -9,6 +9,8 @@ enum LogError {
 	QUEST_COMPLETE ## Quest complete.
 }
 # ==============================================================================
+const SAVE_DATA_PATH := "user://profiles.dcstat"
+# ==============================================================================
 var default_log_dir := OS.get_data_dir().get_base_dir().path_join("Local/demoncrawl/logs")
 
 var profiles := {}
@@ -22,6 +24,8 @@ func _enter_tree() -> void:
 	current_tab = 0
 	
 	read_logs_dir()
+	
+	save_data_to_disk()
 
 
 func read_logs_dir() -> void:
@@ -30,6 +34,19 @@ func read_logs_dir() -> void:
 		var error := read_log2("log%s.txt" % index)
 		if error != LogError.EOF_REACHED:
 			return
+
+
+func save_data_to_disk() -> void:
+	var file := FileAccess.open(SAVE_DATA_PATH, FileAccess.WRITE)
+	if not file:
+		push_error("Error '%s' occurred during write operation. Aborting process..." % error_string(FileAccess.get_open_error()))
+		return
+	
+	var dict := {"profiles": []}
+	for profile in get_profiles():
+		dict.profiles.append(profile._to_dict())
+	
+	file.store_line(JSON.stringify(dict))
 
 
 func read_log2(log_name: String) -> LogError:
