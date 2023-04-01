@@ -55,7 +55,7 @@ func read_saved_data() -> void:
 func read_logs_dir() -> void:
 	for index in range(1, 101):
 #		var error := read_log("log%s.txt" % index, previous_read_quest)
-		var error := read_log2("log%s.txt" % index, int(latest_recorded_time_utc))
+		var error := read_log("log%s.txt" % index, int(latest_recorded_time_utc))
 		if error != LogError.EOF_REACHED:
 			return
 
@@ -73,7 +73,7 @@ func save_data_to_disk() -> void:
 	file.store_line(JSON.stringify(dict))
 
 
-func read_log2(log_name: String, after_unix: int) -> LogError:
+func read_log(log_name: String, after_unix: int) -> LogError:
 	var log_reader := LogFileReader.read(default_log_dir.path_join(log_name), after_unix)
 	if not log_reader:
 		return LogError.INVALID_TIMESTAMP
@@ -100,119 +100,119 @@ func parse_line(log_reader: LogFileReader) -> void:
 			current_profile = data
 
 
-func read_log(log_name: String, quest: Quest = null) -> LogError:
-	var log_reader := LogFileReader.read(default_log_dir.path_join(log_name))
-	
-	var profile := log_reader.get_next_profile()
-	while true:
-		var line := log_reader.look_for(
-			LogFileReader.Line.PROFILE_LOAD |
-			LogFileReader.Line.QUEST_CREATE |
-			LogFileReader.Line.STAGE_BEGIN |
-			LogFileReader.Line.STAGE_LEAVE |
-			LogFileReader.Line.ITEM_LOSE |
-			LogFileReader.Line.ITEM_GAIN |
-			LogFileReader.Line.PLAYER_DEATH
-		)
-		
-		if line.is_empty():
-			return LogError.EOF_REACHED
-		
-		if line.begins_with("Profile loaded: "):
-			profile = log_reader.get_next_profile()
-			if profile:
-				if profile.name in profiles:
-					profiles[profile.name].quests.append_array(profile.quests)
-					profile = profiles[profile.name]
-				else:
-					profiles[profile.name] = profile
-			
-			continue
-		
-		if line.begins_with("Quest started: "):
-			read_quest(log_reader, profile)
-			continue
-		
-		if line.match("* was added to inventory slot #*"):
-			var lines := log_reader.get_current_timestamp_lines()
-			for i in lines:
-				if LogFileReader.get_line_type(i) == LogFileReader.Line.QUEST_CREATE:
-					var read_position := log_reader.file.get_position()
-					# ! -- ERROR IGNORE -- !
-#					log_reader.look_for([i], LogFileReader.Line.QUEST_CREATE)
-					log_reader.file.seek(read_position)
-		
-		if line.begins_with("Begin stage ")\
-		or line.begins_with("Leaving stage ")\
-		or line.match("* was removed from inventory slot #*")\
-		or line.match("* was added to inventory slot #*")\
-		or line.match("* was killed!"):
-			# the quest was reloaded
-			read_quest(log_reader, profile, quest)
-			continue
-	
-	return LogError.UNKNOWN
-
-
-func read_quest(log_reader: LogFileReader, profile: Profile, quest: Quest = null) -> LogError:
-	if not quest:
-		quest = log_reader.get_next_quest(profile)
-		if not quest:
-			return LogError.EOF_REACHED
-		
-#		profile.quests.append(quest)
-		
-		# ! -- ERROR IGNORE -- !
-#		var line := log_reader.look_for(["Mastery selected: *"])
-		var line := ""
-		quest.mastery = line.trim_prefix("Mastery selected: ").get_slice(" ", 0).capitalize()
-		@warning_ignore("int_as_enum_without_cast")
-		quest.mastery_tier = line[-1].to_int()
-	
-	previous_read_quest = quest
-	
-	var inventory := quest.inventory
-	
-	if not quest.stages.is_empty() and not quest.stages[-1].exit:
-		var error := handle_stage_exit(log_reader, quest.stages[-1], inventory, profile)
-		if error:
-			return error
-	
-	while true:
-		var stage := log_reader.get_next_stage(inventory, profile)
-		if stage:
-			quest.stages.append(stage)
-			
-			var error := handle_stage_exit(log_reader, stage, inventory, profile)
-			if error:
-				return error
-			
-			continue
-		
-		var error := get_error(log_reader.get_current_line())
-		if error > 0:
-			return error
-		
-		return LogError.UNKNOWN
-	
-	return LogError.UNKNOWN
-
-
-func handle_stage_exit(log_reader: LogFileReader, stage: Stage, inventory: Inventory, profile: Profile = null) -> LogError:
-	var stage_exit := log_reader.get_next_stage_exit(profile)
-	if stage_exit:
-		stage.exit = stage_exit
-		return LogError.OK
-	
-	var error := get_error(log_reader.get_current_line())
-	if error > 0:
-		if error == LogError.PLAYER_DIED:
-			stage.death = StageExit.new()
-			stage.death.inventory = inventory.duplicate()
-		
-		return error
-	
-	return LogError.UNKNOWN
+#func read_log(log_name: String, quest: Quest = null) -> LogError:
+#	var log_reader := LogFileReader.read(default_log_dir.path_join(log_name))
+#
+#	var profile := log_reader.get_next_profile()
+#	while true:
+#		var line := log_reader.look_for(
+#			LogFileReader.Line.PROFILE_LOAD |
+#			LogFileReader.Line.QUEST_CREATE |
+#			LogFileReader.Line.STAGE_BEGIN |
+#			LogFileReader.Line.STAGE_LEAVE |
+#			LogFileReader.Line.ITEM_LOSE |
+#			LogFileReader.Line.ITEM_GAIN |
+#			LogFileReader.Line.PLAYER_DEATH
+#		)
+#
+#		if line.is_empty():
+#			return LogError.EOF_REACHED
+#
+#		if line.begins_with("Profile loaded: "):
+#			profile = log_reader.get_next_profile()
+#			if profile:
+#				if profile.name in profiles:
+#					profiles[profile.name].quests.append_array(profile.quests)
+#					profile = profiles[profile.name]
+#				else:
+#					profiles[profile.name] = profile
+#
+#			continue
+#
+#		if line.begins_with("Quest started: "):
+#			read_quest(log_reader, profile)
+#			continue
+#
+#		if line.match("* was added to inventory slot #*"):
+#			var lines := log_reader.get_current_timestamp_lines()
+#			for i in lines:
+#				if LogFileReader.get_line_type(i) == LogFileReader.Line.QUEST_CREATE:
+#					var read_position := log_reader.file.get_position()
+#					# ! -- ERROR IGNORE -- !
+##					log_reader.look_for([i], LogFileReader.Line.QUEST_CREATE)
+#					log_reader.file.seek(read_position)
+#
+#		if line.begins_with("Begin stage ")\
+#		or line.begins_with("Leaving stage ")\
+#		or line.match("* was removed from inventory slot #*")\
+#		or line.match("* was added to inventory slot #*")\
+#		or line.match("* was killed!"):
+#			# the quest was reloaded
+#			read_quest(log_reader, profile, quest)
+#			continue
+#
+#	return LogError.UNKNOWN
+#
+#
+#func read_quest(log_reader: LogFileReader, profile: Profile, quest: Quest = null) -> LogError:
+#	if not quest:
+#		quest = log_reader.get_next_quest(profile)
+#		if not quest:
+#			return LogError.EOF_REACHED
+#
+##		profile.quests.append(quest)
+#
+#		# ! -- ERROR IGNORE -- !
+##		var line := log_reader.look_for(["Mastery selected: *"])
+#		var line := ""
+#		quest.mastery = line.trim_prefix("Mastery selected: ").get_slice(" ", 0).capitalize()
+#		@warning_ignore("int_as_enum_without_cast")
+#		quest.mastery_tier = line[-1].to_int()
+#
+#	previous_read_quest = quest
+#
+#	var inventory := quest.inventory
+#
+#	if not quest.stages.is_empty() and not quest.stages[-1].exit:
+#		var error := handle_stage_exit(log_reader, quest.stages[-1], inventory, profile)
+#		if error:
+#			return error
+#
+#	while true:
+#		var stage := log_reader.get_next_stage(inventory, profile)
+#		if stage:
+#			quest.stages.append(stage)
+#
+#			var error := handle_stage_exit(log_reader, stage, inventory, profile)
+#			if error:
+#				return error
+#
+#			continue
+#
+#		var error := get_error(log_reader.get_current_line())
+#		if error > 0:
+#			return error
+#
+#		return LogError.UNKNOWN
+#
+#	return LogError.UNKNOWN
+#
+#
+#func handle_stage_exit(log_reader: LogFileReader, stage: Stage, inventory: Inventory, profile: Profile = null) -> LogError:
+#	var stage_exit := log_reader.get_next_stage_exit(profile)
+#	if stage_exit:
+#		stage.exit = stage_exit
+#		return LogError.OK
+#
+#	var error := get_error(log_reader.get_current_line())
+#	if error > 0:
+#		if error == LogError.PLAYER_DIED:
+#			stage.death = StageExit.new()
+#			stage.death.inventory = inventory.duplicate()
+#
+#		return error
+#
+#	return LogError.UNKNOWN
 
 
 func get_profile(profile_name: String) -> Profile:
