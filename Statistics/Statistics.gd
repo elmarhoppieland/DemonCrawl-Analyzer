@@ -41,15 +41,17 @@ func read_saved_data() -> void:
 		push_error("Error '%s' occurred during read operation. Aborting process..." % error_string(FileAccess.get_open_error()))
 		return
 	
-	var parse = JSON.parse_string(file.get_as_text())
-	if parse is Dictionary:
-		for property in parse:
-			match property:
-				"profiles":
-					for profile in parse.profiles:
-						profiles[profile] = Profile._from_dict(parse.profiles[profile])
-				"time":
-					latest_recorded_time_utc = parse.time
+	var text := file.get_as_text()
+	if not text.is_empty():
+		var parse = JSON.parse_string(text)
+		if parse is Dictionary:
+			for property in parse:
+				match property:
+					"profiles":
+						for profile in parse.profiles:
+							profiles[profile] = Profile._from_dict(parse.profiles[profile])
+					"time":
+						latest_recorded_time_utc = parse.time
 
 
 func read_logs_dir() -> void:
