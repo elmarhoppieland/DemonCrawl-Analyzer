@@ -4,13 +4,16 @@ class_name WinsProfile
 ## A tab for the [Wins] scene.
 
 # ==============================================================================
+## The [Tree] containing the masteries the player uses.
 @onready var tree: Tree = %Tree
 # ==============================================================================
 
+## Populates the [member tree] with masteries used in [code]profile[/code].
 func populate_tree(profile: Profile) -> void:
 	populate_global_tree([profile])
 
 
+## Populates the [member tree] with masteries used in any [Profile] in [code]profiles[/code].
 func populate_global_tree(profiles: Array[Profile]) -> void:
 	var root := tree.create_item()
 	
