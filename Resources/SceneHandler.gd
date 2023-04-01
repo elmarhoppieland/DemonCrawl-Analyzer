@@ -1,9 +1,13 @@
 extends Node
 
+## A singleton for switching between scenes.
+
 # ==============================================================================
-@onready var current_scene := $"/root/Main"
+## The current scene.
+@onready var current_scene := $"/root".get_child(-1)
 # ==============================================================================
 
+## Switch to a new scene.
 func switch_scene(new_scene: PackedScene) -> void:
 	current_scene.queue_free()
 	

@@ -20,6 +20,10 @@ func populate_global_tree(profiles: Array[Profile]) -> void:
 	var masteries: PackedStringArray = []
 	var win_counts := {}
 	var loss_counts := {}
+	
+	var total_wins := 0
+	var total_losses := 0
+	
 	for profile in profiles:
 		for quest in profile.quests:
 			if not quest.mastery in masteries:
@@ -28,8 +32,10 @@ func populate_global_tree(profiles: Array[Profile]) -> void:
 				loss_counts[quest.mastery] = 0
 			if quest.victory:
 				win_counts[quest.mastery] += 1
+				total_wins += 1
 			else:
 				loss_counts[quest.mastery] += 1
+				total_losses += 1
 	
 	for mastery in masteries:
 		var mastery_item := root.create_child()
@@ -37,3 +43,9 @@ func populate_global_tree(profiles: Array[Profile]) -> void:
 		mastery_item.set_text(1, "Wins: %d" % win_counts[mastery])
 		mastery_item.set_text(2, "Losses: %d" % loss_counts[mastery])
 		mastery_item.set_text(3, "%d" % roundi(win_counts[mastery] / float(win_counts[mastery] + loss_counts[mastery]) * 100) + "%")
+	
+	var total_item := root.create_child()
+	total_item.set_text(0, "Total")
+	total_item.set_text(1, "Wins: %d" % total_wins)
+	total_item.set_text(2, "Losses: %d" % total_losses)
+	total_item.set_text(3, "%d" % roundi(total_wins / float(total_wins + total_losses) * 100) + "%")
