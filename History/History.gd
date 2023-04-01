@@ -23,7 +23,7 @@ func populate_tree() -> void:
 		profile_item.collapsed = true
 		
 		for quest in profile.quests:
-			var quest_item := profile_item.create_child()
+			var quest_item := profile_item.create_child(0)
 			quest_item.set_text(0, quest.name)
 			quest_item.set_text(1, quest.creation_timestamp + "  ")
 			quest_item.collapsed = true
