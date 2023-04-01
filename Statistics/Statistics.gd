@@ -6,7 +6,8 @@ enum LogError {
 	OK, ## No error.
 	EOF_REACHED, ## End of file reached.
 	PLAYER_DIED, ## Player died.
-	QUEST_COMPLETE ## Quest complete.
+	QUEST_COMPLETE, ## Quest complete.
+	INVALID_TIMESTAMP ## Does not contain logs after the specified timestamp.
 }
 # ==============================================================================
 const SAVE_DATA_PATH := "user://profiles.dcstat"
@@ -32,6 +33,9 @@ func _enter_tree() -> void:
 
 
 func read_saved_data() -> void:
+	if not FileAccess.file_exists(SAVE_DATA_PATH):
+		FileAccess.open(SAVE_DATA_PATH, FileAccess.WRITE)
+	
 	var file := FileAccess.open(SAVE_DATA_PATH, FileAccess.READ)
 	if not file:
 		push_error("Error '%s' occurred during read operation. Aborting process..." % error_string(FileAccess.get_open_error()))
@@ -49,16 +53,11 @@ func read_saved_data() -> void:
 
 
 func read_logs_dir() -> void:
-	if FileAccess.get_modified_time(default_log_dir.path_join("log1.txt")) <= latest_recorded_time_utc:
-		return
-	
 	for index in range(1, 101):
 #		var error := read_log("log%s.txt" % index, previous_read_quest)
 		var error := read_log2("log%s.txt" % index, int(latest_recorded_time_utc))
 		if error != LogError.EOF_REACHED:
 			return
-	
-	latest_recorded_time_utc = Time.get_unix_time_from_system()
 
 
 func save_data_to_disk() -> void:
@@ -75,13 +74,16 @@ func save_data_to_disk() -> void:
 
 
 func read_log2(log_name: String, after_unix: int) -> LogError:
-	var log_reader := LogFileReader.read(default_log_dir.path_join(log_name))
+	var log_reader := LogFileReader.read(default_log_dir.path_join(log_name), after_unix)
+	if not log_reader:
+		return LogError.INVALID_TIMESTAMP
 	
 	log_reader.next_line()
 	
 	while not log_reader.get_current_line().is_empty():
 		if Time.get_unix_time_from_datetime_string(log_reader.get_date() + "T" + log_reader.get_time()) > after_unix:
 			parse_line(log_reader)
+			latest_recorded_time_utc = Time.get_unix_time_from_datetime_string(log_reader.get_date() + "T" + log_reader.get_time())
 		
 		log_reader.next_line()
 	
