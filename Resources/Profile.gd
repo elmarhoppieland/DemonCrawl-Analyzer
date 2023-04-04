@@ -12,6 +12,7 @@ var quests: Array[Quest] = []
 var in_quest := false
 # ==============================================================================
 
+## Creates a new [Quest] and returns it. Also finishes the old quest if it was not finished.
 func new_quest() -> Quest:
 	var quest := Quest.new()
 	

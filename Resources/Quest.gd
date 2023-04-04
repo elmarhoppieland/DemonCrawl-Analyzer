@@ -47,6 +47,14 @@ var in_stage := false
 var finished := false
 # ==============================================================================
 
+## Finishes the quest. It is considered a victory if [code]is_victory[/code] is
+## [code]true[/code]. Otherwise, it is considered a loss.
+func finish(is_victory: bool = false) -> void:
+	finished = true
+	in_stage = false
+	victory = is_victory
+
+
 static func _from_dict(dict: Dictionary) -> Quest:
 	var quest := Quest.new()
 	
