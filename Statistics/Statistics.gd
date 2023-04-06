@@ -14,7 +14,7 @@ const SAVE_DATA_PATH := "user://profiles.dcstat"
 const SAVE_DATA_PATH_DEBUG := "user://profiles_debug.dcstat"
 
 ## The current version. Formatted as [code]MAJOR.minor.bugfix.debug[/code].
-const CURRENT_VERSION := "1.1.0.2"
+const CURRENT_VERSION := "1.1.0.5"
 # ==============================================================================
 var default_log_dir := OS.get_data_dir().get_base_dir().path_join("Local/demoncrawl/logs")
 # ------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ func read_saved_data() -> void:
 	save_json(old_data, true)
 	
 	if new_data.is_empty(): # there was an update
-		print("Updating...")
+		print_rich("[color=green]Updating...[/color]")
 		load_from_json(old_data)
 		return
 	
