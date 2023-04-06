@@ -14,7 +14,8 @@ enum Line {
 	ITEM_GAIN = 2 * STAGE_LEAVE, ## An item was gained in the line.
 	ITEM_LOSE = 2 * ITEM_GAIN, ## An item was lost in the line.
 	ITEM_GAIN_LOSE = ITEM_GAIN | ITEM_LOSE, ## Allow gaining and losing items.
-	PLAYER_DEATH = 2 * ITEM_LOSE, ## The player was killed in the line.
+	CHEST_OPENED = 2 * ITEM_LOSE, ## A chest was opened in the line.
+	PLAYER_DEATH = 2 * CHEST_OPENED, ## The player was killed in the line.
 	LEADERBOARD_SUBMIT = 2 * PLAYER_DEATH, ## The player's score was submitted to the leaderboards in the line.
 	PLAYER_STATS = 2 * LEADERBOARD_SUBMIT, ## The line shows the player's stats.
 	MASTERY_SELECTED = 2 * PLAYER_STATS, ## The player's mastery is selected in the line.
@@ -29,6 +30,7 @@ const _LINE_FILTERS := {
 	Line.STAGE_LEAVE: "Leaving stage *",
 	Line.ITEM_GAIN: "* was added to inventory slot #*",
 	Line.ITEM_LOSE: "* was removed from inventory slot #*",
+	Line.CHEST_OPENED: "Opening chest",
 	Line.PLAYER_DEATH: "* was killed!",
 	Line.LEADERBOARD_SUBMIT: "Alert: Submitting score to Leaderboard...",
 	Line.PLAYER_STATS: "Player stats: *",
@@ -65,7 +67,8 @@ static func read(log_path: String, after_unix: int = 0, include_text: bool = fal
 	
 	var split := reader.file.get_as_text().split("\n")
 	var last_timestamp := split[-2].get_slice("]", 0).trim_prefix("[")
-	if Time.get_unix_time_from_datetime_string(last_timestamp.get_slice(" @", 0) + "T" + last_timestamp.get_slice("@ ", 1)) < after_unix:
+	var unix := Time.get_unix_time_from_datetime_string(last_timestamp.get_slice(" @", 0) + "T" + last_timestamp.get_slice("@ ", 1))
+	if unix < after_unix:
 		return null
 	
 	for line in split:
@@ -260,6 +263,9 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 		Line.ITEM_LOSE:
 			handle_lose_item(inventory)
 			return null
+		Line.CHEST_OPENED:
+			profile.statistics[Profile.Statistic.CHESTS_OPENED] += 1
+			return null
 		Line.PLAYER_DEATH:
 			return handle_player_death(inventory, stage, profile)
 		Line.LEADERBOARD_SUBMIT:
@@ -402,7 +408,7 @@ func handle_stage_enter(inventory: Inventory, quest: Quest = null) -> Stage:
 	
 	stage.enter = StageEnter.new()
 	if inventory:
-		stage.enter.inventory = inventory.duplicate()
+		stage.enter.inventory = inventory.get_state()
 	
 	# the stats should be in the next line, but passing inventory just in case they're not
 	var stats_string := look_for(Line.PLAYER_STATS)
@@ -444,7 +450,7 @@ func handle_stage_exit(inventory: Inventory, quest: Quest = null, stage: Stage =
 	
 	var stage_exit := StageExit.new()
 	
-	stage_exit.inventory = inventory.duplicate()
+	stage_exit.inventory = inventory.get_state()
 	
 	if stage:
 		stage.exit = stage_exit
@@ -463,7 +469,7 @@ func handle_player_death(inventory: Inventory, stage: Stage = null, profile: Pro
 	
 	var stage_exit := StageExit.new()
 	
-	stage_exit.inventory = inventory.duplicate()
+	stage_exit.inventory = inventory.get_state()
 	
 	if stage:
 		stage.death = stage_exit
