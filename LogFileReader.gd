@@ -14,8 +14,7 @@ enum Line {
 	ITEM_GAIN = 2 * STAGE_LEAVE, ## An item was gained in the line.
 	ITEM_LOSE = 2 * ITEM_GAIN, ## An item was lost in the line.
 	ITEM_GAIN_LOSE = ITEM_GAIN | ITEM_LOSE, ## Allow gaining and losing items.
-	CHEST_OPENED = 2 * ITEM_LOSE, ## A chest was opened in the line.
-	PLAYER_DEATH = 2 * CHEST_OPENED, ## The player was killed in the line.
+	PLAYER_DEATH = 2 * ITEM_LOSE, ## The player was killed in the line.
 	LEADERBOARD_SUBMIT = 2 * PLAYER_DEATH, ## The player's score was submitted to the leaderboards in the line.
 	PLAYER_STATS = 2 * LEADERBOARD_SUBMIT, ## The line shows the player's stats.
 	MASTERY_SELECTED = 2 * PLAYER_STATS, ## The player's mastery is selected in the line.
@@ -30,7 +29,6 @@ const _LINE_FILTERS := {
 	Line.STAGE_LEAVE: "Leaving stage *",
 	Line.ITEM_GAIN: "* was added to inventory slot #*",
 	Line.ITEM_LOSE: "* was removed from inventory slot #*",
-	Line.CHEST_OPENED: "Opening chest",
 	Line.PLAYER_DEATH: "* was killed!",
 	Line.LEADERBOARD_SUBMIT: "Alert: Submitting score to Leaderboard...",
 	Line.PLAYER_STATS: "Player stats: *",
@@ -67,8 +65,7 @@ static func read(log_path: String, after_unix: int = 0, include_text: bool = fal
 	
 	var split := reader.file.get_as_text().split("\n")
 	var last_timestamp := split[-2].get_slice("]", 0).trim_prefix("[")
-	var unix := Time.get_unix_time_from_datetime_string(last_timestamp.get_slice(" @", 0) + "T" + last_timestamp.get_slice("@ ", 1))
-	if unix < after_unix:
+	if Time.get_unix_time_from_datetime_string(last_timestamp.get_slice(" @", 0) + "T" + last_timestamp.get_slice("@ ", 1)) < after_unix:
 		return null
 	
 	for line in split:
@@ -258,13 +255,10 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 		Line.STAGE_LEAVE:
 			return handle_stage_exit(inventory, quest, stage)
 		Line.ITEM_GAIN:
-			handle_gain_item(inventory, profile)
+			handle_gain_item(inventory)
 			return null
 		Line.ITEM_LOSE:
 			handle_lose_item(inventory)
-			return null
-		Line.CHEST_OPENED:
-			profile.statistics[Profile.Statistic.CHESTS_OPENED] += 1
 			return null
 		Line.PLAYER_DEATH:
 			return handle_player_death(inventory, stage, profile)
@@ -338,7 +332,7 @@ func handle_quest_create(profile: Profile = null) -> Quest:
 
 
 ## Handles gaining of an item. Adds the item gained in [code]line[/code] to [code]inventory[/code].
-func handle_gain_item(inventory: Inventory, profile: Profile = null) -> void:
+func handle_gain_item(inventory: Inventory) -> void:
 	if not inventory:
 		return
 	
@@ -357,9 +351,6 @@ func handle_gain_item(inventory: Inventory, profile: Profile = null) -> void:
 	var index := inventory.get_free_slot()
 	
 	inventory.items[index] = item_name
-	
-	if profile:
-		profile.increment_statistic(Profile.Statistic.ITEMS_AQUIRED)
 
 
 ## Handles losing of an item. Removes the item lost in [code]line[/code] from [code]inventory[/code].
@@ -411,7 +402,7 @@ func handle_stage_enter(inventory: Inventory, quest: Quest = null) -> Stage:
 	
 	stage.enter = StageEnter.new()
 	if inventory:
-		stage.enter.inventory = inventory.get_state()
+		stage.enter.inventory = inventory.duplicate()
 	
 	# the stats should be in the next line, but passing inventory just in case they're not
 	var stats_string := look_for(Line.PLAYER_STATS)
@@ -453,7 +444,7 @@ func handle_stage_exit(inventory: Inventory, quest: Quest = null, stage: Stage =
 	
 	var stage_exit := StageExit.new()
 	
-	stage_exit.inventory = inventory.get_state()
+	stage_exit.inventory = inventory.duplicate()
 	
 	if stage:
 		stage.exit = stage_exit
@@ -472,7 +463,7 @@ func handle_player_death(inventory: Inventory, stage: Stage = null, profile: Pro
 	
 	var stage_exit := StageExit.new()
 	
-	stage_exit.inventory = inventory.get_state()
+	stage_exit.inventory = inventory.duplicate()
 	
 	if stage:
 		stage.death = stage_exit
@@ -507,13 +498,8 @@ func next_line() -> void:
 
 ## Advances to the next line of the log file and returns it, excluding the date and time.
 ## If you do not need the line, consider using [method next_line] instead.
-## [br][br]If [code]line_index[/code] is specified, advances to the specified line instead.
-func get_line(line_index: int = position + 1) -> String:
-	position = line_index
-	if position < _lines.size():
-		_last_line = _lines[position]
-	else:
-		_last_line = ""
+func get_line() -> String:
+	next_line()
 	
 	return get_current_line()
 
@@ -548,14 +534,6 @@ func get_timestamp() -> String:
 	return _last_line.get_slice("]", 0).trim_prefix("[")
 
 
-## Returns the last timestamp of the file.
-func get_last_timestamp() -> String:
-	if _lines.is_empty(): # if a file does not contain any useful lines, _lines will be empty
-		return ""
-	
-	return _lines[-1].get_slice("]", 0).trim_prefix("[")
-
-
 ## Returns the date of the line returned by [method get_line].
 func get_date() -> String:
 	return get_timestamp().get_slice(" ", 0).trim_prefix("[")
@@ -564,8 +542,3 @@ func get_date() -> String:
 ## Returns the time of the line returned by [method get_line].
 func get_time() -> String:
 	return get_timestamp().split(" ")[-1].trim_suffix("]")
-
-
-## Closes the log file.
-func close() -> void:
-	file.close()
