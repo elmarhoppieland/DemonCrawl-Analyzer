@@ -31,8 +31,7 @@ func populate_tree() -> void:
 	for profile in owner.get_used_profiles():
 		var profile_item := root.create_child()
 		profile_item.set_text(0, profile.name)
-		profile_item.set_text(1, str(profile.get_statistic(Profile.Statistic.CHESTS_OPENED)))
-		profile_item.set_text(2, str(profile.get_statistic(Profile.Statistic.ITEMS_AQUIRED)))
-		profile_item.set_text(3, str(profile.get_statistic(Profile.Statistic.LIVES_RESTORED)))
-		profile_item.set_text(4, str(profile.get_statistic(Profile.Statistic.COINS_SPENT)))
-		profile_item.set_text(5, str(profile.get_statistic(Profile.Statistic.MASTERY_ABILITY_USES)))
+		
+		for i in Profile.Statistic.COUNT:
+			var statistic: int = profile.get_statistic(i)
+			profile_item.set_text(i + 1, "" if statistic < 0 else (" " + str(statistic)))

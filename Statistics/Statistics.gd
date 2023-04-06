@@ -13,7 +13,8 @@ enum LogError {
 const SAVE_DATA_PATH := "user://profiles.dcstat"
 const SAVE_DATA_PATH_DEBUG := "user://profiles_debug.dcstat"
 
-const CURRENT_VERSION := "1.1.0"
+## The current version. Formatted as [code]MAJOR.minor.bugfix.debug[/code].
+const CURRENT_VERSION := "1.1.0.2"
 # ==============================================================================
 var default_log_dir := OS.get_data_dir().get_base_dir().path_join("Local/demoncrawl/logs")
 # ------------------------------------------------------------------------------
@@ -35,7 +36,7 @@ func _enter_tree() -> void:
 	
 	read_logs_dir()
 	
-	save_data_to_disk()
+#	save_data_to_disk()
 
 
 func read_saved_data() -> void:
@@ -58,37 +59,41 @@ func read_saved_data() -> void:
 	
 	file.close()
 	
-	file = FileAccess.open(default_log_dir.path_join("log1.txt"), FileAccess.READ)
-	if not file:
-		push_error("Error occurred during read operation: %s. Aborting process..." % error_string(FileAccess.get_open_error()))
-		return
-	
-	var log_timestamp := file.get_line().get_slice("]", 0).trim_prefix("[")
-	
-	file.close()
+	var log_file := LogFileReader.read(default_log_dir.path_join("log1.txt"))
+	log_file.next_line()
+	var log_timestamp := log_file.get_timestamp()
+	log_file.close()
 	
 	var old_data := {} # the data before the first log file. If an update occurs, this data will be kept.
 	var new_data: Array[Dictionary] = [] # the data stored in log files. If an update occurs, this data will be deleted.
 	for data in disk_data:
-		if not "timestamp" in data or not data.timestamp is String:
+		if not "start_timestamp" in data or not data.start_timestamp is String:
 			continue
 		
-		var timestamp: String = data.timestamp
+		var timestamp: String = data.start_timestamp
 		if log_timestamp == timestamp:
 			old_data = data
-		elif not old_data.is_empty(): # if old_data is not empty then we must have reached a log file
+		elif not old_data.is_empty() and old_data.version == CURRENT_VERSION:
+			# if old_data is not empty then we must have reached a log file
+			# if old_data.version != CURRENT_VERSION then it must be outdated
 			new_data.append(data)
 	
 	if old_data.is_empty():
 		# data is not yet set up correctly; this usually only happens on first launch
+		# file should be empty but we truncate the file just in case
+		FileAccess.open(get_savedata_path(), FileAccess.WRITE)
 		return
 	
-	save_json(old_data)
+	save_json(old_data, true)
+	
+	if new_data.is_empty(): # there was an update
+		print("Updating...")
+		load_from_json(old_data)
+		return
 	
 	for data in new_data:
 		save_json(data, false)
 	
-	# this assumes there is no update
 	load_from_json(new_data[-1])
 
 
@@ -111,8 +116,14 @@ func read_logs_dir() -> void:
 			return
 
 
-func save_data_to_disk(timestamp: String = "", truncate: bool = true) -> void:
-	var dict := {"profiles": {}, "time": latest_recorded_time, "version": CURRENT_VERSION, "timestamp": timestamp}
+func save_data_to_disk(truncate: bool = true, start_timestamp: String = "", end_timestamp: String = "") -> void:
+	var dict := {
+		"profiles": {},
+		"time": latest_recorded_time,
+		"version": CURRENT_VERSION,
+		"start_timestamp": start_timestamp,
+		"end_timestamp": end_timestamp
+	}
 	for profile in get_profiles():
 		dict.profiles[profile.name] = profile._to_dict()
 	
@@ -124,6 +135,8 @@ func save_json(json: Dictionary, truncate: bool = true) -> void:
 	if not file:
 		push_error("Error occurred during write operation: %s. Aborting process..." % error_string(FileAccess.get_open_error()))
 		return
+	
+	file.seek_end()
 	
 	file.store_line(JSON.stringify(json))
 
@@ -144,7 +157,9 @@ func read_log(log_name: String, after_unix: int) -> LogError:
 		
 		log_reader.next_line()
 	
-	save_data_to_disk(timestamp, false)
+	var end_timestamp := log_reader.get_last_timestamp()
+	
+	save_data_to_disk(false, timestamp, end_timestamp)
 	
 	return LogError.EOF_REACHED
 

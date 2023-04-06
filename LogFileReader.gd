@@ -258,7 +258,7 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 		Line.STAGE_LEAVE:
 			return handle_stage_exit(inventory, quest, stage)
 		Line.ITEM_GAIN:
-			handle_gain_item(inventory)
+			handle_gain_item(inventory, profile)
 			return null
 		Line.ITEM_LOSE:
 			handle_lose_item(inventory)
@@ -338,7 +338,7 @@ func handle_quest_create(profile: Profile = null) -> Quest:
 
 
 ## Handles gaining of an item. Adds the item gained in [code]line[/code] to [code]inventory[/code].
-func handle_gain_item(inventory: Inventory) -> void:
+func handle_gain_item(inventory: Inventory, profile: Profile = null) -> void:
 	if not inventory:
 		return
 	
@@ -357,6 +357,9 @@ func handle_gain_item(inventory: Inventory) -> void:
 	var index := inventory.get_free_slot()
 	
 	inventory.items[index] = item_name
+	
+	if profile:
+		profile.increment_statistic(Profile.Statistic.ITEMS_AQUIRED)
 
 
 ## Handles losing of an item. Removes the item lost in [code]line[/code] from [code]inventory[/code].
@@ -504,8 +507,13 @@ func next_line() -> void:
 
 ## Advances to the next line of the log file and returns it, excluding the date and time.
 ## If you do not need the line, consider using [method next_line] instead.
-func get_line() -> String:
-	next_line()
+## [br][br]If [code]line_index[/code] is specified, advances to the specified line instead.
+func get_line(line_index: int = position + 1) -> String:
+	position = line_index
+	if position < _lines.size():
+		_last_line = _lines[position]
+	else:
+		_last_line = ""
 	
 	return get_current_line()
 
@@ -540,6 +548,14 @@ func get_timestamp() -> String:
 	return _last_line.get_slice("]", 0).trim_prefix("[")
 
 
+## Returns the last timestamp of the file.
+func get_last_timestamp() -> String:
+	if _lines.is_empty(): # if a file does not contain any useful lines, _lines will be empty
+		return ""
+	
+	return _lines[-1].get_slice("]", 0).trim_prefix("[")
+
+
 ## Returns the date of the line returned by [method get_line].
 func get_date() -> String:
 	return get_timestamp().get_slice(" ", 0).trim_prefix("[")
@@ -548,3 +564,8 @@ func get_date() -> String:
 ## Returns the time of the line returned by [method get_line].
 func get_time() -> String:
 	return get_timestamp().split(" ")[-1].trim_suffix("]")
+
+
+## Closes the log file.
+func close() -> void:
+	file.close()

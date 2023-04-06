@@ -3,12 +3,13 @@ class_name Profile
 
 # ==============================================================================
 enum Statistic {
-	CHESTS_OPENED,
-	ARTIFACTS_COLLECTED,
-	ITEMS_AQUIRED,
-	LIVES_RESTORED,
-	COINS_SPENT,
-	MASTERY_ABILITY_USES
+	CHESTS_OPENED, ## The total number of chests opened.
+	ARTIFACTS_COLLECTED, ## The total number of artifacts collected.
+	ITEMS_AQUIRED, ## The total number of items aquired.
+	LIVES_RESTORED, ## The total number of lives restored.
+	COINS_SPENT, ## The total number of coins spent.
+	MASTERY_ABILITY_USES, ## The total number of times any mastery III ability has been used.
+	COUNT ## Represents the size of the [enum Statistic] enum.
 }
 # ==============================================================================
 ## The name of the profile.
@@ -29,25 +30,6 @@ var statistics := {
 	Statistic.COINS_SPENT: 0, # the total number of coins spent
 	Statistic.MASTERY_ABILITY_USES: 0, # the total number of times any mastery III ability has been used
 }
-
-## When a [LogFileReader] stops reading. Each [String] is formatted as
-## [code]CONDITION:quest_index:stage_index[/code]
-##
-## [br][br]The condition contains a [code]Q[/code] if the [LogFileReader] stops reading
-## during a [Quest], and a [code]C[/code] if the [LogFileReader] stops reading due to a DemonCrawl crash.
-##
-## [br][br][code]stage_index[/code] ends with a [code]-[/code] if the player was at
-## the [Stage] select screen.
-##
-## [br][br]If the player is not in a [Quest] when the [LogFileReader] stops reading,
-## the [String] is set to [code]:-1:-1[/code].
-##
-## [br][br][b]Examples:[/b]
-## [br]- [code]Q:2:7[/code]: The player was in quest 2, inside stage 7.
-## [br]- [code]:-1:-1[/code]: The player was not in a quest.
-## [br]- [code]QC:5:0-[/code]: The player was in quest 5, on the stage select before stage 1. The game crashed.
-## [br]- [code]C:-1:-1[/code]: The player was not in a quest. The game crashed. [b]This is quite rare.[/b]
-var read_cutoffs: PackedStringArray = []
 # ==============================================================================
 
 func new_quest() -> Quest:
@@ -72,8 +54,15 @@ func get_statistic(statistic: Statistic) -> int:
 	return statistics[statistic]
 
 
+func increment_statistic(statistic: Statistic) -> void:
+	if not statistic in statistics:
+		return
+	
+	statistics[statistic] += 1
+
+
 static func _from_dict(dict: Dictionary) -> Profile:
-	if ["name", "in_quest", "quests"].any(func(key: String): return not key in dict):
+	if ["name", "in_quest", "quests", "statistics"].any(func(key: String): return not key in dict):
 		return null
 	
 	var profile := Profile.new()
@@ -83,5 +72,8 @@ static func _from_dict(dict: Dictionary) -> Profile:
 	
 	for quest_dict in dict.quests:
 		profile.quests.append(Quest._from_dict(quest_dict))
+	
+	for statistic in profile.statistics:
+		profile.statistics[statistic] = dict.statistics[str(statistic)]
 	
 	return profile
