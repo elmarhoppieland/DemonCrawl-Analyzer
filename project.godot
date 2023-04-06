@@ -23,6 +23,10 @@ config/icon="res://Sprites/Icon.png"
 TimeHelper="*res://TimeHelper.gd"
 SceneHandler="*res://Resources/SceneHandler.gd"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/calendar_button/plugin.cfg")
+
 [input]
 
 ui_left_click={

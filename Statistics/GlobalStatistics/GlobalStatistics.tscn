@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dmn863g0kdr1q"]
+[gd_scene load_steps=3 format=3 uid="uid://dmn863g0kdr1q"]
 
 [ext_resource type="Script" path="res://Statistics/GlobalStatistics/GlobalStatistics.gd" id="1_nkf8l"]
+[ext_resource type="PackedScene" uid="uid://djxx7ojcsxgm3" path="res://Statistics/StatisticsFilterSelection/StatisticsFilterSelection.tscn" id="2_a8ocf"]
 
 [node name="GlobalStatistics" type="Control"]
 layout_mode = 3
@@ -26,3 +27,6 @@ layout_mode = 2
 columns = 6
 column_titles_visible = true
 hide_root = true
+
+[node name="StatisticsFilterSelection" parent="MarginContainer" instance=ExtResource("2_a8ocf")]
+layout_mode = 2

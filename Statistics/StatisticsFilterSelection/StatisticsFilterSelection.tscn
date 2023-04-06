@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://djxx7ojcsxgm3"]
+
+[ext_resource type="Script" path="res://addons/calendar_button/scripts/calendar_script.gd" id="1_0js11"]
+[ext_resource type="Texture2D" uid="uid://cqcxj3c0k77p" path="res://addons/calendar_button/btn_img/btn_32x32_03.png" id="1_pa0ct"]
+[ext_resource type="Texture2D" uid="uid://b146xrhbpdtf8" path="res://addons/calendar_button/btn_img/btn_32x32_04.png" id="2_r5o68"]
+
+[node name="StatisticsFilterSelection" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CalendarButton" type="TextureButton" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_right = 400.0
+offset_bottom = 400.0
+toggle_mode = true
+texture_normal = ExtResource("1_pa0ct")
+texture_pressed = ExtResource("2_r5o68")
+stretch_mode = 5
+script = ExtResource("1_0js11")

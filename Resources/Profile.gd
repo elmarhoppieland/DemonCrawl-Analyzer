@@ -46,6 +46,7 @@ func new_quest() -> Quest:
 	return quest
 
 
+## Returns a [enum Statistic] from this profile.
 func get_statistic(statistic: Statistic) -> int:
 	if not statistic in statistics:
 		return -1
@@ -53,6 +54,7 @@ func get_statistic(statistic: Statistic) -> int:
 	return statistics[statistic]
 
 
+## Increments a [enum Statistic] from this profile by [code]amount[/code].
 func increment_statistic(statistic: Statistic, amount: int = 1) -> void:
 	if not statistic in statistics:
 		return
