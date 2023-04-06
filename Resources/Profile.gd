@@ -2,16 +2,6 @@ extends HistoryData
 class_name Profile
 
 # ==============================================================================
-enum Statistic {
-	CHESTS_OPENED, ## The total number of chests opened.
-	ARTIFACTS_COLLECTED, ## The total number of artifacts collected.
-	ITEMS_AQUIRED, ## The total number of items aquired.
-	LIVES_RESTORED, ## The total number of lives restored.
-	COINS_SPENT, ## The total number of coins spent.
-	MASTERY_ABILITY_USES, ## The total number of times any mastery III ability has been used.
-	COUNT ## Represents the size of the [enum Statistic] enum.
-}
-# ==============================================================================
 ## The name of the profile.
 var name := ""
 
@@ -20,16 +10,6 @@ var quests: Array[Quest] = []
 
 ## Whether the profile is currently in a [Quest].
 var in_quest := false
-
-## The player's statistics in this profile.
-var statistics := {
-	Statistic.CHESTS_OPENED: 0, # the total number of chests opened
-	Statistic.ARTIFACTS_COLLECTED: 0, # the total number of artifacts collected
-	Statistic.ITEMS_AQUIRED: 0, # the total number of items aquired
-	Statistic.LIVES_RESTORED: 0, # the total number of lives restored
-	Statistic.COINS_SPENT: 0, # the total number of coins spent
-	Statistic.MASTERY_ABILITY_USES: 0, # the total number of times any mastery III ability has been used
-}
 # ==============================================================================
 
 func new_quest() -> Quest:
@@ -47,22 +27,8 @@ func new_quest() -> Quest:
 	return quest
 
 
-func get_statistic(statistic: Statistic) -> int:
-	if not statistic in statistics:
-		return -1
-	
-	return statistics[statistic]
-
-
-func increment_statistic(statistic: Statistic) -> void:
-	if not statistic in statistics:
-		return
-	
-	statistics[statistic] += 1
-
-
 static func _from_dict(dict: Dictionary) -> Profile:
-	if ["name", "in_quest", "quests", "statistics"].any(func(key: String): return not key in dict):
+	if ["name", "in_quest", "quests"].any(func(key): return not key in dict.keys()):
 		return null
 	
 	var profile := Profile.new()
@@ -72,8 +38,5 @@ static func _from_dict(dict: Dictionary) -> Profile:
 	
 	for quest_dict in dict.quests:
 		profile.quests.append(Quest._from_dict(quest_dict))
-	
-	for statistic in profile.statistics:
-		profile.statistics[statistic] = dict.statistics[str(statistic)]
 	
 	return profile

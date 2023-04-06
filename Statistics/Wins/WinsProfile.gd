@@ -43,7 +43,6 @@ func populate_global_tree(profiles: Array[Profile]) -> void:
 		mastery_item.set_text(1, "Wins: %d" % win_counts[mastery])
 		mastery_item.set_text(2, "Losses: %d" % loss_counts[mastery])
 		mastery_item.set_text(3, "%d" % roundi(win_counts[mastery] / float(win_counts[mastery] + loss_counts[mastery]) * 100) + "%")
-		mastery_item.set_icon(0, Mastery.get_icon(mastery))
 	
 	var total_item := root.create_child()
 	total_item.set_text(0, "Total")
