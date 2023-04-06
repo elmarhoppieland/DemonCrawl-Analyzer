@@ -15,7 +15,10 @@ enum Line {
 	ITEM_LOSE = 2 * ITEM_GAIN, ## An item was lost in the line.
 	ITEM_GAIN_LOSE = ITEM_GAIN | ITEM_LOSE, ## Allow gaining and losing items.
 	CHEST_OPENED = 2 * ITEM_LOSE, ## A chest was opened in the line.
-	PLAYER_DEATH = 2 * CHEST_OPENED, ## The player was killed in the line.
+	ARTIFACT_COLLECTED = 2 * CHEST_OPENED, ## An artifact was collected in the line.
+	LIVES_RESTORED = 2 * ARTIFACT_COLLECTED, ## The player restored 1 or more lives in the line.
+	COINS_SPENT = 2 * LIVES_RESTORED, ## The player spent coins in the line.
+	PLAYER_DEATH = 2 * COINS_SPENT, ## The player was killed in the line.
 	LEADERBOARD_SUBMIT = 2 * PLAYER_DEATH, ## The player's score was submitted to the leaderboards in the line.
 	PLAYER_STATS = 2 * LEADERBOARD_SUBMIT, ## The line shows the player's stats.
 	MASTERY_SELECTED = 2 * PLAYER_STATS, ## The player's mastery is selected in the line.
@@ -31,6 +34,9 @@ const _LINE_FILTERS := {
 	Line.ITEM_GAIN: "* was added to inventory slot #*",
 	Line.ITEM_LOSE: "* was removed from inventory slot #*",
 	Line.CHEST_OPENED: "Opening chest",
+	Line.ARTIFACT_COLLECTED: "Collected artifact: *",
+	Line.LIVES_RESTORED: "* li*e* restored! You now have */* lives.",
+	Line.COINS_SPENT: "* coins spent. You now have * coins.",
 	Line.PLAYER_DEATH: "* was killed!",
 	Line.LEADERBOARD_SUBMIT: "Alert: Submitting score to Leaderboard...",
 	Line.PLAYER_STATS: "Player stats: *",
@@ -88,9 +94,14 @@ static func get_line_type(line: String) -> Line:
 		return Line.NONE
 	
 	for line_type in _LINE_FILTERS:
-		var filter: String = _LINE_FILTERS[line_type]
-		if line.match(filter):
-			return line_type
+		var filter: Variant = _LINE_FILTERS[line_type]
+		if filter is String:
+			if line.match(filter):
+				return line_type
+		elif filter is PackedStringArray or filter is Array:
+			for string in filter:
+				if line.match(string):
+					return line_type
 	
 	return Line.NONE
 
@@ -264,7 +275,16 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 			handle_lose_item(inventory)
 			return null
 		Line.CHEST_OPENED:
-			profile.statistics[Profile.Statistic.CHESTS_OPENED] += 1
+			profile.increment_statistic(Profile.Statistic.CHESTS_OPENED)
+			return null
+		Line.ARTIFACT_COLLECTED:
+			profile.increment_statistic(Profile.Statistic.ARTIFACTS_COLLECTED)
+			return null
+		Line.LIVES_RESTORED:
+			profile.increment_statistic(Profile.Statistic.LIVES_RESTORED, line.get_slice(" ", 0).to_int())
+			return null
+		Line.COINS_SPENT:
+			profile.increment_statistic(Profile.Statistic.COINS_SPENT, line.get_slice(" ", 0).to_int())
 			return null
 		Line.PLAYER_DEATH:
 			return handle_player_death(inventory, stage, profile)

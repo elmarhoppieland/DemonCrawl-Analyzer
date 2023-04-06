@@ -8,7 +8,6 @@ enum Statistic {
 	ITEMS_AQUIRED, ## The total number of items aquired.
 	LIVES_RESTORED, ## The total number of lives restored.
 	COINS_SPENT, ## The total number of coins spent.
-	MASTERY_ABILITY_USES, ## The total number of times any mastery III ability has been used.
 	COUNT ## Represents the size of the [enum Statistic] enum.
 }
 # ==============================================================================
@@ -28,7 +27,6 @@ var statistics := {
 	Statistic.ITEMS_AQUIRED: 0, # the total number of items aquired
 	Statistic.LIVES_RESTORED: 0, # the total number of lives restored
 	Statistic.COINS_SPENT: 0, # the total number of coins spent
-	Statistic.MASTERY_ABILITY_USES: 0, # the total number of times any mastery III ability has been used
 }
 # ==============================================================================
 
@@ -54,11 +52,11 @@ func get_statistic(statistic: Statistic) -> int:
 	return statistics[statistic]
 
 
-func increment_statistic(statistic: Statistic) -> void:
+func increment_statistic(statistic: Statistic, amount: int = 1) -> void:
 	if not statistic in statistics:
 		return
 	
-	statistics[statistic] += 1
+	statistics[statistic] += amount
 
 
 static func _from_dict(dict: Dictionary) -> Profile:
