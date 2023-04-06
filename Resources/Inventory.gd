@@ -6,7 +6,7 @@ var items: PackedStringArray = (func(): var r := []; r.resize(24); r.fill(""); r
 # ==============================================================================
 
 ## Creates a copy of this [Inventory] and returns it.
-func duplicate() -> Inventory:
+func get_state() -> Inventory:
 	var inventory := Inventory.new()
 	inventory.items = items.duplicate()
 	

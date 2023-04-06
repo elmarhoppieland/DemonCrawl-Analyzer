@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://c4plfbktdna17"]
+[gd_scene load_steps=6 format=3 uid="uid://c4plfbktdna17"]
 
 [ext_resource type="PackedScene" uid="uid://6le4rjsq7xnf" path="res://History/History.tscn" id="1_f34vi"]
 [ext_resource type="Script" path="res://Statistics/Statistics.gd" id="1_gj66t"]
 [ext_resource type="PackedScene" uid="uid://dff50136u5eac" path="res://Statistics/Wins/Wins.tscn" id="3_hejge"]
+[ext_resource type="PackedScene" uid="uid://dmn863g0kdr1q" path="res://Statistics/GlobalStatistics/GlobalStatistics.tscn" id="4_hfufw"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_138mp"]
 
@@ -19,5 +20,9 @@ script = ExtResource("1_gj66t")
 layout_mode = 2
 
 [node name="Wins" parent="." instance=ExtResource("3_hejge")]
+visible = false
+layout_mode = 2
+
+[node name="Statistics" parent="." instance=ExtResource("4_hfufw")]
 visible = false
 layout_mode = 2
