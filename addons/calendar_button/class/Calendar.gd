@@ -15,6 +15,11 @@ const _WEEKDAY_NAME: PackedStringArray = [
 ]
 # ==============================================================================
 
+## Returns the current [Date] from the user's system.
+static func get_date() -> Date:
+	return Date.new()
+
+
 ## Returns the number of days in [code]month[/code] of [code]year[/code].
 static func get_days_in_month(month: Time.Month, year: int) -> int:
 	var number_of_days := 0
