@@ -14,3 +14,7 @@ static func _from_dict(dict: Dictionary) -> StageExit:
 	stage_exit.inventory = Inventory._from_array(dict.inventory.items)
 	
 	return stage_exit
+
+
+func _import_inventory(json: Dictionary) -> void:
+	inventory = HistoryData.from_json(json, Inventory)

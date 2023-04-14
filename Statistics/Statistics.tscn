@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://c4plfbktdna17"]
+[gd_scene load_steps=7 format=3 uid="uid://c4plfbktdna17"]
 
 [ext_resource type="PackedScene" uid="uid://6le4rjsq7xnf" path="res://History/History.tscn" id="1_f34vi"]
 [ext_resource type="Script" path="res://Statistics/Statistics.gd" id="1_gj66t"]
 [ext_resource type="PackedScene" uid="uid://dff50136u5eac" path="res://Statistics/Wins/Wins.tscn" id="3_hejge"]
 [ext_resource type="PackedScene" uid="uid://dmn863g0kdr1q" path="res://Statistics/GlobalStatistics/GlobalStatistics.tscn" id="4_hfufw"]
+[ext_resource type="PackedScene" uid="uid://b11gbfevpt52w" path="res://Statistics/StatisticsFilterSelection/StatisticsFilterSelection.tscn" id="5_fmjx1"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_138mp"]
 
@@ -26,3 +27,28 @@ layout_mode = 2
 [node name="Statistics" parent="." instance=ExtResource("4_hfufw")]
 visible = false
 layout_mode = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -48.0
+offset_bottom = 35.0
+grow_horizontal = 0
+
+[node name="Button" type="Button" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Filter"
+
+[node name="StatisticsFilterSelection" parent="CanvasLayer/VBoxContainer/Button" instance=ExtResource("5_fmjx1")]
+unique_name_in_owner = true
+visible = false
+
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/Button" to="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" method="popup"]
+[connection signal="filters_saved" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="History" method="_on_filters_saved"]
+[connection signal="filters_saved" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="Wins" method="_on_filters_saved"]
+[connection signal="filters_saved" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="Statistics" method="_on_filters_saved"]
+[connection signal="ready" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" method="hide"]

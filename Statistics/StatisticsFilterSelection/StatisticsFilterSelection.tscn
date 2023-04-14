@@ -1,0 +1,273 @@
+[gd_scene load_steps=6 format=3 uid="uid://b11gbfevpt52w"]
+
+[ext_resource type="Script" path="res://Statistics/StatisticsFilterSelection/StatisticsFilterSelection.gd" id="1_ii0da"]
+[ext_resource type="PackedScene" uid="uid://cxnmkvh5273r6" path="res://Statistics/StatisticsFilterSelection/TimeFilter.tscn" id="1_nbhow"]
+[ext_resource type="Script" path="res://Statistics/StatisticsFilterSelection/QuestTypeCheckBox.gd" id="3_yvhsg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x0gpq"]
+bg_color = Color(0.219608, 0.219608, 0.219608, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="LabelSettings" id="LabelSettings_whsf4"]
+font_size = 20
+
+[node name="StatisticsFilterSelection" type="PopupPanel"]
+size = Vector2i(620, 568)
+visible = true
+theme_override_styles/panel = SubResource("StyleBoxFlat_x0gpq")
+script = ExtResource("1_ii0da")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Time" type="VBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/Time"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Time"
+label_settings = SubResource("LabelSettings_whsf4")
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/Time"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="After" parent="MarginContainer/VBoxContainer/GridContainer/Time/HBoxContainer" instance=ExtResource("1_nbhow")]
+unique_name_in_owner = true
+layout_mode = 2
+title = "After"
+
+[node name="Before" parent="MarginContainer/VBoxContainer/GridContainer/Time/HBoxContainer" instance=ExtResource("1_nbhow")]
+unique_name_in_owner = true
+layout_mode = 2
+title = "Before"
+
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer/GridContainer/Time/HBoxContainer/Before" index="0"]
+text = "Before"
+
+[node name="TimeSelection" parent="MarginContainer/VBoxContainer/GridContainer/Time/HBoxContainer/Before" index="2"]
+time_hour = 23
+time_minute = 59
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="QuestType" type="VBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/QuestType"]
+layout_mode = 2
+text = "Quest Type"
+label_settings = SubResource("LabelSettings_whsf4")
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/QuestType"]
+layout_mode = 2
+
+[node name="Casual" type="VBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Casual"]
+layout_mode = 2
+text = "Casual"
+horizontal_alignment = 1
+
+[node name="GloryDays" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Glory Days (I)"
+script = ExtResource("3_yvhsg")
+
+[node name="RespitesEnd" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Respite's End (II)"
+script = ExtResource("3_yvhsg")
+type = 4
+
+[node name="AnotherWay" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Another Way (III)"
+script = ExtResource("3_yvhsg")
+type = 8
+
+[node name="AroundTheBend" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Around The Bend (IV)"
+script = ExtResource("3_yvhsg")
+type = 12
+
+[node name="Shadowman" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Shadowman (V)"
+script = ExtResource("3_yvhsg")
+type = 16
+
+[node name="Normal" type="VBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Normal"]
+layout_mode = 2
+text = "Normal"
+horizontal_alignment = 1
+
+[node name="GloryDays" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Glory Days (I)"
+script = ExtResource("3_yvhsg")
+difficulty = 1
+
+[node name="RespitesEnd" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Respite's End (II)"
+script = ExtResource("3_yvhsg")
+difficulty = 1
+type = 4
+
+[node name="AnotherWay" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Another Way (III)"
+script = ExtResource("3_yvhsg")
+difficulty = 1
+type = 8
+
+[node name="AroundTheBend" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Around The Bend (IV)"
+script = ExtResource("3_yvhsg")
+difficulty = 1
+type = 12
+
+[node name="Shadowman" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Shadowman (V)"
+script = ExtResource("3_yvhsg")
+difficulty = 1
+type = 16
+
+[node name="Hard" type="VBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+text = "Hard"
+horizontal_alignment = 1
+
+[node name="GloryDays" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Glory Days (I)"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+
+[node name="RespitesEnd" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Respite's End (II)"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+type = 4
+
+[node name="AnotherWay" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Another Way (III)"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+type = 8
+
+[node name="AroundTheBend" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Around The Bend (IV)"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+type = 12
+
+[node name="Shadowman" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Shadowman (V)"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+type = 16
+
+[node name="EndlessMultiverse" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Endless Multiverse"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+type = 20
+
+[node name="HeroTrials" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Hero Trials"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+type = 24
+
+[node name="Beyond" type="CheckBox" parent="MarginContainer/VBoxContainer/GridContainer/QuestType/HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Beyond"
+script = ExtResource("3_yvhsg")
+difficulty = 2
+type = 28
+
+[node name="SaveButton" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+text = "Save"
+
+[connection signal="about_to_popup" from="." to="." method="_on_about_to_popup"]
+[connection signal="popup_hide" from="." to="." method="save_request"]
+[connection signal="time_changed" from="MarginContainer/VBoxContainer/GridContainer/Time/HBoxContainer/After" to="." method="_on_time_after_changed"]
+[connection signal="time_changed" from="MarginContainer/VBoxContainer/GridContainer/Time/HBoxContainer/Before" to="." method="_on_time_before_changed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SaveButton" to="." method="_on_save_button_pressed"]
+
+[editable path="MarginContainer/VBoxContainer/GridContainer/Time/HBoxContainer/Before"]

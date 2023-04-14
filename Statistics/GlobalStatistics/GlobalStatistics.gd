@@ -5,6 +5,7 @@ class_name GlobalStatistics
 @export var columns: Array[String] = []
 # ==============================================================================
 @onready var tree: Tree = %Tree
+@onready var main: Statistics = owner
 # ==============================================================================
 
 func _ready() -> void:
@@ -25,13 +26,25 @@ func _initialize_tree() -> void:
 		tree.set_column_expand(i, false)
 
 
-func populate_tree() -> void:
+func populate_tree(filters: Dictionary = {}) -> void:
+	tree.clear()
+	
 	var root := tree.create_item()
 	
-	for profile in owner.get_used_profiles():
+	for profile in main.get_used_profiles():
 		var profile_item := root.create_child()
 		profile_item.set_text(0, profile.name)
 		
-		for i in Profile.Statistic.COUNT:
-			var statistic: int = profile.get_statistic(i)
-			profile_item.set_text(i + 1, "" if statistic < 0 else (" " + str(statistic)))
+		for i in Quest.Statistic.COUNT:
+			var value := 0
+			for quest in profile.quests:
+				if not quest.matches_filters(filters):
+					continue
+				
+				value += quest.get_statistic(i)
+			
+			profile_item.set_text(i + 1, "" if value < 0 else (" " + str(value)))
+
+
+func _on_filters_saved(filters: Dictionary) -> void:
+	populate_tree(filters)

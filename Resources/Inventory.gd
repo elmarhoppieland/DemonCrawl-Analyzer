@@ -23,7 +23,7 @@ func get_free_slot() -> int:
 	return index
 
 
-static func _from_array(item_array: Array) -> Inventory:
+static func from_array(item_array: Array) -> Inventory:
 	var inventory := Inventory.new()
 	
 	inventory.items = item_array
