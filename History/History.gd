@@ -1,19 +1,22 @@
 extends Control
+class_name History
 
+# ==============================================================================
+@onready var main: Statistics = owner
 # ==============================================================================
 
 func _ready() -> void:
 	populate_tree()
 
 
-func populate_tree() -> void:
+func populate_tree(filters: Dictionary = {}) -> void:
 	var tree: Tree = $Tree
 	
 	tree.clear()
 	
 	var root := tree.create_item()
 	
-	var profiles: Array[Profile] = owner.get_profiles()
+	var profiles: Array[Profile] = main.get_profiles()
 	for profile in profiles:
 		if profile.quests.is_empty():
 			continue
@@ -23,17 +26,27 @@ func populate_tree() -> void:
 		profile_item.collapsed = true
 		
 		for quest in profile.quests:
-			var quest_item := profile_item.create_child(0)
-			quest_item.set_text(0, quest.name)
-			quest_item.set_text(1, quest.creation_timestamp + "  ")
-			quest_item.collapsed = true
+			if not quest.matches_filters(filters):
+				continue
 			
-			quest_item.create_child().set_text(0, "Victory: %s" % ("Yes" if quest.victory else "No"))
-			
-			add_mastery(quest.mastery, quest.mastery_tier, quest_item)
-			
-			for stage in quest.stages:
-				add_stage(stage, quest_item)
+			add_quest(quest, profile_item)
+
+
+func add_quest(quest: Quest, parent_item: TreeItem) -> void:
+	var quest_item := parent_item.create_child(0)
+	quest_item.set_text(0, quest.name)
+	quest_item.set_text(1, quest.creation_timestamp + "  ")
+	quest_item.collapsed = true
+	
+	quest_item.create_child().set_text(0, "Victory: %s" % ("Yes" if quest.victory else "No"))
+	
+	add_mastery(quest.mastery, quest.mastery_tier, quest_item)
+	
+	if OS.is_debug_build():
+		quest_item.create_child().set_text(0, "Type Int: %s" % quest.type)
+	
+	for stage in quest.stages:
+		add_stage(stage, quest_item)
 
 
 func add_mastery(mastery: String, tier: int, parent_item: TreeItem) -> void:
@@ -79,3 +92,7 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
 		var item := inventory.items[i]
 		if not item.is_empty():
 			inventory_item.create_child().set_text(0, "%s. %s" % [i + 1, item])
+
+
+func _on_filters_saved(filters: Dictionary) -> void:
+	populate_tree(filters)

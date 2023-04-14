@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cxnmkvh5273r6"]
+[gd_scene load_steps=6 format=3 uid="uid://cxnmkvh5273r6"]
 
 [ext_resource type="Script" path="res://Statistics/StatisticsFilterSelection/TimeFilter.gd" id="1_hvm7b"]
 [ext_resource type="Texture2D" uid="uid://cqcxj3c0k77p" path="res://addons/calendar_button/btn_img/btn_32x32_03.png" id="2_g1bew"]
 [ext_resource type="Texture2D" uid="uid://b146xrhbpdtf8" path="res://addons/calendar_button/btn_img/btn_32x32_04.png" id="3_oepub"]
 [ext_resource type="Script" path="res://addons/calendar_button/scripts/calendar_script.gd" id="4_snqp3"]
+[ext_resource type="PackedScene" uid="uid://bsdrt0gwjj3f1" path="res://Resources/Scenes/TimeSelection.tscn" id="5_kvpw5"]
 
 [node name="TimeFilter" type="VBoxContainer"]
 anchors_preset = 15
@@ -28,7 +29,6 @@ size_flags_horizontal = 4
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
-toggle_mode = true
 texture_normal = ExtResource("2_g1bew")
 texture_pressed = ExtResource("3_oepub")
 script = ExtResource("4_snqp3")
@@ -40,4 +40,9 @@ size_flags_horizontal = 4
 text = "DD-MM-YYYY"
 horizontal_alignment = 2
 
+[node name="TimeSelection" parent="." instance=ExtResource("5_kvpw5")]
+unique_name_in_owner = true
+layout_mode = 2
+
 [connection signal="date_selected" from="HBoxContainer/CalendarButton" to="." method="_date_selected"]
+[connection signal="time_selected" from="TimeSelection" to="." method="_on_time_selected"]

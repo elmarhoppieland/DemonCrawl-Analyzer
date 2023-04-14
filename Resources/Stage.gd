@@ -41,3 +41,15 @@ static func _from_dict(dict: Dictionary) -> Stage:
 		stage.death = StageExit._from_dict(dict.death)
 	
 	return stage
+
+
+func _import_enter(json: Dictionary) -> void:
+	enter = HistoryData.from_json(json, StageEnter)
+
+
+func _import_exit(json: Dictionary) -> void:
+	exit = HistoryData.from_json(json, StageExit)
+
+
+func _import_death(json: Dictionary) -> void:
+	death = HistoryData.from_json(json, StageExit)

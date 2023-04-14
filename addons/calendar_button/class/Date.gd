@@ -35,23 +35,23 @@ func _init(_day: int = Time.get_datetime_dict_from_system().day,
 	day = _day
 	month = _month
 	year = _year
-	
+
 
 ## Returns the current date in the specified format.
-## [br][br] Supported date formats:
+## [br][br]Supported date formats (case-insensitive):
 ## [br][code]DD[/code]: Two digit day
 ## [br][code]MM[/code]: Two digit month
 ## [br][code]YY[/code]: Two digit year
 ## [br][code]YYYY[/code]: Four digit year
 func date(date_format: String = "DD-MM-YY") -> String:
-	if "DD".is_subsequence_of(date_format):
-		date_format = date_format.replace("DD", str(day).pad_zeros(2))
-	if "MM".is_subsequence_of(date_format):
-		date_format = date_format.replace("MM", str(month).pad_zeros(2))
-	if "YYYY".is_subsequence_of(date_format):
-		date_format = date_format.replace("YYYY", str(year))
-	elif "YY".is_subsequence_of(date_format):
-		date_format = date_format.replace("YY", str(year).substr(2,3))
+	if "DD".is_subsequence_ofn(date_format):
+		date_format = date_format.replacen("DD", str(day).pad_zeros(2))
+	if "MM".is_subsequence_ofn(date_format):
+		date_format = date_format.replacen("MM", str(month).pad_zeros(2))
+	if "YYYY".is_subsequence_ofn(date_format):
+		date_format = date_format.replacen("YYYY", str(year))
+	elif "YY".is_subsequence_ofn(date_format):
+		date_format = date_format.replacen("YY", str(year).substr(2,3))
 	return date_format
 
 

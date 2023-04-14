@@ -3,6 +3,14 @@ extends TextureButton
 class_name CalendarButton
 
 # ==============================================================================
+enum PopupDirection {
+	RIGHT,
+	DOWN,
+	LEFT
+}
+# ==============================================================================
+@export var popup_direction := PopupDirection.DOWN
+# ==============================================================================
 var selected_date := Date.new()
 
 var popup: Popup
@@ -12,7 +20,7 @@ signal date_selected(date_obj: Date)
 # ==============================================================================
 
 func _enter_tree():
-	toggle_mode = true
+	toggle_mode = false
 	
 	setup_calendar_icon()
 	
@@ -32,11 +40,6 @@ func setup_calendar_icon():
 
 
 func create_button_texture(image_name: String) -> Texture2D:
-#	var image_normal := Image.new()
-#	image_normal.load("res://addons/calendar_button/btn_img/" + image_name)
-#	var image_texture_normal := ImageTexture.new()
-#	image_texture_normal.create_from_image(image_normal)
-	
 	return load("res://addons/calendar_button/btn_img/" + image_name)
 
 
@@ -100,15 +103,27 @@ func close_popup():
 	set_pressed(false)
 
 
-func _toggled(is_pressed: bool):
+func _pressed() -> void: # WAS func _toggled(is_pressed: bool) -> void:
 	if not has_node("popup"):
 		add_child(popup)
-	if not is_pressed:
-		close_popup()
-	else:
-		if has_node("popup"):
-			popup.show()
-		else:
-			add_child(popup)
+		popup.position = global_position
+		if get_window() != get_tree().root:
+			popup.position += get_window().position
+		
+		match popup_direction:
+			PopupDirection.DOWN:
+				popup.position.x += size.x / 2
+				popup.position.x -= popup.size.x / 2
+				popup.position.y += size.y
+			PopupDirection.LEFT:
+				popup.position.x -= popup.size.x
+				popup.position.y += size.y / 2
+				popup.position.y -= popup.size.y / 2
+			PopupDirection.RIGHT:
+				popup.position.x += size.x
+				popup.position.y += size.y / 2
+				popup.position.y -= popup.size.y / 2
+		
+		popup.position = popup.position.clamp(Vector2i.ZERO, get_tree().root.size - popup.size)
 	
-	WindowRestrictor.restrict_popup_inside_screen(popup)
+	popup.popup()

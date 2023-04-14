@@ -1,0 +1,65 @@
+[gd_scene load_steps=6 format=3 uid="uid://hbp6gbjwf4qx"]
+
+[ext_resource type="Script" path="res://Main/Main.gd" id="1_cbrcg"]
+[ext_resource type="Texture2D" uid="uid://cwafubdri0xva" path="res://Sprites/Icon.png" id="2_5tcmd"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_t8i6d"]
+font_size = 48
+font_color = Color(0.839216, 0.0666667, 0.14902, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h3hhy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0mlam"]
+font_color = Color(0, 1, 1, 1)
+
+[node name="Main" type="CanvasLayer"]
+script = ExtResource("1_cbrcg")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="PanelContainer/VBoxContainer"]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("2_5tcmd")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "DemonCrawl Analyzer"
+label_settings = SubResource("LabelSettings_t8i6d")
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+theme_override_styles/separator = SubResource("StyleBoxEmpty_h3hhy")
+
+[node name="Button" type="Button" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 24
+text = "Text set by script"
+
+[node name="SaveStatusLabel" type="Label" parent="PanelContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Text set by script."
+label_settings = SubResource("LabelSettings_0mlam")
+horizontal_alignment = 1
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]

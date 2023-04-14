@@ -41,12 +41,14 @@ grow_horizontal = 0
 [node name="Button" type="Button" parent="CanvasLayer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 8
-toggle_mode = true
 text = "Filter"
 
-[node name="StatisticsFilterSelection" parent="CanvasLayer/VBoxContainer" instance=ExtResource("5_fmjx1")]
+[node name="StatisticsFilterSelection" parent="CanvasLayer/VBoxContainer/Button" instance=ExtResource("5_fmjx1")]
+unique_name_in_owner = true
 visible = false
-layout_mode = 2
 
-[connection signal="toggled" from="CanvasLayer/VBoxContainer/Button" to="CanvasLayer/VBoxContainer/StatisticsFilterSelection" method="set_visible"]
-[connection signal="ready" from="CanvasLayer/VBoxContainer/StatisticsFilterSelection" to="CanvasLayer/VBoxContainer/StatisticsFilterSelection" method="hide"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/Button" to="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" method="popup"]
+[connection signal="filters_saved" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="History" method="_on_filters_saved"]
+[connection signal="filters_saved" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="Wins" method="_on_filters_saved"]
+[connection signal="filters_saved" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="Statistics" method="_on_filters_saved"]
+[connection signal="ready" from="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" to="CanvasLayer/VBoxContainer/Button/StatisticsFilterSelection" method="hide"]

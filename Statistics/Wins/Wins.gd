@@ -6,23 +6,35 @@ class_name Wins
 # ==============================================================================
 const _WINS_PROFILE_SCENE := preload("res://Statistics/Wins/WinsProfile.tscn")
 # ==============================================================================
+var profile_tabs := {}
+# ==============================================================================
 @onready var _global: WinsProfile = %Global
+@onready var main: Statistics = owner
 # ==============================================================================
 
 func _ready() -> void:
 	_create_tabs()
 
 
-func _create_tabs() -> void:
-	var profiles: Array[Profile] = owner.get_profiles()
+func _create_tabs(filters: Dictionary = {}) -> void:
+	var profiles: Array[Profile] = main.get_used_profiles()
 	
 	for profile in profiles:
 		if not profile.quests.is_empty():
-			var profile_tab: WinsProfile = _WINS_PROFILE_SCENE.instantiate()
-			$TabContainer.add_child(profile_tab)
+			var profile_tab: WinsProfile
+			if profile.name in profile_tabs:
+				profile_tab = profile_tabs[profile.name]
+			else:
+				profile_tab = _WINS_PROFILE_SCENE.instantiate()
+				profile_tabs[profile.name] = profile_tab
+				$TabContainer.add_child(profile_tab)
 			
 			profile_tab.name = profile.name
 			
-			profile_tab.populate_tree(profile)
+			profile_tab.populate_tree(profile, filters)
 	
-	_global.populate_global_tree(profiles)
+	_global.populate_global_tree(profiles, filters)
+
+
+func _on_filters_saved(filters: Dictionary) -> void:
+	_create_tabs(filters)
