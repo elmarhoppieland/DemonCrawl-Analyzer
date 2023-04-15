@@ -149,6 +149,8 @@ func update_savedata() -> void:
 	var first_log_file := DemonCrawl.open_log_file(1)
 	var first_log_unix := TimeHelper.get_unix_time_from_timestamp(first_log_file.get_line().get_slice("]", 0).trim_prefix("["))
 	
+	first_log_file.close()
+	
 	var savedata_index := get_savedata_index_before_unix(first_log_unix)
 	if savedata_index < 0:
 		# this shouldn't every happen but if it does then there's no reason to continue
@@ -160,6 +162,8 @@ func update_savedata() -> void:
 	var savedata_parse = JSON.parse_string(savedata_text)
 	if savedata_parse is Dictionary:
 		load_from_json(savedata_parse)
+	
+	savedata_file.close()
 	
 	move_savedata_files(savedata_index)
 
@@ -202,9 +206,11 @@ func move_savedata_files(new_zero_index: int) -> void:
 		return
 	
 	for index in DemonCrawl.get_logs_count() - new_zero_index:
-		var error := DirAccess.rename_absolute(Analyzer.get_savedata_path(new_zero_index + index), Analyzer.get_savedata_path(index))
+		var current_path := Analyzer.get_savedata_path(new_zero_index + index)
+		var new_path := Analyzer.get_savedata_path(index)
+		var error := DirAccess.rename_absolute(current_path, new_path)
 		if error:
-			push_error("Error occurred during move operation: %s." % error_string(error))
+			push_error("Error occurred during move operation: %s. Can't rename file '%s' to '%s'" % [error_string(error), Analyzer.get_savedata_path(new_zero_index + index), Analyzer.get_savedata_path(index)])
 			breakpoint
 
 

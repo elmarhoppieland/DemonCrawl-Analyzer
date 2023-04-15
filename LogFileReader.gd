@@ -24,7 +24,8 @@ enum Line {
 	MASTERY_SELECTED = 2 * PLAYER_STATS, ## The player's mastery is selected in the line.
 	QUEST_ABORT = 2 * MASTERY_SELECTED, ## The [Quest] was aborted in the line.
 	DEMONCRAWL_STARTED = 2 * QUEST_ABORT, ## DemonCrawl was launched in the line.
-	ARENA_CONNECT = 2 * DEMONCRAWL_STARTED, ## The player connected to arena in the line.
+	DEMONCRAWL_CLOSED = 2 * DEMONCRAWL_STARTED, ## DemonCrawl was closed in the line.
+	ARENA_CONNECT = 2 * DEMONCRAWL_CLOSED, ## The player connected to arena in the line.
 	ALL = 2 * ARENA_CONNECT - 1, ## Allow all (useful) lines.
 }
 const _LINE_FILTERS := {
@@ -45,6 +46,7 @@ const _LINE_FILTERS := {
 	Line.MASTERY_SELECTED: "Mastery selected: *",
 	Line.QUEST_ABORT: "Quest aborted",
 	Line.DEMONCRAWL_STARTED: "DemonCrawl started",
+	Line.DEMONCRAWL_CLOSED: "DemonCrawl closed",
 	Line.ARENA_CONNECT: "Connected to DemonCrawl Arena",
 }
 # ==============================================================================

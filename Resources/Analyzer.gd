@@ -11,18 +11,18 @@ const SAVE_DATA_FILENAME := "profiles%d.dcstat"
 const SETTINGS_FILE := "user://settings.cfg"
 
 ## The current version. Formatted as [code]MAJOR.minor.bugfix.debug[/code].
-const CURRENT_VERSION := "1.0.0.8"
+const CURRENT_VERSION := "1.0.0.10"
 # ==============================================================================
 
 static func get_settings() -> SettingsFile:
-	var config := SettingsFile.new()
+	var settings := SettingsFile.new()
 	if FileAccess.file_exists(SETTINGS_FILE):
-		config.load(SETTINGS_FILE)
+		settings.load(SETTINGS_FILE)
 	else:
 		# create the file
 		FileAccess.open(SETTINGS_FILE, FileAccess.WRITE)
 	
-	return config
+	return settings
 
 
 static func save_settings(new_settings: SettingsFile) -> void:

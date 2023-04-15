@@ -34,6 +34,7 @@ func _ready() -> void:
 			var log_file := DemonCrawl.open_log_file(DemonCrawl.get_logs_count())
 			var start_unix_log := TimeHelper.get_unix_time_from_timestamp(log_file.get_line().get_slice("]", 0).trim_prefix("["))
 			if start_unix_json != start_unix_log:
+				button.text = BUTTON_TEXT_UP_TO_DATE
 				save_status_label.text = LABEL_TEXT_NEW_DATA
 				return
 		
