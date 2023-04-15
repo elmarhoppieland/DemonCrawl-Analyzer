@@ -245,7 +245,7 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 	if allowed_line_types == Line.NONE:
 		return null
 	
-	var line := get_current_line()
+	var line := get_line(position)
 	if line.is_empty():
 		return null
 	

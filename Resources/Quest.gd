@@ -15,7 +15,8 @@ enum Statistic {
 enum Difficulty {
 	CASUAL, # ___00
 	NORMAL, # ___01
-	HARD # ___10
+	HARD, # ___10
+	BEYOND # ___11
 }
 enum Type {
 	GLORY_DAYS = 0, # 000__
