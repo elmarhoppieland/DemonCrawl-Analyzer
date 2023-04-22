@@ -93,7 +93,7 @@ func read_saved_data() -> int:
 	var text := file.get_as_text()
 	var parse = JSON.parse_string(text)
 	if parse is Dictionary:
-		if "version" in parse and parse.version == Analyzer.CURRENT_VERSION:
+		if "version" in parse and parse.version == Analyzer.get_version():
 			# there is no update; we now want to load from this savedata file
 			# and start reading from the log file after the one the
 			# savedata file is associated with
@@ -223,7 +223,7 @@ func read_logs_dir(starting_index: int) -> void:
 func save_data_to_disk(index: int, start_unix: int, end_unix: int) -> void:
 	var dict := {
 		"profiles": {},
-		"version": Analyzer.CURRENT_VERSION,
+		"version": Analyzer.get_version(),
 		"start_unix": start_unix,
 		"end_unix": end_unix
 	}

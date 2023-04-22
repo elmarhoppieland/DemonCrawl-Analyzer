@@ -62,4 +62,11 @@ text = "Text set by script."
 label_settings = SubResource("LabelSettings_0mlam")
 horizontal_alignment = 1
 
+[node name="VersionLabel" type="Label" parent="PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Analyzer Version %s"
+
 [connection signal="pressed" from="PanelContainer/VBoxContainer/Button" to="." method="_on_button_pressed"]

@@ -33,6 +33,16 @@ func save_setting(section: String, setting: String, value: Variant) -> void:
 	SettingsFile.set_setting_static(section, setting, value)
 
 
+func get_version(include_debug: bool = OS.is_debug_build()) -> String:
+	if include_debug:
+		return CURRENT_VERSION
+	
+	var split := CURRENT_VERSION.split(".", false, 2)
+	split[-1] = split[-1].get_slice(".", 0)
+	print(split)
+	return ".".join(split)
+
+
 func get_setting(section: String, setting: String, default: Variant = null) -> Variant:
 	return get_settings().get_value(section, setting, default)
 
@@ -108,7 +118,7 @@ func get_data_status() -> DataStatus:
 	if json is Dictionary:
 		if "version" in json:
 			var version: String = json.version
-			if version != CURRENT_VERSION:
+			if version != get_version():
 				return DataStatus.OUTDATED_VERSION
 		if "start_unix" in json:
 			var start_unix_json: int = json.start_unix

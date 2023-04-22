@@ -11,9 +11,18 @@ const LABEL_TEXT_UP_TO_DATE := "Analyzed data is up to date."
 # ==============================================================================
 @onready var button: Button = %Button
 @onready var save_status_label: Label = %SaveStatusLabel
+@onready var version_label: Label = %VersionLabel
 # ==============================================================================
 
 func _ready() -> void:
+	_initialize_button_text()
+	
+	version_label.text %= Analyzer.get_version()
+	if OS.is_debug_build():
+		version_label.text += " (DEBUG)"
+
+
+func _initialize_button_text() -> void:
 	if Analyzer.is_first_launch():
 		button.text = BUTTON_TEXT_FIRST_LAUNCH
 		save_status_label.text = LABEL_TEXT_FIRST_LAUNCH
