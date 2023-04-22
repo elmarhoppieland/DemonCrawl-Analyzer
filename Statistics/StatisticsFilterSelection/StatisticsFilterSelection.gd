@@ -92,3 +92,7 @@ func _on_about_to_popup() -> void:
 	position = button.global_position
 	position.x -= size.x
 	position.y += int(button.position.y)
+
+
+func _on_quest_type_filters_changed(_new_filters: Dictionary) -> void:
+	filters_changed = true
