@@ -29,7 +29,7 @@ var datetime_string := "YYYY-MM-DDTHH:MM:00"
 @onready var calendar_button: TextureButton = %CalendarButton
 @onready var date_label: Label = %DateLabel
 
-@onready var time_selection: HBoxContainer = %TimeSelection
+@onready var time_selection: TimeSelection = %TimeSelection
 # ==============================================================================
 signal time_changed(new_time: String)
 # ==============================================================================

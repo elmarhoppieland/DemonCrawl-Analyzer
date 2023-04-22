@@ -1,0 +1,180 @@
+[gd_scene load_steps=3 format=3 uid="uid://cnmpv1mfge18n"]
+
+[ext_resource type="Script" path="res://Statistics/StatisticsFilterSelection/QuestTypeCheckBox.gd" id="1_73xjk"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_whsf4"]
+font_size = 20
+
+[node name="QuestType" type="VBoxContainer"]
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Quest Type"
+label_settings = SubResource("LabelSettings_whsf4")
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Casual" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="HBoxContainer/Casual"]
+layout_mode = 2
+text = "Casual"
+horizontal_alignment = 1
+
+[node name="GloryDays" type="CheckBox" parent="HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Glory Days (I)"
+script = ExtResource("1_73xjk")
+
+[node name="RespitesEnd" type="CheckBox" parent="HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Respite's End (II)"
+script = ExtResource("1_73xjk")
+type = 4
+
+[node name="AnotherWay" type="CheckBox" parent="HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Another Way (III)"
+script = ExtResource("1_73xjk")
+type = 8
+
+[node name="AroundTheBend" type="CheckBox" parent="HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Around The Bend (IV)"
+script = ExtResource("1_73xjk")
+type = 12
+
+[node name="Shadowman" type="CheckBox" parent="HBoxContainer/Casual"]
+layout_mode = 2
+button_pressed = true
+text = "Shadowman (V)"
+script = ExtResource("1_73xjk")
+type = 16
+
+[node name="Normal" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="HBoxContainer/Normal"]
+layout_mode = 2
+text = "Normal"
+horizontal_alignment = 1
+
+[node name="GloryDays" type="CheckBox" parent="HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Glory Days (I)"
+script = ExtResource("1_73xjk")
+difficulty = 1
+
+[node name="RespitesEnd" type="CheckBox" parent="HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Respite's End (II)"
+script = ExtResource("1_73xjk")
+difficulty = 1
+type = 4
+
+[node name="AnotherWay" type="CheckBox" parent="HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Another Way (III)"
+script = ExtResource("1_73xjk")
+difficulty = 1
+type = 8
+
+[node name="AroundTheBend" type="CheckBox" parent="HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Around The Bend (IV)"
+script = ExtResource("1_73xjk")
+difficulty = 1
+type = 12
+
+[node name="Shadowman" type="CheckBox" parent="HBoxContainer/Normal"]
+layout_mode = 2
+button_pressed = true
+text = "Shadowman (V)"
+script = ExtResource("1_73xjk")
+difficulty = 1
+type = 16
+
+[node name="Hard" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="HBoxContainer/Hard"]
+layout_mode = 2
+text = "Hard"
+horizontal_alignment = 1
+
+[node name="GloryDays" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Glory Days (I)"
+script = ExtResource("1_73xjk")
+difficulty = 2
+
+[node name="RespitesEnd" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Respite's End (II)"
+script = ExtResource("1_73xjk")
+difficulty = 2
+type = 4
+
+[node name="AnotherWay" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Another Way (III)"
+script = ExtResource("1_73xjk")
+difficulty = 2
+type = 8
+
+[node name="AroundTheBend" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Around The Bend (IV)"
+script = ExtResource("1_73xjk")
+difficulty = 2
+type = 12
+
+[node name="Shadowman" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Shadowman (V)"
+script = ExtResource("1_73xjk")
+difficulty = 2
+type = 16
+
+[node name="EndlessMultiverse" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Endless Multiverse"
+script = ExtResource("1_73xjk")
+difficulty = 2
+type = 20
+
+[node name="HeroTrials" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Hero Trials"
+script = ExtResource("1_73xjk")
+difficulty = 2
+type = 24
+
+[node name="Beyond" type="CheckBox" parent="HBoxContainer/Hard"]
+layout_mode = 2
+button_pressed = true
+text = "Beyond"
+script = ExtResource("1_73xjk")
+difficulty = 3
+type = 28

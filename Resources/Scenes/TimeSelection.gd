@@ -3,6 +3,15 @@ extends HBoxContainer
 class_name TimeSelection
 
 # ==============================================================================
+enum ClockType {
+	HOUR_24,
+	HOUR_12
+}
+enum Period {
+	AM,
+	PM
+}
+# ==============================================================================
 @export_enum("24h", "12h") var type := 0 :
 	set(value):
 		type = value

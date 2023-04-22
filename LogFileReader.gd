@@ -88,14 +88,14 @@ static func read(log_path: String, include_text: bool = false) -> LogFileReader:
 ## Returns the line type of [code]line[/code]. If [code]line[/code] does not match
 ## any [enum Line] constant, returns [constant NONE].
 static func get_line_type(line: String) -> Line:
-	if line.match("[*] *"):
+	if line.match("[*-*-* @ *:*:*] *"):
 		line = line.get_slice("]", 1).strip_edges()
 	
 	if line.is_empty():
 		return Line.NONE
 	
 	for line_type in _LINE_FILTERS:
-		var filter: Variant = _LINE_FILTERS[line_type]
+		var filter = _LINE_FILTERS[line_type]
 		if filter is String:
 			if line.match(filter):
 				return line_type

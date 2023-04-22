@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://Statistics/Statistics.gd" id="1_gj66t"]
 [ext_resource type="PackedScene" uid="uid://dff50136u5eac" path="res://Statistics/Wins/Wins.tscn" id="3_hejge"]
 [ext_resource type="PackedScene" uid="uid://dmn863g0kdr1q" path="res://Statistics/GlobalStatistics/GlobalStatistics.tscn" id="4_hfufw"]
-[ext_resource type="PackedScene" uid="uid://b11gbfevpt52w" path="res://Statistics/StatisticsFilterSelection/StatisticsFilterSelection.tscn" id="5_fmjx1"]
+[ext_resource type="PackedScene" uid="uid://cwxgye4khbgli" path="res://Statistics/StatisticsFilterSelection/StatisticsFilterSelection.tscn" id="5_fmjx1"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_138mp"]
 

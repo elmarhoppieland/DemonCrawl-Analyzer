@@ -24,6 +24,7 @@ config/icon="res://Sprites/Icon.png"
 
 TimeHelper="*res://TimeHelper.gd"
 SceneHandler="*res://Resources/SceneHandler.gd"
+Analyzer="*res://Resources/Analyzer.gd"
 
 [debug]
 

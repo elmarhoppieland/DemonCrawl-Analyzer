@@ -19,27 +19,16 @@ func _ready() -> void:
 		save_status_label.text = LABEL_TEXT_FIRST_LAUNCH
 		return
 	
-	var file := Analyzer.open_savedata_file(-1)
-	var json = JSON.parse_string(file.get_as_text())
-	
-	if json is Dictionary:
-		if "version" in json:
-			var version: String = json.version
-			if version != Analyzer.CURRENT_VERSION:
-				button.text = BUTTON_TEXT_UPDATE
-				save_status_label.text = LABEL_TEXT_UPDATE
-				return
-		if "start_unix" in json:
-			var start_unix_json: int = json.start_unix
-			var log_file := DemonCrawl.open_log_file(DemonCrawl.get_logs_count())
-			var start_unix_log := TimeHelper.get_unix_time_from_timestamp(log_file.get_line().get_slice("]", 0).trim_prefix("["))
-			if start_unix_json != start_unix_log:
-				button.text = BUTTON_TEXT_UP_TO_DATE
-				save_status_label.text = LABEL_TEXT_NEW_DATA
-				return
-		
-		button.text = BUTTON_TEXT_UP_TO_DATE
-		save_status_label.text = LABEL_TEXT_UP_TO_DATE
+	match Analyzer.get_data_status():
+		Analyzer.DataStatus.OUTDATED_VERSION:
+			button.text = BUTTON_TEXT_UPDATE
+			save_status_label.text = LABEL_TEXT_UPDATE
+		Analyzer.DataStatus.NEW_DATA_FOUND:
+			button.text = BUTTON_TEXT_UP_TO_DATE
+			save_status_label.text = LABEL_TEXT_NEW_DATA
+		Analyzer.DataStatus.UP_TO_DATE:
+			button.text = BUTTON_TEXT_UP_TO_DATE
+			save_status_label.text = LABEL_TEXT_UP_TO_DATE
 
 
 func _on_button_pressed() -> void:

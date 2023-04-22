@@ -23,12 +23,6 @@ enum ExitCode {
 }
 # ==============================================================================
 var profiles := {}
-#var latest_recorded_time := 0.0
-var latest_recorded_version := "0.0.0"
-
-var disk_data: Array[Dictionary] = []
-# ------------------------------------------------------------------------------
-var previous_read_quest: Quest = null
 
 var current_profile: Profile
 # ==============================================================================
@@ -47,6 +41,9 @@ func _enter_tree() -> void:
 	if read_index < 0:
 		printerr("An error occurred while attempting to read the saved data. Aborting...")
 		get_tree().quit(ExitCode.READ_ERROR)
+		return
+	
+	if read_index == 0:
 		return
 	
 	if read_index > DemonCrawl.get_logs_count():
@@ -76,10 +73,16 @@ func initiate_first_launch() -> void:
 
 
 ## Reads the saved data and sets the properties to the stored values.
-## [br][br]Returns the index of the log file that should be read.
+## [br][br]Returns the index of the log file that should be read. Returns [code]-1[/code]
+## if an error occurred. Returns [code]0[/code] if no log files should be read.
 ## [br][br][b]Note:[/b] The returned index is 1-indexed, so that the index matches
 ## with how DemonCrawl indexes its log files.
 func read_saved_data() -> int:
+	match Analyzer.get_data_status():
+		Analyzer.DataStatus.UP_TO_DATE:
+			load_from_json(Analyzer.get_savedata(-1))
+			return 0
+	
 	create_backups()
 	
 	var file := Analyzer.open_savedata_file(-1)
@@ -115,6 +118,7 @@ func read_saved_data() -> int:
 	return -1
 
 
+## Copies the entire savedata directory into the backup directory.
 func create_backups() -> void:
 	if not DirAccess.dir_exists_absolute(Analyzer.get_backup_directory()):
 		DirAccess.make_dir_absolute(Analyzer.get_backup_directory())
@@ -192,10 +196,6 @@ func load_from_json(json: Dictionary) -> void:
 				for profile in json.profiles:
 					profiles[profile] = HistoryData.from_json(json.profiles[profile], Profile)
 #					profiles[profile] = Profile._from_dict(json.profiles[profile])
-#			"end_unix":
-#				latest_recorded_time = json.time
-			"version":
-				latest_recorded_version = json.version
 
 
 ## Moves all savedata files so that the file at index [code]new_zero_index[/code]
@@ -224,7 +224,6 @@ func read_logs_dir(starting_index: int) -> void:
 func save_data_to_disk(index: int, start_unix: int, end_unix: int) -> void:
 	var dict := {
 		"profiles": {},
-#		"time": latest_recorded_time,
 		"version": Analyzer.CURRENT_VERSION,
 		"start_unix": start_unix,
 		"end_unix": end_unix

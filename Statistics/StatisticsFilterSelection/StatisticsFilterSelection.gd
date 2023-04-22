@@ -16,10 +16,14 @@ signal filters_saved(filters: Dictionary)
 # ==============================================================================
 
 func _ready() -> void:
-	time_after.set_date(Time.get_date_string_from_unix_time(Analyzer.get_settings().get_value("-Data", "start_unix", Time.get_unix_time_from_system())))
+	time_after.set_date(Time.get_date_string_from_unix_time(Analyzer.get_setting("-Data", "start_unix", Time.get_unix_time_from_system())))
 	
 	for filter in Statistics.Filter.values():
 		filters[filter] = get_filter(filter)
+	
+	var clock_type: TimeSelection.ClockType = Analyzer.get_setting("General", "ClockType", TimeSelection.ClockType.HOUR_24)
+	time_after.time_selection.type = clock_type
+	time_before.time_selection.type = clock_type
 
 
 func get_filter(filter: Statistics.Filter) -> Variant:
@@ -40,6 +44,11 @@ func get_filter(filter: Statistics.Filter) -> Variant:
 
 
 func save() -> void:
+	var after_type := time_after.time_selection.type
+	var before_type := time_after.time_selection.type
+	if after_type == before_type:
+		SettingsFile.set_setting_static("General", "ClockType", after_type)
+	
 	filters_saved.emit(filters)
 
 
