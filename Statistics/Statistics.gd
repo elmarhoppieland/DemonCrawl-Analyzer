@@ -195,7 +195,6 @@ func load_from_json(json: Dictionary) -> void:
 			"profiles":
 				for profile in json.profiles:
 					profiles[profile] = HistoryData.from_json(json.profiles[profile], Profile)
-#					profiles[profile] = Profile._from_dict(json.profiles[profile])
 
 
 ## Moves all savedata files so that the file at index [code]new_zero_index[/code]

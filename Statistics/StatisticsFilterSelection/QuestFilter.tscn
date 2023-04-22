@@ -1,11 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://cnmpv1mfge18n"]
+[gd_scene load_steps=4 format=3 uid="uid://cnmpv1mfge18n"]
 
+[ext_resource type="Script" path="res://Statistics/StatisticsFilterSelection/QuestFilter.gd" id="1_6ce1o"]
 [ext_resource type="Script" path="res://Statistics/StatisticsFilterSelection/QuestTypeCheckBox.gd" id="1_73xjk"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_whsf4"]
 font_size = 20
 
-[node name="QuestType" type="VBoxContainer"]
+[node name="QuestFilter" type="VBoxContainer"]
+script = ExtResource("1_6ce1o")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2

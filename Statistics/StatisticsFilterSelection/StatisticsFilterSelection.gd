@@ -11,6 +11,7 @@ var filters_changed := false
 # ==============================================================================
 @onready var time_after: TimeFilter = %After
 @onready var time_before: TimeFilter = %Before
+@onready var quest_type: QuestFilter = %QuestType
 # ==============================================================================
 signal filters_saved(filters: Dictionary)
 # ==============================================================================
@@ -24,6 +25,8 @@ func _ready() -> void:
 	var clock_type: TimeSelection.ClockType = Analyzer.get_setting("General", "ClockType", TimeSelection.ClockType.HOUR_24)
 	time_after.time_selection.type = clock_type
 	time_before.time_selection.type = clock_type
+	
+	filters[Statistics.Filter.QUEST_TYPE] = quest_type.filters
 
 
 func get_filter(filter: Statistics.Filter) -> Variant:
