@@ -9,8 +9,8 @@
 ### Usage
  Once you have downloaded the program, you can run it by simply running the .exe
  file. Click "Initialize Analyzer" and it will read through your DemonCrawl logs folder
- and show relevant information, divided into different tabs. *Note:* Since reading all of
- DemonCrawl's log files take some time, the Analyzer most likely will freeze for a moment
+ and show relevant information, divided into different tabs. **Note:** Since reading all of
+ DemonCrawl's log files takes some time, the Analyzer most likely will freeze for a moment
  after clicking on "Initalize Analyzer". Just give the Analyzer a few seconds to load, and
  everything will be fine.
 
