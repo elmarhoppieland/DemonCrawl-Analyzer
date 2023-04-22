@@ -1,4 +1,4 @@
-# DemonCrawl History And Statistics
+# DemonCrawl Analyzer
  A program that analyses DemonCrawl log files. It gives an overview of all quests you created,
  and can also show what percentage of runs made it to a victory.
 
