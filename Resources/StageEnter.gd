@@ -17,3 +17,15 @@ static func _from_dict(dict: Dictionary) -> StageEnter:
 	stage_enter.stats = PlayerStats.from_string(dict.stats)
 	
 	return stage_enter
+
+
+func _import_inventory(json: Dictionary) -> void:
+	inventory = HistoryData.from_json(json, Inventory)
+
+
+func _import_stats(data: String) -> void:
+	stats = PlayerStats.from_string(data)
+
+
+func _export_stats() -> String:
+	return stats.to_string()

@@ -10,8 +10,10 @@ config_version=5
 
 [application]
 
-config/name="DemonCrawl Statistics"
-run/main_scene="res://Statistics/Statistics.tscn"
+config/name="DemonCrawl Analyzer"
+run/main_scene="res://Main/Main.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="DemonCrawl Analyzer"
 config/features=PackedStringArray("4.0", "Forward Plus")
 boot_splash/image="res://Sprites/LoadIcon.png"
 boot_splash/fullsize=false
@@ -22,6 +24,15 @@ config/icon="res://Sprites/Icon.png"
 
 TimeHelper="*res://TimeHelper.gd"
 SceneHandler="*res://Resources/SceneHandler.gd"
+Analyzer="*res://Resources/Analyzer.gd"
+
+[debug]
+
+gdscript/warnings/native_method_override=1
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/calendar_button/plugin.cfg")
 
 [input]
 

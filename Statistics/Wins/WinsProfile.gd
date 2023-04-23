@@ -9,12 +9,14 @@ class_name WinsProfile
 # ==============================================================================
 
 ## Populates the [member tree] with masteries used in [code]profile[/code].
-func populate_tree(profile: Profile) -> void:
-	populate_global_tree([profile])
+func populate_tree(profile: Profile, filters: Dictionary = {}) -> void:
+	populate_global_tree([profile], filters)
 
 
 ## Populates the [member tree] with masteries used in any [Profile] in [code]profiles[/code].
-func populate_global_tree(profiles: Array[Profile]) -> void:
+func populate_global_tree(profiles: Array[Profile], filters: Dictionary = {}) -> void:
+	tree.clear()
+	
 	var root := tree.create_item()
 	
 	var masteries: PackedStringArray = []
@@ -26,6 +28,9 @@ func populate_global_tree(profiles: Array[Profile]) -> void:
 	
 	for profile in profiles:
 		for quest in profile.quests:
+			if not quest.matches_filters(filters):
+				continue
+			
 			if not quest.mastery in masteries:
 				masteries.append(quest.mastery)
 				win_counts[quest.mastery] = 0
@@ -39,13 +44,24 @@ func populate_global_tree(profiles: Array[Profile]) -> void:
 	
 	for mastery in masteries:
 		var mastery_item := root.create_child()
+		mastery_item.set_icon(0, Mastery.get_icon(mastery))
 		mastery_item.set_text(0, "No Mastery" if mastery.is_empty() else mastery)
+		
 		mastery_item.set_text(1, "Wins: %d" % win_counts[mastery])
 		mastery_item.set_text(2, "Losses: %d" % loss_counts[mastery])
+		
 		mastery_item.set_text(3, "%d" % roundi(win_counts[mastery] / float(win_counts[mastery] + loss_counts[mastery]) * 100) + "%")
+		
+		mastery_item.set_tooltip_text(0, " ")
 	
 	var total_item := root.create_child()
 	total_item.set_text(0, "Total")
 	total_item.set_text(1, "Wins: %d" % total_wins)
 	total_item.set_text(2, "Losses: %d" % total_losses)
-	total_item.set_text(3, "%d" % roundi(total_wins / float(total_wins + total_losses) * 100) + "%")
+	
+	if total_wins + total_losses < 1:
+		total_item.set_text(3, "")
+	else:
+		total_item.set_text(3, "%d" % roundi(total_wins / float(total_wins + total_losses) * 100) + "%")
+	
+	total_item.set_tooltip_text(0, " ")
