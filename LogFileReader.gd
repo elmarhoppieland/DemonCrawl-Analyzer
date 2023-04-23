@@ -465,7 +465,7 @@ func handle_stage_enter(inventory: Inventory, profile: Profile = null, quest: Qu
 	
 	stage.enter = StageEnter.new()
 	if inventory:
-		stage.enter.inventory = inventory.get_state()
+		stage.enter.inventory = inventory.duplicate()
 	
 	# the stats should be in the next line, but passing inventory just in case they're not
 	var stats_string := look_for(Line.PLAYER_STATS)
@@ -507,7 +507,7 @@ func handle_stage_exit(inventory: Inventory, quest: Quest = null, stage: Stage =
 	
 	var stage_exit := StageExit.new()
 	
-	stage_exit.inventory = inventory.get_state()
+	stage_exit.inventory = inventory.duplicate()
 	
 	if stage:
 		stage.exit = stage_exit
@@ -528,7 +528,7 @@ func handle_player_death(inventory: Inventory, stage: Stage = null, profile: Pro
 	
 	var stage_exit := StageExit.new()
 	
-	stage_exit.inventory = inventory.get_state()
+	stage_exit.inventory = inventory.duplicate()
 	
 	if stage:
 		stage.death = stage_exit
