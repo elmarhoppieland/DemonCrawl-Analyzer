@@ -38,6 +38,7 @@ func populate_tree(filters: Dictionary = {}) -> void:
 	for profile in main.get_used_profiles():
 		var profile_item := root.create_child()
 		profile_item.set_text(0, profile.name)
+		profile_item.set_tooltip_text(0, " ")
 		
 		for i in Quest.Statistic.COUNT:
 			var value := 0
@@ -48,14 +49,17 @@ func populate_tree(filters: Dictionary = {}) -> void:
 				value += quest.get_statistic(i)
 			
 			profile_item.set_text(i + 1, "" if value < 0 else (" " + str(value)))
+			profile_item.set_tooltip_text(i + 1, " ")
 			
 			total_stats[i] += value
 	
 	var total_item := root.create_child()
 	total_item.set_text(0, "Total")
+	total_item.set_tooltip_text(0, " ")
 	for i in Quest.Statistic.COUNT:
 		var value: int = total_stats[i]
 		total_item.set_text(i + 1, "" if value < 0 else " " + str(value))
+		total_item.set_tooltip_text(i + 1, " ")
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
