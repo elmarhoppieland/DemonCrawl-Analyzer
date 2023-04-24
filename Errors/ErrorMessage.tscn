@@ -30,6 +30,7 @@ layout_mode = 2
 
 [node name="ErrorLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(549, 0)
 layout_mode = 2
 text = "
 
@@ -39,6 +40,7 @@ ERROR in
 action number 1
 #####################################################
 "
+autowrap_mode = 2
 script = ExtResource("1_ysa0p")
 error_info = PackedStringArray()
 error_message = "action number 1"
@@ -46,9 +48,11 @@ error_stack_trace = PackedStringArray()
 
 [node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 10
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 8
 
 [node name="Button" type="Button" parent="MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
@@ -59,6 +63,5 @@ text = "Copy Error"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
-text = "YYYY-MM-DD @ HH-MM-SS"
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/MarginContainer/Button" to="." method="_on_button_pressed"]
