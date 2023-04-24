@@ -2,7 +2,10 @@ extends Control
 class_name History
 
 # ==============================================================================
+var item_data := {}
+# ==============================================================================
 @onready var main: Statistics = owner
+@onready var tree: Tree = $Tree
 # ==============================================================================
 
 func _ready() -> void:
@@ -10,8 +13,6 @@ func _ready() -> void:
 
 
 func populate_tree(filters: Dictionary = {}) -> void:
-	var tree: Tree = $Tree
-	
 	tree.clear()
 	
 	var root := tree.create_item()
@@ -102,6 +103,7 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
 	var inventory_item := parent_item.create_child()
 	inventory_item.set_text(0, "Inventory")
 	inventory_item.set_tooltip_text(0, " ")
+	inventory_item.set_meta("inventory", inventory)
 	inventory_item.collapsed = true
 	
 	for i in inventory.items.size():
@@ -110,7 +112,30 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
 			var item_item := inventory_item.create_child()
 			item_item.set_text(0, "%s. %s" % [i + 1, item])
 			item_item.set_tooltip_text(0, " ")
+			
+#			DemonCrawlWiki.request_item_data(item, func(data: Dictionary): item_item.set_icon(0, data.icon))
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
 	populate_tree(filters)
+
+
+func _on_tree_item_collapsed(item: TreeItem) -> void:
+	if not item.collapsed and item.get_text(0) == "Inventory":
+		var inventory: Inventory = item.get_meta("inventory")
+		for index in item.get_child_count():
+			var item_item := item.get_child(index)
+			if item_item.get_icon(0):
+				continue
+			
+			var item_name := inventory.items[index]
+			
+			if item_name in item_data:
+				item_item.set_icon(0, item_data[item_name].icon)
+				continue
+			
+			DemonCrawlWiki.request_item_data(item_name, func(data: Dictionary):
+				data.icon.set_size_override(Vector2i(16, 16))
+				item_item.set_icon(0, data.icon)
+				item_data[item_name] = data
+			)

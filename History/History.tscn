@@ -24,4 +24,5 @@ hide_root = true
 scroll_horizontal_enabled = false
 
 [connection signal="cell_selected" from="Tree" to="Tree" method="deselect_all"]
+[connection signal="item_collapsed" from="Tree" to="." method="_on_tree_item_collapsed"]
 [connection signal="ready" from="Tree" to="Tree" method="set_column_expand" binds= [1, false]]
