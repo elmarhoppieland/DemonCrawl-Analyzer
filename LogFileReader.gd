@@ -26,7 +26,8 @@ enum Line {
 	DEMONCRAWL_STARTED = 2 * QUEST_ABORT, ## DemonCrawl was launched in the line.
 	DEMONCRAWL_CLOSED = 2 * DEMONCRAWL_STARTED, ## DemonCrawl was closed in the line.
 	ARENA_CONNECT = 2 * DEMONCRAWL_CLOSED, ## The player connected to arena in the line.
-	ALL = 2 * ARENA_CONNECT - 1, ## Allow all (useful) lines.
+	ERROR_CODE_ALERT = 2 * ARENA_CONNECT, ## DemonCrawl threw an error in the line. The next lines will contain the error message.
+	ALL = 2 * ERROR_CODE_ALERT - 1, ## Allow all (useful) lines.
 }
 const _LINE_FILTERS := {
 	Line.PROFILE_LOAD: "Profile loaded: *",
@@ -48,12 +49,11 @@ const _LINE_FILTERS := {
 	Line.DEMONCRAWL_STARTED: "DemonCrawl started",
 	Line.DEMONCRAWL_CLOSED: "DemonCrawl closed",
 	Line.ARENA_CONNECT: "Connected to DemonCrawl Arena",
+	Line.ERROR_CODE_ALERT: "Alert: Error Code * - check log for details",
 }
 # ==============================================================================
 ## The path to the log file.
 var file_path := ""
-## The text of the log file.
-var file_text := ""
 
 ## The log file.
 var file: FileAccess
@@ -63,10 +63,12 @@ var _lines: PackedStringArray = []
 var position := -1
 
 var _last_line := ""
+
+var errors: Array[Dictionary] = []
 # ==============================================================================
 
 ## Returns a new [LogFileReader] that reads the file at [code]log_path[/code].
-static func read(log_path: String, include_text: bool = false) -> LogFileReader:
+static func read(log_path: String) -> LogFileReader:
 	var reader := LogFileReader.new()
 	
 	reader.file = FileAccess.open(log_path, FileAccess.READ)
@@ -74,13 +76,89 @@ static func read(log_path: String, include_text: bool = false) -> LogFileReader:
 		return null
 	
 	reader.file_path = log_path
-	if include_text:
-		reader.file_text = reader.file.get_as_text()
 	
-	var split := reader.file.get_as_text().split("\n")
-	for line in split:
-		if get_line_type(line) != Line.NONE:
-			reader._lines.append(line.strip_edges())
+	var file_text := reader.file.get_as_text()
+	var split := file_text.split("\n")
+	for line_index in split.size():
+		var line := split[line_index]
+		var line_trimmed := line.get_slice("] ", 1)
+		var line_type := get_line_type(line)
+		if line_type == Line.NONE:
+			continue
+		
+		if line_type == Line.ERROR_CODE_ALERT:
+			var error := {
+				"code": line_trimmed.get_slice(" ", 3),
+				"short_message": "",
+				"long_message": "",
+				"script": "",
+				"stack_trace": PackedStringArray(),
+				"info": PackedStringArray(),
+				"date": ""
+			}
+			reader.errors.append(error)
+			
+			error.date = line.get_slice("]", 0).trim_prefix("[")
+			
+			var plus_index := 1
+			var error_line_full := split[line_index + 1]
+			var error_line := error_line_full.get_slice("] ", 1)
+			
+			# short message
+			error.short_message = error_line.get_slice(": ", 1)
+			
+			plus_index += 1
+			
+			# long message
+			while true:
+				plus_index += 1
+				if plus_index > 15:
+					break # the message shouldn't be this long so there's probably some kind of bug
+				
+				error_line_full = split[line_index + plus_index]
+				if error_line_full.begins_with("["):
+					break
+				if error.long_message.is_empty():
+					error.long_message = error_line_full.strip_edges()
+				else:
+					error.long_message += "\n" + error_line_full.strip_edges()
+			
+			error_line = error_line_full.get_slice("] ", 1).strip_edges()
+			
+			# script
+			var script := error_line.get_slice(" ", error_line.get_slice_count(" ") - 1)
+			error.script = script
+			
+			# stack trace
+			while true:
+				plus_index += 1
+				error_line_full = split[line_index + plus_index]
+				error_line = error_line_full.get_slice("] ", 1).strip_edges()
+				if not error_line.match("ERROR * stracktrace[*]: * (line *)"):
+					break
+				
+				var trace_index := error_line.get_slice("stracktrace[", 1).get_slice("]", 0).to_int()
+				var trace_message := error_line.get_slice("]: ", 1)
+				var error_stack_trace: PackedStringArray = error.stack_trace
+				if error_stack_trace.size() <= trace_index:
+					error_stack_trace.resize(trace_index + 1)
+				error_stack_trace[trace_index] = trace_message
+			
+			# extra info
+			while true:
+				if not error_line.begins_with("ERROR"):
+					break
+				
+				error.info.append(error_line.trim_prefix("ERROR %s " % error.code))
+				
+				plus_index += 1
+				error_line_full = split[line_index + plus_index]
+				error_line = error_line_full.get_slice("] ", 1).strip_edges()
+			
+			
+			continue
+		
+		reader._lines.append(line.strip_edges())
 	
 	return reader
 

@@ -25,6 +25,8 @@ enum ExitCode {
 var profiles := {}
 
 var current_profile: Profile
+
+var errors := []
 # ==============================================================================
 @onready var statistics_filter_selection: StatisticsFilterSelection = %StatisticsFilterSelection
 # ==============================================================================
@@ -195,6 +197,8 @@ func load_from_json(json: Dictionary) -> void:
 			"profiles":
 				for profile in json.profiles:
 					profiles[profile] = HistoryData.from_json(json.profiles[profile], Profile)
+			"errors":
+				errors = json[property]
 
 
 ## Moves all savedata files so that the file at index [code]new_zero_index[/code]
@@ -225,7 +229,8 @@ func save_data_to_disk(index: int, start_unix: int, end_unix: int) -> void:
 		"profiles": {},
 		"version": Analyzer.get_version(),
 		"start_unix": start_unix,
-		"end_unix": end_unix
+		"end_unix": end_unix,
+		"errors": errors
 	}
 	for profile in get_used_profiles():
 		dict.profiles[profile.name] = profile.to_json()
@@ -248,6 +253,8 @@ func read_log(index: int) -> LogError:
 		push_error("Error occurred when attempting to read log file at index %s: %s" % [index, error_string(FileAccess.get_open_error())])
 		DirAccess.copy_absolute(Analyzer.get_savedata_path(index - 1), Analyzer.get_savedata_path(index))
 		return LogError.READ_ERROR
+	
+	errors.append_array(log_reader.errors)
 	
 	log_reader.next_line()
 	
