@@ -4,6 +4,8 @@ class_name GlobalStatistics
 # ==============================================================================
 @export var columns: Array[String] = []
 # ==============================================================================
+var load_thread := Thread.new()
+# ==============================================================================
 @onready var tree: Tree = %Tree
 @onready var main: Statistics = owner
 # ==============================================================================
@@ -11,7 +13,12 @@ class_name GlobalStatistics
 func _ready() -> void:
 	_initialize_tree()
 	
-	populate_tree()
+	load_thread.start(populate_tree)
+
+
+func _process(_delta: float) -> void:
+	if load_thread.is_started() and not load_thread.is_alive():
+		load_thread.wait_to_finish()
 
 
 func _initialize_tree() -> void:
@@ -35,7 +42,7 @@ func populate_tree(filters: Dictionary = {}) -> void:
 	for i in Quest.Statistic.COUNT:
 		total_stats[i] = 0
 	
-	for profile in main.get_used_profiles():
+	for profile in ProfileLoader.get_used_profiles():
 		var profile_item := root.create_child()
 		profile_item.set_text(0, profile.name)
 		profile_item.set_tooltip_text(0, " ")
@@ -63,4 +70,4 @@ func populate_tree(filters: Dictionary = {}) -> void:
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
-	populate_tree(filters)
+	load_thread.start(populate_tree.bind(filters))

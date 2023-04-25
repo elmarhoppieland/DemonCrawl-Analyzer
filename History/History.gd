@@ -2,11 +2,18 @@ extends Control
 class_name History
 
 # ==============================================================================
+var load_thread := Thread.new()
+# ==============================================================================
 @onready var main: Statistics = owner
 # ==============================================================================
 
 func _ready() -> void:
-	populate_tree()
+	load_thread.start(populate_tree)
+
+
+func _process(_delta: float) -> void:
+	if load_thread.is_started() and not load_thread.is_alive():
+		load_thread.wait_to_finish()
 
 
 func populate_tree(filters: Dictionary = {}) -> void:
@@ -16,7 +23,7 @@ func populate_tree(filters: Dictionary = {}) -> void:
 	
 	var root := tree.create_item()
 	
-	var profiles: Array[Profile] = main.get_profiles()
+	var profiles: Array[Profile] = ProfileLoader.get_used_profiles()
 	for profile in profiles:
 		if profile.quests.is_empty():
 			continue
@@ -113,4 +120,4 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
-	populate_tree(filters)
+	load_thread.start(populate_tree.bind(filters))
