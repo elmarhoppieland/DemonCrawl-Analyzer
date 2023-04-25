@@ -7,6 +7,10 @@ extends PopupPanel
 signal finished()
 # ==============================================================================
 
+func _ready() -> void:
+	hide()
+
+
 func start(step_count: int, start_message: String) -> void:
 	progress_bar.max_value = step_count
 	progress_bar.value = 0
