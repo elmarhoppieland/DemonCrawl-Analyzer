@@ -71,3 +71,8 @@ func populate_tree(filters: Dictionary = {}) -> void:
 
 func _on_filters_saved(filters: Dictionary) -> void:
 	load_thread.start(populate_tree.bind(filters))
+
+
+func _exit_tree() -> void:
+	if load_thread.is_started():
+		load_thread.wait_to_finish()

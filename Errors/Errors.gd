@@ -31,3 +31,8 @@ func populate() -> void:
 		message_instance.error_message = error.long_message
 		message_instance.error_stack_trace = error.stack_trace
 		message_instance.error_date = error.date
+
+
+func _exit_tree() -> void:
+	if load_thread.is_started():
+		load_thread.wait_to_finish()
