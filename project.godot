@@ -26,6 +26,8 @@ TimeHelper="*res://TimeHelper.gd"
 SceneHandler="*res://Resources/SceneHandler.gd"
 Analyzer="*res://Resources/Analyzer.gd"
 DemonCrawlWiki="*res://Resources/DemonCrawlWiki.gd"
+LoadingScreen="*res://Resources/Scenes/LoadingScreen.tscn"
+ProfileLoader="*res://Resources/ProfileLoader.gd"
 
 [debug]
 

@@ -16,7 +16,7 @@ const SAVE_DATA_FILENAME := "profiles%d.dcstat"
 const SETTINGS_FILE := "user://settings.cfg"
 
 ## The current version. Formatted as [code]MAJOR.minor.bugfix.debug[/code].
-const CURRENT_VERSION := "1.0.0.11"
+const CURRENT_VERSION := "1.1.0.13"
 # ==============================================================================
 var first_launch := false : get = is_first_launch
 # ==============================================================================

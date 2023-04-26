@@ -7,17 +7,24 @@ class_name Wins
 const _WINS_PROFILE_SCENE := preload("res://Statistics/Wins/WinsProfile.tscn")
 # ==============================================================================
 var profile_tabs := {}
+
+var load_thread := Thread.new()
 # ==============================================================================
 @onready var _global: WinsProfile = %Global
 @onready var main: Statistics = owner
 # ==============================================================================
 
 func _ready() -> void:
-	_create_tabs()
+	load_thread.start(_create_tabs)
+
+
+func _process(_delta: float) -> void:
+	if load_thread.is_started() and not load_thread.is_alive():
+		load_thread.wait_to_finish()
 
 
 func _create_tabs(filters: Dictionary = {}) -> void:
-	var profiles: Array[Profile] = main.get_used_profiles()
+	var profiles: Array[Profile] = ProfileLoader.get_used_profiles()
 	
 	for profile in profiles:
 		if not profile.quests.is_empty():
@@ -37,4 +44,9 @@ func _create_tabs(filters: Dictionary = {}) -> void:
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
-	_create_tabs(filters)
+	load_thread.start(_create_tabs.bind(filters))
+
+
+func _exit_tree() -> void:
+	if load_thread.is_started():
+		load_thread.wait_to_finish()

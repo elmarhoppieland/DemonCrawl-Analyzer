@@ -1,4 +1,5 @@
 extends CanvasLayer
+class_name Main
 
 # ==============================================================================
 const BUTTON_TEXT_FIRST_LAUNCH := "Initialize Analyzer"
@@ -8,6 +9,8 @@ const LABEL_TEXT_UPDATE := "Analyzed data is from an earlier Analyzer version."
 const LABEL_TEXT_NEW_DATA := "New data can be retrieved."
 const BUTTON_TEXT_UP_TO_DATE := "Analyze DemonCrawl History"
 const LABEL_TEXT_UP_TO_DATE := "Analyzed data is up to date."
+# ==============================================================================
+var load_thread := Thread.new()
 # ==============================================================================
 @onready var button: Button = %Button
 @onready var save_status_label: Label = %SaveStatusLabel
@@ -20,6 +23,12 @@ func _ready() -> void:
 	version_label.text %= Analyzer.get_version()
 	if OS.is_debug_build():
 		version_label.text += " (DEBUG)"
+
+
+func _process(_delta: float) -> void:
+	if load_thread.is_started() and not load_thread.is_alive():
+		load_thread.wait_to_finish()
+		SceneHandler.switch_scene(preload("res://Statistics/Statistics.tscn"))
 
 
 func _initialize_button_text() -> void:
@@ -41,4 +50,9 @@ func _initialize_button_text() -> void:
 
 
 func _on_button_pressed() -> void:
-	SceneHandler.switch_scene(preload("res://Statistics/Statistics.tscn"))
+	load_thread.start(ProfileLoader.load_profiles)
+
+
+func _exit_tree() -> void:
+	if load_thread.is_started():
+		load_thread.wait_to_finish()
