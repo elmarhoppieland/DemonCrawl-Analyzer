@@ -16,8 +16,6 @@ const TYPE_COLORS := {
 	ItemType.OMEN: Color.RED,
 }
 # ==============================================================================
-var requests: Array[Dictionary] = []
-# ==============================================================================
 signal finished_loading(item_name: String, item_icon: ImageTexture, item_description: String, item_price: int, item_type: ItemType)
 # ==============================================================================
 
