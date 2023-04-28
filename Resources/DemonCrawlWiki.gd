@@ -88,7 +88,7 @@ func _on_item_http_request_request_completed(result: int, _response_code: int, _
 	for slice_index in html.get_slice_count("\n"):
 		var slice := html.get_slice("\n", slice_index)
 		if slice.match("<td class=\"description\">*</td>"):
-			data_source.description = slice.trim_prefix("<td class=\"description\">").trim_suffix("</td>")
+			data_source.description = remove_html(slice)
 		if slice.match("<div class=\"infobox-image\"><a href=\"*\" class=\"image\"><img alt=\"*\" src=\"*\" decoding=\"async\" width=\"*\" height=\"*\" /></a></div>"):
 			var source := slice.get_slice("src=\"", 1).get_slice("\"", 0)
 			icon_page_http_request.request("https://demoncrawl.com" + source)
@@ -115,3 +115,21 @@ func _on_icon_page_request_request_completed(result: int, _response_code: int, _
 	var texture := ImageTexture.create_from_image(image)
 	
 	data_source.icon = texture
+
+
+func remove_html(html_string: String) -> String:
+	var new_string := ""
+	
+	var html_depth := 0
+	for character in html_string:
+		if character == "<":
+			html_depth += 1
+			continue
+		if character == ">":
+			html_depth -= 1
+			continue
+		
+		if html_depth < 1:
+			new_string += character
+	
+	return new_string

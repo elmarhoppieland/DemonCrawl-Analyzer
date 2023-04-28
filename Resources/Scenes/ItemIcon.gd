@@ -44,7 +44,9 @@ func load_item(item_name: String, icon_size: Vector2i = Vector2i(16, 16)) -> voi
 func _on_mouse_entered() -> void:
 	if not item_data.is_empty():
 		description_panel.show()
+		
 		await get_tree().process_frame
+		
 		description_panel.position.y = -description_v_box_container.size.y
 		description_panel.position.x = size.x / 2 - description_v_box_container.size.x / 2
 		
