@@ -1,0 +1,104 @@
+[gd_scene load_steps=4 format=3 uid="uid://dkb7ueasgk7bq"]
+
+[ext_resource type="Script" path="res://Resources/Scenes/InventoryScreen.gd" id="1_cnmfs"]
+[ext_resource type="Texture2D" uid="uid://cgykg8m0k5vb2" path="res://Sprites/Inventory_Scaled.png" id="2_uyxr1"]
+[ext_resource type="PackedScene" uid="uid://7ltwuemuf25t" path="res://Resources/Scenes/ItemIcon.tscn" id="3_wei03"]
+
+[node name="InventoryScreen" type="MarginContainer"]
+texture_filter = 1
+offset_right = 93.0
+offset_bottom = 194.0
+script = ExtResource("1_cnmfs")
+icon_size = Vector2i(20, 20)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 2
+texture = ExtResource("2_uyxr1")
+stretch_mode = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 171
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 9
+theme_override_constants/v_separation = 9
+columns = 4
+
+[node name="ItemIcon0" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon1" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon2" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon3" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon4" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon5" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon6" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon7" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon8" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon9" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon10" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon11" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon12" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon13" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon14" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon15" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon16" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon17" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon18" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon19" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon20" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon21" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon22" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
+
+[node name="ItemIcon23" parent="MarginContainer/GridContainer" instance=ExtResource("3_wei03")]
+layout_mode = 2
