@@ -30,6 +30,11 @@
  were created or what kind of quest it is. You can specify a timeframe in which
  the quests were created, and/or specify the types of quests that are shown.
  Changing filters affects all tabs.
+### Errors
+ This tab shows all errors DemonCrawl has bypassed. When the game bypasses an error,
+ it shows an alert to the player to view the log file for details. The Analyzer can read
+ these details to generate an error log for you to report in the Discord server.
+ **Note:** The Errors tab does **not** support filtering.
 
 ## Additional notes
 - The Analyzer cannot see all quests you created. It can only go back as far as
