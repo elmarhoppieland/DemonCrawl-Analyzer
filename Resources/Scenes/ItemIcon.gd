@@ -5,6 +5,8 @@ class_name ItemIcon
 const SCENE := preload("res://Resources/Scenes/ItemIcon.tscn")
 const ITEM_LOAD_ATLAS := preload("res://Resources/Scenes/ItemLoadIcon.tres")
 # ==============================================================================
+@export var minimum_description_panel_width := 150.0
+# ==============================================================================
 var load_atlas := ITEM_LOAD_ATLAS.duplicate()
 
 var item_data := {}
@@ -21,7 +23,7 @@ func _ready() -> void:
 
 
 func load_item(item_name: String, icon_size: Vector2i = Vector2i(16, 16)) -> void:
-	description_panel.position.x = -74 + icon_size.x
+	description_panel.size = Vector2(minimum_description_panel_width, 0)
 	item_data = {}
 	
 	if not DemonCrawlWiki.is_item_in_cache(item_name):
