@@ -13,7 +13,7 @@
 
 ## Features
 ### History
- This tab shows an overview of all quests you created in the last 100 sessions.
+ This tab shows an overview of all quests you created.
  In every quest, it shows a list of stages you entered, and it shows your inventory
  whenever you entered or leaved a stage. It also shows your stats at the start of
  every stage.
