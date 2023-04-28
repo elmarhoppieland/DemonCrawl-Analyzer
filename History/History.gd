@@ -2,15 +2,17 @@ extends Control
 class_name History
 
 # ==============================================================================
-var item_data := {}
 var load_thread := Thread.new()
 # ==============================================================================
 @onready var main: Statistics = owner
-@onready var tree: Tree = $Tree
+@onready var tree: Tree = %Tree
+@onready var inventory_panel: PanelContainer = %InventoryPanel
+@onready var inventory_screen: InventoryScreen = %InventoryScreen
 # ==============================================================================
 
 func _ready() -> void:
 	load_thread.start(populate_tree)
+	inventory_panel.hide()
 
 
 func _process(_delta: float) -> void:
@@ -127,24 +129,29 @@ func _on_filters_saved(filters: Dictionary) -> void:
 
 
 func _on_tree_item_collapsed(item: TreeItem) -> void:
-	if not item.collapsed and item.get_text(0) == "Inventory":
-		var inventory: Inventory = item.get_meta("inventory")
-		for index in item.get_child_count():
-			var item_item := item.get_child(index)
-			if item_item.get_icon(0):
-				continue
-			
-			var item_name := inventory.items[index]
-			
-			if item_name in item_data:
-				item_item.set_icon(0, item_data[item_name].icon)
-				continue
-			
-			DemonCrawlWiki.request_item_data(item_name, func(data: Dictionary):
-				data.icon.set_size_override(Vector2i(16, 16))
-				item_item.set_icon(0, data.icon)
-				item_data[item_name] = data
-			)
+	if item.collapsed:
+		for child in item.get_children():
+			child.collapsed = true
+			tree.item_collapsed.emit(child)
+	
+	if item.get_text(0) == "Inventory":
+		if item.collapsed:
+			inventory_panel.hide()
+		else:
+			var inventory: Inventory = item.get_meta("inventory")
+			inventory_panel.show()
+			inventory_screen.show_inventory(inventory)
+			for index in item.get_child_count():
+				var item_item := item.get_child(index)
+				if item_item.get_icon(0):
+					continue
+				
+				var item_name := inventory.items[index]
+				
+				DemonCrawlWiki.request_item_data(item_name, func(data: Dictionary):
+					data.icon.set_size_override(Vector2i(16, 16))
+					item_item.set_icon(0, data.icon)
+				)
 
 
 func _exit_tree() -> void:
