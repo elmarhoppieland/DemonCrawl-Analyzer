@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" path="res://Resources/Scenes/ItemIcon.gd" id="2_4iqjk"]
 
+[sub_resource type="Animation" id="Animation_4ub4d"]
+length = 0.001
+
 [sub_resource type="Animation" id="Animation_3uyl5"]
 resource_name = "load"
 length = 0.8
@@ -18,9 +21,6 @@ tracks/0/keys = {
 "update": 1,
 "values": [Rect2(0, 0, 16, 16), Rect2(16, 0, 16, 16), Rect2(32, 0, 16, 16), Rect2(48, 0, 16, 16), Rect2(64, 0, 16, 16), Rect2(80, 0, 16, 16), Rect2(96, 0, 16, 16), Rect2(112, 0, 16, 16)]
 }
-
-[sub_resource type="Animation" id="Animation_4ub4d"]
-length = 0.001
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_udwpu"]
 _data = {

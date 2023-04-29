@@ -77,8 +77,11 @@ func is_item_in_cache(item_name: String) -> bool:
 	return item_name in item_data
 
 
-func _on_item_http_request_request_completed(result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray, icon_page_http_request: HTTPRequest, data_source: Dictionary) -> void:
+func _on_item_http_request_request_completed(result: HTTPRequest.Result, _response_code: int, _headers: PackedStringArray, body: PackedByteArray, icon_page_http_request: HTTPRequest, data_source: Dictionary) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS:
+		data_source.description = "Unable to load information about the item."
+		data_source.icon = ImageTexture.create_from_image(preload("res://Sprites/Unknown.png"))
+		item_request_completed.emit(data_source)
 		return
 	
 	var html := body.get_string_from_utf8()
