@@ -12,9 +12,10 @@ const LABEL_TEXT_UP_TO_DATE := "Analyzed data is up to date."
 # ==============================================================================
 var load_thread := Thread.new()
 # ==============================================================================
-@onready var button: Button = %Button
+@onready var start_button: Button = %StartButton
 @onready var save_status_label: Label = %SaveStatusLabel
 @onready var version_label: Label = %VersionLabel
+@onready var force_update_button: Button = %ForceUpdateButton
 # ==============================================================================
 
 func _ready() -> void:
@@ -23,6 +24,8 @@ func _ready() -> void:
 	version_label.text %= Analyzer.get_version()
 	if OS.is_debug_build():
 		version_label.text += " (DEBUG)"
+	else:
+		force_update_button.hide()
 
 
 func _process(_delta: float) -> void:
@@ -33,19 +36,19 @@ func _process(_delta: float) -> void:
 
 func _initialize_button_text() -> void:
 	if Analyzer.is_first_launch():
-		button.text = BUTTON_TEXT_FIRST_LAUNCH
+		start_button.text = BUTTON_TEXT_FIRST_LAUNCH
 		save_status_label.text = LABEL_TEXT_FIRST_LAUNCH
 		return
 	
 	match Analyzer.get_data_status():
 		Analyzer.DataStatus.OUTDATED_VERSION:
-			button.text = BUTTON_TEXT_UPDATE
+			start_button.text = BUTTON_TEXT_UPDATE
 			save_status_label.text = LABEL_TEXT_UPDATE
 		Analyzer.DataStatus.NEW_DATA_FOUND:
-			button.text = BUTTON_TEXT_UP_TO_DATE
+			start_button.text = BUTTON_TEXT_UP_TO_DATE
 			save_status_label.text = LABEL_TEXT_NEW_DATA
 		Analyzer.DataStatus.UP_TO_DATE:
-			button.text = BUTTON_TEXT_UP_TO_DATE
+			start_button.text = BUTTON_TEXT_UP_TO_DATE
 			save_status_label.text = LABEL_TEXT_UP_TO_DATE
 
 
@@ -56,3 +59,7 @@ func _on_button_pressed() -> void:
 func _exit_tree() -> void:
 	if load_thread.is_started():
 		load_thread.wait_to_finish()
+
+
+func _on_force_update_button_pressed() -> void:
+	load_thread.start(ProfileLoader.update_profiles)

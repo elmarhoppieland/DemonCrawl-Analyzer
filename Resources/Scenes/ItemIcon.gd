@@ -15,7 +15,6 @@ var item_data := {}
 @onready var description_panel: PanelContainer = %DescriptionPanel
 @onready var title_label: Label = %TitleLabel
 @onready var description_label: Label = %DescriptionLabel
-@onready var description_v_box_container: VBoxContainer = %VBoxContainer
 # ==============================================================================
 
 func _ready() -> void:
@@ -49,8 +48,8 @@ func _on_mouse_entered() -> void:
 		
 		await get_tree().process_frame
 		
-		description_panel.position.y = -description_v_box_container.size.y
-		description_panel.position.x = size.x / 2 - description_v_box_container.size.x / 2
+		description_panel.position.y = -description_panel.size.y
+		description_panel.position.x = size.x / 2 - description_panel.size.x / 2
 		
 		description_panel.global_position = description_panel.global_position.clamp(Vector2.ZERO, Vector2(get_window().size) - description_panel.size)
 

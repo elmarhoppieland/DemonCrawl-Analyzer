@@ -15,13 +15,32 @@ var errors := []
 signal profiles_loaded(used_profiles: Array[Profile])
 # ==============================================================================
 
-func load_profiles() -> void:
+func update_profiles() -> void:
 	if Analyzer.is_first_launch():
-		LoadingScreen.start(100, "Initializing...")
+		LoadingScreen.start(DemonCrawl.get_logs_count(), "Initializing...")
 		initiate_first_launch()
 		return
 	
-	LoadingScreen.start(101, "Loading saved data...")
+	LoadingScreen.start(DemonCrawl.get_logs_count() + 1, "Loading saved data...")
+	
+	create_backups()
+	
+	update_savedata()
+	
+	LoadingScreen.progress_increment()
+	
+	read_logs_dir(1)
+	
+	profiles_loaded.emit(get_used_profiles())
+
+
+func load_profiles() -> void:
+	if Analyzer.is_first_launch():
+		LoadingScreen.start(DemonCrawl.get_logs_count(), "Initializing...")
+		initiate_first_launch()
+		return
+	
+	LoadingScreen.start(DemonCrawl.get_logs_count() + 1, "Loading saved data...")
 	
 	var read_index := read_saved_data()
 	LoadingScreen.progress_increment()
