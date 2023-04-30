@@ -41,6 +41,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 
-[connection signal="cell_selected" from="HBoxContainer/Tree" to="HBoxContainer/Tree" method="deselect_all"]
+[connection signal="cell_selected" from="HBoxContainer/Tree" to="." method="_on_tree_cell_selected"]
 [connection signal="item_collapsed" from="HBoxContainer/Tree" to="." method="_on_tree_item_collapsed"]
 [connection signal="ready" from="HBoxContainer/Tree" to="HBoxContainer/Tree" method="set_column_expand" binds= [1, false]]

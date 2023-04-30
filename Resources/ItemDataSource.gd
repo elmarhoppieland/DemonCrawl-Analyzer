@@ -35,6 +35,19 @@ func get_url() -> String:
 	return "https://demoncrawl.com/wiki/index.php/%s" % item.replace(" ", "_")
 
 
+func is_found() -> bool:
+	if description.match("Unable to load information about the item. (Error code *)"):
+		return false
+	if description == "The item was not found on the DemonCrawl wiki.":
+		return false
+	
+	return true
+
+
+func is_loaded() -> bool:
+	return not description.match("Unable to load information about the item. (Error code *)")
+
+
 func is_complete() -> bool:
 	if item.is_empty() \
 	or description.is_empty() \

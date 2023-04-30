@@ -120,8 +120,6 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
 			var item_item := inventory_item.create_child()
 			item_item.set_text(0, "%s. %s" % [i + 1, item])
 			item_item.set_tooltip_text(0, " ")
-			
-#			DemonCrawlWiki.request_item_data(item, func(data: Dictionary): item_item.set_icon(0, data.icon))
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
@@ -129,32 +127,34 @@ func _on_filters_saved(filters: Dictionary) -> void:
 
 
 func _on_tree_item_collapsed(item: TreeItem) -> void:
+	if not item.get_text(0) == "Inventory":
+		return
 	if item.collapsed:
-		for child in item.get_children():
-			child.collapsed = true
-			tree.item_collapsed.emit(child)
+		return
 	
-	if item.get_text(0) == "Inventory":
-		if item.collapsed:
-			inventory_panel.hide()
-		else:
-			var inventory: Inventory = item.get_meta("inventory")
-			inventory_panel.show()
-			inventory_screen.show_inventory(inventory)
-			for index in item.get_child_count():
-				var item_item := item.get_child(index)
-				if item_item.get_icon(0):
-					continue
-				
-				var item_name := inventory.items[index]
-				
-				DemonCrawlWiki.request_item_data(item_name, func(data: ItemDataSource):
-					var icon := data.icon.duplicate()
-					icon.set_size_override(Vector2i(16, 16))
-					item_item.set_icon(0, data.icon)
-				)
+	var inventory: Inventory = item.get_meta("inventory")
+	for index in item.get_child_count():
+		var item_item := item.get_child(index)
+		var item_name := inventory.items[index]
+		
+		DemonCrawlWiki.request_item_data(item_name, func(data: ItemDataSource):
+			var icon: ImageTexture = data.icon.duplicate()
+			icon.set_size_override(Vector2i(16, 16))
+			item_item.set_icon(0, icon)
+		)
 
 
 func _exit_tree() -> void:
 	if load_thread.is_started():
 		load_thread.wait_to_finish()
+
+
+func _on_tree_cell_selected() -> void:
+	var item := tree.get_selected()
+	if item.get_text(0) == "Inventory":
+		var inventory: Inventory = item.get_meta("inventory")
+		inventory_panel.show()
+		inventory_screen.show_inventory(inventory)
+	else:
+		inventory_panel.hide()
+		tree.deselect_all()

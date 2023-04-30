@@ -44,7 +44,8 @@ func request_item_data(item_name: String, callable: Callable) -> void:
 		if data.item == item_name:
 			if item_name in item_requests:
 				item_requests.remove_at(item_requests.find(item_name))
-			item_data[item_name] = data
+			if data.is_found():
+				item_data[item_name] = data
 			callable.call(data)
 	)
 

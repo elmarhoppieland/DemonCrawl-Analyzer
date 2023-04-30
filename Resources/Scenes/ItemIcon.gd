@@ -44,8 +44,8 @@ func load_item(item_name: String, icon_size: Vector2i = Vector2i(16, 16)) -> voi
 		
 		item_data = data
 		
-		data.icon.set_size_override(icon_size)
-		texture = data.icon
+		texture = data.icon.duplicate()
+		texture.set_size_override(icon_size)
 		
 		title_label.text = item_name
 		description_label.text = data.description
