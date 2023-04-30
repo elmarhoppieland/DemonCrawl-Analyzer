@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://c4plfbktdna17"]
+[gd_scene load_steps=8 format=3 uid="uid://c4plfbktdna17"]
 
 [ext_resource type="PackedScene" uid="uid://6le4rjsq7xnf" path="res://History/History.tscn" id="1_f34vi"]
 [ext_resource type="Script" path="res://Statistics/Statistics.gd" id="1_gj66t"]
 [ext_resource type="PackedScene" uid="uid://dff50136u5eac" path="res://Statistics/Wins/Wins.tscn" id="3_hejge"]
 [ext_resource type="PackedScene" uid="uid://dmn863g0kdr1q" path="res://Statistics/GlobalStatistics/GlobalStatistics.tscn" id="4_hfufw"]
 [ext_resource type="PackedScene" uid="uid://cwxgye4khbgli" path="res://Statistics/StatisticsFilterSelection/StatisticsFilterSelection.tscn" id="5_fmjx1"]
+[ext_resource type="PackedScene" uid="uid://bcxp6q0kqe1h3" path="res://Errors/Errors.tscn" id="6_i2eb4"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_138mp"]
 
@@ -25,6 +26,10 @@ visible = false
 layout_mode = 2
 
 [node name="Statistics" parent="." instance=ExtResource("4_hfufw")]
+visible = false
+layout_mode = 2
+
+[node name="Errors" parent="." instance=ExtResource("6_i2eb4")]
 visible = false
 layout_mode = 2
 

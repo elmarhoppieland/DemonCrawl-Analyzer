@@ -1,12 +1,14 @@
 extends RefCounted
 class_name DemonCrawl
 
+
 # ==============================================================================
 const LOG_FILE_NAME := "log%d.txt"
 # ==============================================================================
 
 static func get_logs_dir() -> String:
-	return OS.get_data_dir().get_base_dir().path_join("Local/demoncrawl/logs")
+	var dir := ProjectSettings.get_setting_with_override("custom/demoncrawl/logs_directory") as String
+	return dir.replace("%localappdata%", OS.get_data_dir().get_base_dir().path_join("Local"))
 
 
 static func get_log_path(index: int) -> String:

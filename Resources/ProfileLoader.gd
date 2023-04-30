@@ -1,22 +1,6 @@
-extends TabContainer
-class_name Statistics
+extends Node
 
 # ==============================================================================
-enum LogError {
-	UNKNOWN = -1, ## Unknown error.
-	OK, ## No error.
-	EOF_REACHED, ## End of file reached.
-	EMPTY_FILE, ## File is empty.
-	PLAYER_DIED, ## Player died.
-	QUEST_COMPLETE, ## Quest complete.
-	INVALID_TIMESTAMP, ## Does not contain logs after the specified timestamp.
-	READ_ERROR ## There was an error when attempting to read the file.
-}
-enum Filter {
-	TIME_AFTER,
-	TIME_BEFORE,
-	QUEST_TYPE
-}
 enum ExitCode {
 	OK,
 	READ_ERROR
@@ -24,45 +8,65 @@ enum ExitCode {
 # ==============================================================================
 var profiles := {}
 
-var current_profile: Profile
+var _current_profile: Profile
 
 var errors := []
 # ==============================================================================
-@onready var statistics_filter_selection: StatisticsFilterSelection = %StatisticsFilterSelection
+signal profiles_loaded(used_profiles: Array[Profile])
 # ==============================================================================
 
-func _enter_tree() -> void:
-	current_tab = 0
-#
-#	if has_meta("profiles"):
-#		for profile in get_meta("profiles"):
-#			profiles[profile.name] = profile
-#			return
-#
-#	breakpoint
-#
-#	if Analyzer.is_first_launch():
-#		initiate_first_launch()
-#		return
-#
-#	var read_index := read_saved_data()
-#
-#	if read_index < 0:
-#		printerr("An error occurred while attempting to read the saved data. Aborting...")
-#		get_tree().quit(ExitCode.READ_ERROR)
-#		return
-#
-#	if read_index == 0:
-#		return
-#
-#	if read_index > DemonCrawl.get_logs_count():
-#		print_rich("[color=aqua]Save data is up to date.[/color]")
-#		return
-#
-#	print_rich("[color=aqua]Save data is outdated.[/color]\n[color=aqua]Reading log files at index %s and beyond...[/color]" % read_index)
-#	read_logs_dir(read_index)
+func update_profiles() -> void:
+	if Analyzer.is_first_launch():
+		LoadingScreen.start(DemonCrawl.get_logs_count(), "Initializing...")
+		initiate_first_launch()
+		return
 	
-#	save_data_to_disk()
+	LoadingScreen.start(DemonCrawl.get_logs_count() + 1, "Loading saved data...")
+	
+	create_backups()
+	
+	update_savedata()
+	
+	LoadingScreen.progress_increment()
+	
+	read_logs_dir(1)
+	
+	profiles_loaded.emit(get_used_profiles())
+
+
+func load_profiles() -> void:
+	if Analyzer.is_first_launch():
+		LoadingScreen.start(DemonCrawl.get_logs_count(), "Initializing...")
+		initiate_first_launch()
+		return
+	
+	LoadingScreen.start(DemonCrawl.get_logs_count() + 1, "Loading saved data...")
+	
+	var read_index := read_saved_data()
+	LoadingScreen.progress_increment()
+	
+	if read_index < 0:
+		printerr("An error occurred while attempting to read the saved data. Aborting...")
+		get_tree().quit(ExitCode.READ_ERROR)
+		return
+	
+	if read_index == 0:
+		LoadingScreen.progress_finish()
+		return
+	
+	if read_index > DemonCrawl.get_logs_count():
+		print_rich("[color=aqua]Save data is up to date.[/color]")
+		LoadingScreen.progress_finish()
+		return
+	
+	LoadingScreen.set_step_count(DemonCrawl.get_logs_count() - read_index + 2)
+	
+	print_rich("[color=aqua]Save data is outdated.[/color]\n[color=aqua]Reading log files at index %s and beyond...[/color]" % read_index)
+	read_logs_dir(read_index)
+	
+	profiles_loaded.emit(get_used_profiles())
+	
+	# LoadingScreen should be finished automatically
 
 
 func initiate_first_launch() -> void:
@@ -79,6 +83,8 @@ func initiate_first_launch() -> void:
 	print_rich("[color=green]Finished initializing. Reading log files...[/color]")
 	
 	read_logs_dir(1)
+	
+	profiles_loaded.emit(get_used_profiles())
 
 
 ## Reads the saved data and sets the properties to the stored values.
@@ -226,9 +232,10 @@ func move_savedata_files(new_zero_index: int) -> void:
 
 func read_logs_dir(starting_index: int) -> void:
 	for index in range(starting_index, DemonCrawl.get_logs_count() + 1):
-		var error := read_log(index)
-		if not error in [LogError.EOF_REACHED, LogError.INVALID_TIMESTAMP, LogError.EMPTY_FILE]:
-			return
+		LoadingScreen.set_message("Parsing %s..." % (DemonCrawl.LOG_FILE_NAME % index))
+		read_log(index)
+		LoadingScreen.progress_increment()
+
 
 
 func save_data_to_disk(index: int, start_unix: int, end_unix: int) -> void:
@@ -254,12 +261,12 @@ func save_json(json: Dictionary, index: int) -> void:
 	file.store_line(JSON.stringify(json))
 
 
-func read_log(index: int) -> LogError:
+func read_log(index: int) -> void:
 	var log_reader := LogFileReader.read(DemonCrawl.get_log_path(index))
 	if not log_reader:
 		push_error("Error occurred when attempting to read log file at index %s: %s" % [index, error_string(FileAccess.get_open_error())])
 		DirAccess.copy_absolute(Analyzer.get_savedata_path(index - 1), Analyzer.get_savedata_path(index))
-		return LogError.READ_ERROR
+		return
 	
 	errors.append_array(log_reader.errors)
 	
@@ -275,27 +282,26 @@ func read_log(index: int) -> LogError:
 		# the log file does not contain readable lines
 		# I don't know how this happens exactly but it's possible
 		save_data_to_disk(index, start_unix, end_unix)
-		return LogError.EMPTY_FILE
+		return
 	
 	while not log_reader.get_current_line().is_empty():
 		parse_line(log_reader)
-#		latest_recorded_time = Time.get_unix_time_from_datetime_string(log_reader.get_date() + "T" + log_reader.get_time())
 		
 		log_reader.next_line()
 	
 	save_data_to_disk(index, start_unix, end_unix)
 	
-	return LogError.EOF_REACHED
+	return
 
 
 func parse_line(log_reader: LogFileReader) -> void:
-	var data := log_reader.handle_current_line(LogFileReader.Line.ALL, current_profile)
+	var data := log_reader.handle_current_line(LogFileReader.Line.ALL, _current_profile)
 	if data is Profile:
 		if data.name in profiles:
-			current_profile = profiles[data.name]
+			_current_profile = profiles[data.name]
 		else:
 			profiles[data.name] = data
-			current_profile = data
+			_current_profile = data
 
 
 func get_profile(profile_name: String, allow_unused: bool = true) -> Profile:
@@ -324,31 +330,3 @@ func get_profiles() -> Array[Profile]:
 			profile_array.append(profile)
 	
 	return profile_array
-
-
-func get_error(line: String) -> LogError:
-	if line.is_empty():
-		return LogError.EOF_REACHED
-	if line.match("* was killed!"):
-		return LogError.PLAYER_DIED
-	if line == "Alert: Submitting score to Leaderboard...":
-		return LogError.QUEST_COMPLETE
-	
-	return LogError.OK
-
-
-func get_filter(filter: Filter) -> Variant:
-	return statistics_filter_selection.get_filter(filter)
-
-
-#func is_savedata_outdated() -> bool:
-#	var savedata_split := latest_recorded_version.split(".")
-#	var current_split := CURRENT_VERSION.split(".")
-#
-#	for i in 3:
-#		if savedata_split[i].to_int() < current_split[i].to_int():
-#			return true
-#		elif savedata_split[i].to_int() > current_split[i].to_int():
-#			break
-#
-#	return false

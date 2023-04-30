@@ -9,14 +9,11 @@
 ### Usage
  Once you have downloaded the program, you can run it by simply running the .exe
  file. Click "Initialize Analyzer" and it will read through your DemonCrawl logs folder
- and show relevant information, divided into different tabs. **Note:** Since reading all of
- DemonCrawl's log files takes some time, the Analyzer most likely will freeze for a moment
- after clicking on "Initalize Analyzer". Just give the Analyzer a few seconds to load, and
- everything will be fine.
+ and show relevant information, divided into different tabs.
 
 ## Features
 ### History
- This tab shows an overview of all quests you created in the last 100 sessions.
+ This tab shows an overview of all quests you created.
  In every quest, it shows a list of stages you entered, and it shows your inventory
  whenever you entered or leaved a stage. It also shows your stats at the start of
  every stage.
@@ -33,6 +30,11 @@
  were created or what kind of quest it is. You can specify a timeframe in which
  the quests were created, and/or specify the types of quests that are shown.
  Changing filters affects all tabs.
+### Errors
+ This tab shows all errors DemonCrawl has bypassed. When the game bypasses an error,
+ it shows an alert to the player to view the log file for details. The Analyzer can read
+ these details to generate an error log for you to report in the Discord server.
+ **Note:** The Errors tab does **not** support filtering.
 
 ## Additional notes
 - The Analyzer cannot see all quests you created. It can only go back as far as

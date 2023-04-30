@@ -2,21 +2,30 @@ extends Control
 class_name History
 
 # ==============================================================================
+var load_thread := Thread.new()
+# ==============================================================================
 @onready var main: Statistics = owner
+@onready var tree: Tree = %Tree
+@onready var inventory_panel: PanelContainer = %InventoryPanel
+@onready var inventory_screen: InventoryScreen = %InventoryScreen
 # ==============================================================================
 
 func _ready() -> void:
-	populate_tree()
+	load_thread.start(populate_tree)
+	inventory_panel.hide()
+
+
+func _process(_delta: float) -> void:
+	if load_thread.is_started() and not load_thread.is_alive():
+		load_thread.wait_to_finish()
 
 
 func populate_tree(filters: Dictionary = {}) -> void:
-	var tree: Tree = $Tree
-	
 	tree.clear()
 	
 	var root := tree.create_item()
 	
-	var profiles: Array[Profile] = main.get_profiles()
+	var profiles: Array[Profile] = ProfileLoader.get_used_profiles()
 	for profile in profiles:
 		if profile.quests.is_empty():
 			continue
@@ -102,6 +111,7 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
 	var inventory_item := parent_item.create_child()
 	inventory_item.set_text(0, "Inventory")
 	inventory_item.set_tooltip_text(0, " ")
+	inventory_item.set_meta("inventory", inventory)
 	inventory_item.collapsed = true
 	
 	for i in inventory.items.size():
@@ -113,4 +123,38 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
-	populate_tree(filters)
+	load_thread.start(populate_tree.bind(filters))
+
+
+func _on_tree_item_collapsed(item: TreeItem) -> void:
+	if not item.get_text(0) == "Inventory":
+		return
+	if item.collapsed:
+		return
+	
+	var inventory: Inventory = item.get_meta("inventory")
+	for index in item.get_child_count():
+		var item_item := item.get_child(index)
+		var item_name := inventory.items[index]
+		
+		DemonCrawlWiki.request_item_data(item_name, func(data: ItemDataSource):
+			var icon: ImageTexture = data.icon.duplicate()
+			icon.set_size_override(Vector2i(16, 16))
+			item_item.set_icon(0, icon)
+		)
+
+
+func _exit_tree() -> void:
+	if load_thread.is_started():
+		load_thread.wait_to_finish()
+
+
+func _on_tree_cell_selected() -> void:
+	var item := tree.get_selected()
+	if item.get_text(0) == "Inventory":
+		var inventory: Inventory = item.get_meta("inventory")
+		inventory_panel.show()
+		inventory_screen.show_inventory(inventory)
+	else:
+		inventory_panel.hide()
+		tree.deselect_all()
