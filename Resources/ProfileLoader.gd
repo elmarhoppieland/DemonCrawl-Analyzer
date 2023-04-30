@@ -21,12 +21,17 @@ func update_profiles() -> void:
 		initiate_first_launch()
 		return
 	
-	LoadingScreen.start(DemonCrawl.get_logs_count() + 1, "Loading saved data...")
+	LoadingScreen.start(DemonCrawl.get_logs_count() + 3, "Creating backups...")
 	
 	create_backups()
+	LoadingScreen.progress_increment()
 	
+	LoadingScreen.set_message("Loading saved data...")
 	update_savedata()
+	LoadingScreen.progress_increment()
 	
+	LoadingScreen.set_message("Removing excess data files...")
+	remove_excess_savedata_files()
 	LoadingScreen.progress_increment()
 	
 	read_logs_dir(1)
@@ -59,7 +64,11 @@ func load_profiles() -> void:
 		LoadingScreen.progress_finish()
 		return
 	
-	LoadingScreen.set_step_count(DemonCrawl.get_logs_count() - read_index + 2)
+	LoadingScreen.set_step_count(DemonCrawl.get_logs_count() - read_index + 3)
+	
+	LoadingScreen.set_message("Removing excess data files...")
+	remove_excess_savedata_files()
+	LoadingScreen.progress_increment()
 	
 	print_rich("[color=aqua]Save data is outdated.[/color]\n[color=aqua]Reading log files at index %s and beyond...[/color]" % read_index)
 	read_logs_dir(read_index)
@@ -184,7 +193,7 @@ func update_savedata() -> void:
 	
 	savedata_file.close()
 	
-	move_savedata_files(savedata_index)
+	save_data_to_disk(0, -1, -1)
 
 
 ## Returns the index of the last savedata file that started before [code]unix[/code]
@@ -228,6 +237,16 @@ func move_savedata_files(new_zero_index: int) -> void:
 		if error:
 			push_error("Error occurred during move operation: %s. Can't rename file '%s' to '%s'" % [error_string(error), Analyzer.get_savedata_path(new_zero_index + index), Analyzer.get_savedata_path(index)])
 			breakpoint
+
+
+func remove_excess_savedata_files() -> void:
+	var index := DemonCrawl.get_logs_count() + 1
+	while true:
+		var path := Analyzer.get_savedata_path(index)
+		if not FileAccess.file_exists(path):
+			return
+#		OS.move_to_trash(ProjectSettings.globalize_path(path))
+		DirAccess.remove_absolute(path)
 
 
 func read_logs_dir(starting_index: int) -> void:
