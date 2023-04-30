@@ -29,6 +29,10 @@ LoadingScreen="*res://Resources/Scenes/LoadingScreen.tscn"
 ProfileLoader="*res://Resources/ProfileLoader.gd"
 DemonCrawlWiki="*res://Resources/DemonCrawlWiki.gd"
 
+[custom]
+
+demoncrawl/logs_directory.windows="%localappdata%/demoncrawl/logs"
+
 [debug]
 
 gdscript/warnings/native_method_override=1
