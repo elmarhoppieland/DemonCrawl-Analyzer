@@ -10,6 +10,8 @@ const ITEM_LOAD_ATLAS := preload("res://Resources/Scenes/ItemLoadIcon.tres")
 var load_atlas := ITEM_LOAD_ATLAS.duplicate()
 
 var item_data := {}
+
+var mouse_is_inside := false
 # ==============================================================================
 @onready var animation_player: AnimationPlayer = %AnimationPlayer
 @onready var description_panel: PanelContainer = %DescriptionPanel
@@ -21,12 +23,20 @@ func _ready() -> void:
 	description_panel.hide()
 
 
+func _process(_delta: float) -> void:
+	if Input.is_action_just_pressed("ui_left_click"):
+		if mouse_is_inside and not item_data.is_empty():
+			OS.shell_open("https://demoncrawl.com/wiki/index.php/%s" % item_data.item.replace(" ", "_"))
+
+
 func load_item(item_name: String, icon_size: Vector2i = Vector2i(16, 16)) -> void:
 	description_label.text = ""
 	description_panel.size = Vector2(minimum_description_panel_width, 0)
 	item_data = {}
 	
+	
 	if not DemonCrawlWiki.is_item_in_cache(item_name):
+		mouse_default_cursor_shape = Control.CURSOR_ARROW
 		texture = load_atlas
 		animation_player.play("load")
 	
@@ -40,10 +50,14 @@ func load_item(item_name: String, icon_size: Vector2i = Vector2i(16, 16)) -> voi
 		
 		title_label.text = item_name
 		description_label.text = data.description
+		
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	)
 
 
 func _on_mouse_entered() -> void:
+	mouse_is_inside = true
+	
 	if not item_data.is_empty():
 		description_panel.show()
 		
@@ -57,3 +71,5 @@ func _on_mouse_entered() -> void:
 
 func _on_mouse_exited() -> void:
 	description_panel.hide()
+	
+	mouse_is_inside = false
