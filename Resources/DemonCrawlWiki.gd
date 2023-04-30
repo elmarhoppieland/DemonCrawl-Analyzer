@@ -66,8 +66,10 @@ func load_item(item_name: String, item_page_http_request: HTTPRequest, icon_page
 		icon_page_http_request.queue_free()
 		item_request_completed.emit(data_source)
 	)
-	item_page_http_request.request_completed.connect(func(_result: int, _response_code: int, _headers: PackedStringArray, _body: PackedByteArray):
+	item_page_http_request.request_completed.connect(func(result: HTTPRequest.Result, _response_code: int, _headers: PackedStringArray, _body: PackedByteArray):
 		item_page_http_request.queue_free()
+		if result != HTTPRequest.RESULT_SUCCESS:
+			icon_page_http_request.queue_free()
 	)
 	
 	return data_source
@@ -79,22 +81,30 @@ func is_item_in_cache(item_name: String) -> bool:
 
 func _on_item_http_request_request_completed(result: HTTPRequest.Result, _response_code: int, _headers: PackedStringArray, body: PackedByteArray, icon_page_http_request: HTTPRequest, data_source: Dictionary) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS:
-		data_source.description = "Unable to load information about the item."
+		data_source.description = "Unable to load information about the item. (Error code %s)" % result
 		data_source.icon = ImageTexture.create_from_image(preload("res://Sprites/Unknown.png"))
 		item_request_completed.emit(data_source)
 		return
 	
 	var html := body.get_string_from_utf8()
 	
-	FileAccess.open("user://temp.txt", FileAccess.WRITE).store_string(html)
+	if data_source.item == "Big Minion":
+		FileAccess.open("user://temp.txt", FileAccess.WRITE).store_string(html)
 	
 	for slice_index in html.get_slice_count("\n"):
 		var slice := html.get_slice("\n", slice_index)
+		if slice == "<p>There is currently no text in this page.":
+			data_source.description = "The item was not found on the DemonCrawl wiki."
+			data_source.icon = ImageTexture.create_from_image(preload("res://Sprites/Unknown.png"))
+			item_request_completed.emit(data_source)
+			break
 		if slice.match("<td class=\"description\">*</td>"):
 			data_source.description = remove_html(slice)
+			continue
 		if slice.match("<div class=\"infobox-image\"><a href=\"*\" class=\"image\"><img alt=\"*\" src=\"*\" decoding=\"async\" width=\"*\" height=\"*\" /></a></div>"):
 			var source := slice.get_slice("src=\"", 1).get_slice("\"", 0)
 			icon_page_http_request.request("https://demoncrawl.com" + source)
+			continue
 		if slice.match("<td><img src=\"*\" /> <a href=\"*\" title=\"*\">*</a></td>"):
 			var string := slice.get_slice(">", 3).get_slice("<", 0)
 			if string.ends_with(" coins"):
@@ -102,6 +112,7 @@ func _on_item_http_request_request_completed(result: HTTPRequest.Result, _respon
 				break
 			else:
 				data_source.type = ItemType[string.to_upper()]
+				continue
 		if slice.begins_with("<div class=\"printfooter\">Retrieved from "):
 			break
 

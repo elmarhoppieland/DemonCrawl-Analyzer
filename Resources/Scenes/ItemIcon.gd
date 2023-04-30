@@ -22,6 +22,7 @@ func _ready() -> void:
 
 
 func load_item(item_name: String, icon_size: Vector2i = Vector2i(16, 16)) -> void:
+	description_label.text = ""
 	description_panel.size = Vector2(minimum_description_panel_width, 0)
 	item_data = {}
 	
