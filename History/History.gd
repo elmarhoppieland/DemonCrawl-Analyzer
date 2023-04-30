@@ -148,8 +148,9 @@ func _on_tree_item_collapsed(item: TreeItem) -> void:
 				
 				var item_name := inventory.items[index]
 				
-				DemonCrawlWiki.request_item_data(item_name, func(data: Dictionary):
-					data.icon.set_size_override(Vector2i(16, 16))
+				DemonCrawlWiki.request_item_data(item_name, func(data: ItemDataSource):
+					var icon := data.icon.duplicate()
+					icon.set_size_override(Vector2i(16, 16))
 					item_item.set_icon(0, data.icon)
 				)
 
