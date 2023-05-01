@@ -11,6 +11,7 @@ var profile_tabs := {}
 var load_thread := Thread.new()
 # ==============================================================================
 @onready var _global: WinsProfile = %Global
+@onready var _graph: WinsGraph = %Graph
 @onready var main: Statistics = owner
 # ==============================================================================
 
@@ -45,6 +46,7 @@ func _create_tabs(filters: Dictionary = {}) -> void:
 
 func _on_filters_saved(filters: Dictionary) -> void:
 	load_thread.start(_create_tabs.bind(filters))
+	_graph._on_filters_saved(filters)
 
 
 func _exit_tree() -> void:

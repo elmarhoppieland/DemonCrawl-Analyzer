@@ -144,11 +144,6 @@ func _on_tree_item_collapsed(item: TreeItem) -> void:
 		)
 
 
-func _exit_tree() -> void:
-	if load_thread.is_started():
-		load_thread.wait_to_finish()
-
-
 func _on_tree_cell_selected() -> void:
 	var item := tree.get_selected()
 	if item.get_text(0) == "Inventory":
@@ -158,3 +153,8 @@ func _on_tree_cell_selected() -> void:
 	else:
 		inventory_panel.hide()
 		tree.deselect_all()
+
+
+func _exit_tree() -> void:
+	if load_thread.is_started():
+		load_thread.wait_to_finish()
