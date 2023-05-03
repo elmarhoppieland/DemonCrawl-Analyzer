@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://ds5y13ul1c2tn"]
+[gd_scene load_steps=4 format=3 uid="uid://ds5y13ul1c2tn"]
 
 [ext_resource type="Script" path="res://Statistics/Wins/WinsGraph.gd" id="1_xdtss"]
+[ext_resource type="PackedScene" uid="uid://bnlyu1jvl07fk" path="res://Resources/Scenes/HelpPopup.tscn" id="3_mmm7m"]
 [ext_resource type="Script" path="res://Resources/PointGraph.gd" id="3_y5jih"]
 
 [node name="WinsGraph" type="Control"]
@@ -116,10 +117,22 @@ selected = 0
 popup/item_0/text = "Global"
 popup/item_0/id = 0
 
-[node name="GraphTypeCheckBox" type="CheckBox" parent="PanelContainer/HBoxContainer/VBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="GraphTypeCheckBox" type="CheckBox" parent="PanelContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Time Adjusted"
+size_flags_horizontal = 3
+size_flags_vertical = 2
+text = "Time-adjusted"
+
+[node name="HelpPopup" parent="PanelContainer/HBoxContainer/VBoxContainer2/HBoxContainer" instance=ExtResource("3_mmm7m")]
+custom_minimum_size = Vector2(14, 16)
+layout_mode = 2
+size_flags_vertical = 4
+text = "If checked, each quest's victory/loss is placed according to their creation date, instead of spreading them out equally."
 
 [connection signal="item_selected" from="PanelContainer/HBoxContainer/VBoxContainer2/ProfileSelectButton" to="." method="_on_profile_select_button_item_selected"]
-[connection signal="pressed" from="PanelContainer/HBoxContainer/VBoxContainer2/GraphTypeCheckBox" to="." method="_on_graph_type_check_box_pressed"]
+[connection signal="pressed" from="PanelContainer/HBoxContainer/VBoxContainer2/HBoxContainer/GraphTypeCheckBox" to="." method="_on_graph_type_check_box_pressed"]
