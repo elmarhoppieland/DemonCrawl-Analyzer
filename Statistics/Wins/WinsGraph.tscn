@@ -129,7 +129,7 @@ size_flags_vertical = 2
 text = "Time-adjusted"
 
 [node name="HelpPopup" parent="PanelContainer/HBoxContainer/VBoxContainer2/HBoxContainer" instance=ExtResource("3_mmm7m")]
-custom_minimum_size = Vector2(14, 16)
+custom_minimum_size = Vector2(17.5, 20)
 layout_mode = 2
 size_flags_vertical = 4
 text = "If checked, each quest's victory/loss is placed according to their creation date, instead of spreading them out equally."
