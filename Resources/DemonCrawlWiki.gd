@@ -128,8 +128,6 @@ func _on_item_http_request_request_completed(result: HTTPRequest.Result, _respon
 		var properties := data_source.get_unset_properties()
 		if "icon" in properties:
 			properties.remove_at(properties.find("icon"))
-		if not properties.is_empty():
-			print(data_source.item, ": ", properties)
 	
 	item_page_http_request.queue_free()
 

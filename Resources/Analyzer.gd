@@ -39,7 +39,6 @@ func get_version(include_debug: bool = OS.is_debug_build()) -> String:
 	
 	var split := CURRENT_VERSION.split(".", false, 2)
 	split[-1] = split[-1].get_slice(".", 0)
-	print(split)
 	return ".".join(split)
 
 

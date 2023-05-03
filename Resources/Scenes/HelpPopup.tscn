@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://bnlyu1jvl07fk"]
+[gd_scene load_steps=4 format=3 uid="uid://cv4yxtd8fpwnb"]
 
-[ext_resource type="Texture2D" uid="uid://l1p0vf5yn7x" path="res://Sprites/HelpIcon.png" id="1_kyn2u"]
+[ext_resource type="Texture2D" uid="uid://r4og3twu7bsr" path="res://Sprites/HelpIcon.png" id="1_kyn2u"]
 [ext_resource type="Script" path="res://Resources/Scenes/HelpPopup.gd" id="2_ao5in"]
-[ext_resource type="StyleBox" uid="uid://x6rlvqlkg62v" path="res://Resources/Panel.tres" id="3_461ql"]
+[ext_resource type="StyleBox" uid="uid://hy41wey1w7ms" path="res://Resources/Panel.tres" id="3_461ql"]
 
 [node name="HelpPopup" type="TextureRect"]
 texture_filter = 1

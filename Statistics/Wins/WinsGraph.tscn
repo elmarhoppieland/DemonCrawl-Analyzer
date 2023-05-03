@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://ds5y13ul1c2tn"]
 
 [ext_resource type="Script" path="res://Statistics/Wins/WinsGraph.gd" id="1_xdtss"]
-[ext_resource type="PackedScene" uid="uid://bnlyu1jvl07fk" path="res://Resources/Scenes/HelpPopup.tscn" id="3_mmm7m"]
+[ext_resource type="PackedScene" uid="uid://cv4yxtd8fpwnb" path="res://Resources/Scenes/HelpPopup.tscn" id="3_mmm7m"]
 [ext_resource type="Script" path="res://Resources/PointGraph.gd" id="3_y5jih"]
 
 [node name="WinsGraph" type="Control"]
@@ -101,6 +101,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_y5jih")
+margin = 25.0
 data = Array[Vector2]([Vector2(1.68227e+09, 60), Vector2(1.68257e+09, 75), Vector2(1.68267e+09, 0), Vector2(1.68276e+09, 75), Vector2(1.68277e+09, 75)])
 y_min_override = 0.0
 y_max_override = 100.0

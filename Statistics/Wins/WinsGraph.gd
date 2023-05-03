@@ -34,10 +34,6 @@ func convert_to_win_percentages(quests: Array[Quest], time_adjusted: bool) -> Ar
 		var quest_start_unix_time := TimeHelper.get_unix_time_from_timestamp(quest.creation_timestamp)
 		percentages.append(Vector2(quest_start_unix_time if time_adjusted else i, 100 * win_count / float(quest_count)))
 	
-	if quest_count < 10:
-		for quest in quests:
-			print(quest.creation_timestamp)
-	
 	return percentages
 
 
@@ -63,7 +59,9 @@ func get_quests() -> Array[Quest]:
 			if quest.matches_filters(filters):
 				quests.append(quest)
 	
-	quests.sort_custom(func(a: Quest, b: Quest) -> bool: return TimeHelper.get_unix_time_from_timestamp(a.creation_timestamp) < TimeHelper.get_unix_time_from_timestamp(b.creation_timestamp))
+	quests.sort_custom(func(a: Quest, b: Quest) -> bool:
+		return TimeHelper.get_unix_time_from_timestamp(a.creation_timestamp) < TimeHelper.get_unix_time_from_timestamp(b.creation_timestamp)
+	)
 	
 	return quests
 
