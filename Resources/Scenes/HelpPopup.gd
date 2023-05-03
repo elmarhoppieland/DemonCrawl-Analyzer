@@ -15,9 +15,9 @@ func _ready() -> void:
 func _on_mouse_entered() -> void:
 	panel_container.show()
 	
-	panel_container.position.y += size.y
+	panel_container.position.y = size.y
 	
-	panel_container.position.x -= panel_container.size.x / 2.0
+	panel_container.position.x = -panel_container.size.x / 2.0
 	panel_container.position.x += size.x / 2
 	
 	panel_container.global_position = panel_container.global_position.clamp(Vector2i.ZERO, Vector2(get_window().size) - panel_container.size)
