@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://bnlyu1jvl07fk"]
+
+[ext_resource type="Texture2D" uid="uid://l1p0vf5yn7x" path="res://Sprites/HelpIcon.png" id="1_kyn2u"]
+[ext_resource type="Script" path="res://Resources/Scenes/HelpPopup.gd" id="2_ao5in"]
+[ext_resource type="StyleBox" uid="uid://x6rlvqlkg62v" path="res://Resources/Panel.tres" id="3_461ql"]
+
+[node name="HelpPopup" type="TextureRect"]
+texture_filter = 1
+custom_minimum_size = Vector2(14, 16)
+offset_right = 14.0
+offset_bottom = 16.0
+texture = ExtResource("1_kyn2u")
+script = ExtResource("2_ao5in")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+offset_right = 100.0
+offset_bottom = 27.0
+theme_override_styles/panel = ExtResource("3_461ql")
+
+[node name="HelpLabel" type="Label" parent="PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 0
+autowrap_mode = 2
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
