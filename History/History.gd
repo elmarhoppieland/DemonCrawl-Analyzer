@@ -20,6 +20,8 @@ func _process(_delta: float) -> void:
 		load_thread.wait_to_finish()
 
 
+## Populates the [member tree] with [TreeItem]s to show the player's history.
+## Applies the specified [code]filters[/code] to the [Quest]s (see [method Quest.matches_filters].
 func populate_tree(filters: Dictionary = {}) -> void:
 	tree.clear()
 	
@@ -42,6 +44,7 @@ func populate_tree(filters: Dictionary = {}) -> void:
 			add_quest(quest, profile_item)
 
 
+## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the [code]quest[/code].
 func add_quest(quest: Quest, parent_item: TreeItem) -> void:
 	var quest_item := parent_item.create_child(0)
 	quest_item.set_text(0, quest.name)
@@ -65,11 +68,13 @@ func add_quest(quest: Quest, parent_item: TreeItem) -> void:
 		add_stage(stage, quest_item)
 
 
+## Adds a new [TreeItem] to show the selected [code]mastery[/code] for a [Quest] as a child of [code]parent_item[/code].
 func add_mastery(mastery: String, tier: int, parent_item: TreeItem) -> void:
 	var mastery_item := parent_item.create_child()
 	mastery_item.set_text(0, "Mastery: %s tier %s" % [mastery, tier])
 
 
+## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the a single [code]stage[/code].
 func add_stage(stage: Stage, parent_item: TreeItem) -> void:
 	var stage_item := parent_item.create_child()
 	stage_item.set_text(0, stage.full_name)
@@ -107,22 +112,27 @@ func add_stage(stage: Stage, parent_item: TreeItem) -> void:
 		time_spent_item.set_tooltip_text(0, " ")
 
 
-func add_inventory(inventory: Inventory, parent_item: TreeItem) -> void:
+## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the player's [code]inventory[/code].
+## [br][br]If [code]add_item_list[/code] is [code]true[/code], also adds a list of the items as
+## children of the newly created [TreeItem]. However, [b]this currently does not work[/b].
+func add_inventory(inventory: Inventory, parent_item: TreeItem, add_item_list: bool = false) -> void:
 	var inventory_item := parent_item.create_child()
 	inventory_item.set_text(0, "Inventory")
 	inventory_item.set_tooltip_text(0, " ")
 	inventory_item.set_meta("inventory", inventory)
 	inventory_item.collapsed = true
 	
-	for i in inventory.items.size():
-		var item := inventory.items[i]
-		if not item.is_empty():
-			var item_item := inventory_item.create_child()
-			item_item.set_text(0, "%s. %s" % [i + 1, item])
-			item_item.set_tooltip_text(0, " ")
+	if add_item_list:
+		for i in inventory.items.size():
+			var item := inventory.items[i]
+			if not item.is_empty():
+				var item_item := inventory_item.create_child()
+				item_item.set_text(0, "%s. %s" % [i + 1, item])
+				item_item.set_tooltip_text(0, " ")
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
+#	populate_tree(filters)
 	load_thread.start(populate_tree.bind(filters))
 
 

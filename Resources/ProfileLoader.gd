@@ -11,6 +11,8 @@ var profiles := {}
 var _current_profile: Profile
 
 var errors := []
+
+var used_profiles: Array[Profile] = [] : get = get_used_profiles
 # ==============================================================================
 signal profiles_loaded(used_profiles: Array[Profile])
 # ==============================================================================
@@ -332,13 +334,14 @@ func get_profile(profile_name: String, allow_unused: bool = true) -> Profile:
 
 
 func get_used_profiles() -> Array[Profile]:
-	var profile_array: Array[Profile] = []
+	if not used_profiles.is_empty():
+		return used_profiles
 	
 	for profile in profiles.values():
 		if profile is Profile and not profile.quests.is_empty():
-			profile_array.append(profile)
+			used_profiles.append(profile)
 	
-	return profile_array
+	return used_profiles
 
 
 func get_profiles() -> Array[Profile]:
