@@ -351,18 +351,12 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 			handle_stage_finish(stage)
 			return null
 		Line.STAGE_LEAVE:
-			if profile and profile.in_arena:
-				return null
 			return handle_stage_exit(inventory, quest, stage)
 		Line.ITEM_GAIN:
-			if profile and profile.in_arena:
-				return null
-			handle_gain_item(inventory, quest)
+			handle_gain_item(inventory, profile, quest)
 			return null
 		Line.ITEM_LOSE:
-			if profile and profile.in_arena:
-				return null
-			handle_lose_item(inventory)
+			handle_lose_item(inventory, profile)
 			return null
 		Line.CHEST_OPENED:
 			if profile and profile.in_arena:
@@ -389,9 +383,7 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 				quest.increment_statistic(Quest.Statistic.COINS_SPENT, line.get_slice(" ", 0).to_int())
 			return null
 		Line.PLAYER_DEATH:
-			if profile and profile.in_arena:
-				return null
-			return handle_player_death(inventory, stage, profile, quest)
+			return handle_player_death(inventory, stage, profile)
 		Line.LEADERBOARD_SUBMIT:
 			if profile and profile.in_arena:
 				return null
@@ -422,9 +414,6 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 		Line.ARENA_CONNECT:
 			profile.in_arena = true
 			return null
-		Line.PLAYER_STATS:
-			stage.enter.stats = PlayerStats.from_string(line.trim_prefix("Player stats: "))
-			return stage.enter.stats
 	
 	return null
 
@@ -473,10 +462,12 @@ func handle_quest_create(profile: Profile = null) -> Quest:
 
 
 ## Handles gaining of an item. Adds the item gained in [code]line[/code] to [code]inventory[/code].
-func handle_gain_item(inventory: Inventory, quest: Quest = null) -> void:
+func handle_gain_item(inventory: Inventory, profile: Profile = null, quest: Quest = null) -> void:
 	if quest and not inventory:
 		inventory = quest.inventory
 	if not inventory:
+		return
+	if profile and profile.in_arena:
 		return
 	
 	var split := get_current_line().split(" ", false)
@@ -500,8 +491,10 @@ func handle_gain_item(inventory: Inventory, quest: Quest = null) -> void:
 
 
 ## Handles losing of an item. Removes the item lost in [code]line[/code] from [code]inventory[/code].
-func handle_lose_item(inventory: Inventory) -> void:
+func handle_lose_item(inventory: Inventory, profile: Profile = null) -> void:
 	if not inventory:
+		return
+	if profile and profile.in_arena:
 		return
 	
 	var index := get_current_line().split(" ")[-1].trim_prefix("#").to_int() - 1
@@ -517,8 +510,6 @@ func handle_stage_enter(inventory: Inventory, profile: Profile = null, quest: Qu
 		return null
 	if profile and profile.in_arena:
 		return null
-	if quest:
-		return quest.enter_stage(get_current_line().trim_prefix("Begin stage "))
 	
 	var stage := Stage.new()
 	
@@ -551,9 +542,10 @@ func handle_stage_enter(inventory: Inventory, profile: Profile = null, quest: Qu
 			stage.name = stage_name[3]
 	
 	stage.enter = StageEnter.new()
-	stage.enter.inventory = inventory.duplicate()
+	if inventory:
+		stage.enter.inventory = inventory.duplicate()
 	
-	# the stats should be in the next line, but calling look_for() just in case they're not
+	# the stats should be in the next line, but passing inventory just in case they're not
 	var stats_string := look_for(Line.PLAYER_STATS)
 	stage.enter.stats = PlayerStats.from_string(stats_string.trim_prefix("Player stats: "))
 	
@@ -590,8 +582,6 @@ func handle_stage_finish(stage: Stage) -> void:
 func handle_stage_exit(inventory: Inventory, quest: Quest = null, stage: Stage = null) -> StageExit:
 	if not inventory:
 		return null
-	if quest:
-		return quest.exit_stage(get_current_line().trim_prefix("Leaving stage "))
 	
 	var stage_exit := StageExit.new()
 	
@@ -608,13 +598,11 @@ func handle_stage_exit(inventory: Inventory, quest: Quest = null, stage: Stage =
 
 ## Handles player death. Returns a new [StageExit] for the death. If [code]stage[/code]
 ## is not [code]null[/code], adds the death to that [Stage].
-func handle_player_death(inventory: Inventory, stage: Stage = null, profile: Profile = null, quest: Quest = null) -> StageExit:
+func handle_player_death(inventory: Inventory, stage: Stage = null, profile: Profile = null) -> StageExit:
 	if not inventory:
 		return null
-	if quest:
-		if profile:
-			profile.in_quest = false
-		return quest.die()
+	if profile and profile.in_arena:
+		return null
 	
 	var stage_exit := StageExit.new()
 	
@@ -625,7 +613,10 @@ func handle_player_death(inventory: Inventory, stage: Stage = null, profile: Pro
 	if profile:
 		profile.in_quest = false
 		
-		quest.finish()
+		var quest := profile.quests[-1]
+		quest.finished = true
+		quest.victory = false
+		quest.in_stage = false
 	
 	return stage_exit
 
