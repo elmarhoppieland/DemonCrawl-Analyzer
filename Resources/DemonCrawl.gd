@@ -1,9 +1,24 @@
 extends RefCounted
 class_name DemonCrawl
 
-
 # ==============================================================================
 const LOG_FILE_NAME := "log%d.txt"
+const STAGE_MODS: PackedStringArray = [
+	"Abstact", "Aching", "Active", "Apocalyptic", "Astral", "Barbed", "Bleeding",
+	"Blinding", "Brooding", "Burning", "Celestial", "Chummy", "Communist", "Convulsing",
+	"Crooked", "Cryptic", "Dangerous", "Dark", "Devouring", "Dirty", "Disturbing",
+	"Diverse", "Double", "Dramatic", "Dry", "Dumb", "Educational", "Electric",
+	"Elemental", "Evolving", "Explosive", "Fake", "Feeble", "Fickle", "Flawless",
+	"Forgotten", "Forsaken", "Frothy", "Frozen", "Galvanized", "Glacial", "Grim",
+	"Haunted", "Hidden", "Horizontal", "Illusory", "Immutable", "Judging", "Large",
+	"Lawless", "Liberated", "Lofty", "Mauling", "Melting", "Misty", "Native", "Nightmare",
+	"Nomadic", "Null", "Ominous", "Overwhelming", "Pagan", "Predatory", "Psychotic",
+	"Rancid", "Righteous", "Rising", "Scrappy", "Sealed", "Seismic", "Serrated",
+	"Shiny", "Silenced", "Slippery", "Stable", "Stronghold", "Surrounded", "Team",
+	"Temporal", "Timeless", "Toxic", "Trusty", "Tunnel", "Unchained", "Uncharted",
+	"Valhallan", "Vengeful", "Vertical", "Vigilant", "Viral", "Wicked", "Windy",
+	"Withering"
+]
 # ==============================================================================
 
 static func get_logs_dir() -> String:
