@@ -2,6 +2,21 @@ extends Control
 class_name History
 
 # ==============================================================================
+enum ItemType {
+	PROFILE,
+	QUEST,
+	STAGE,
+	STAGE_ENTER,
+	STAGE_EXIT,
+	STAGE_DEATH,
+	PLAYER_STATS,
+	TIME_SPENT,
+	INVENTORY,
+	VICTORY,
+	TYPE_INT,
+	MASTERY
+}
+# ==============================================================================
 var load_thread := Thread.new()
 # ==============================================================================
 @onready var main: Statistics = owner
@@ -36,6 +51,7 @@ func populate_tree(filters: Dictionary = {}) -> void:
 		profile_item.set_text(0, profile.name)
 		profile_item.collapsed = true
 		profile_item.set_tooltip_text(0, " ")
+		profile_item.set_meta("type", ItemType.PROFILE)
 		
 		for quest in profile.quests:
 			if not quest.matches_filters(filters):
@@ -51,11 +67,14 @@ func add_quest(quest: Quest, parent_item: TreeItem) -> void:
 	quest_item.set_tooltip_text(0, " ")
 	quest_item.set_text(1, quest.creation_timestamp + "  ")
 	quest_item.set_tooltip_text(1, " ")
+	quest_item.set_meta("stages", quest.stages)
 	quest_item.collapsed = true
+	quest_item.set_meta("type", ItemType.QUEST)
 	
 	var victory_item := quest_item.create_child()
 	victory_item.set_text(0, "Victory: %s" % ("Yes" if quest.victory else "No"))
 	victory_item.set_tooltip_text(0, " ")
+	victory_item.set_meta("type", ItemType.VICTORY)
 	
 	add_mastery(quest.mastery, quest.mastery_tier, quest_item)
 	
@@ -63,6 +82,7 @@ func add_quest(quest: Quest, parent_item: TreeItem) -> void:
 		var type_int_item := quest_item.create_child()
 		type_int_item.set_text(0, "Type Int: %s" % quest.type)
 		type_int_item.set_tooltip_text(0, " ")
+		type_int_item.set_meta("type", ItemType.TYPE_INT)
 	
 	for stage in quest.stages:
 		add_stage(stage, quest_item)
@@ -72,6 +92,7 @@ func add_quest(quest: Quest, parent_item: TreeItem) -> void:
 func add_mastery(mastery: String, tier: int, parent_item: TreeItem) -> void:
 	var mastery_item := parent_item.create_child()
 	mastery_item.set_text(0, "Mastery: %s tier %s" % [mastery, tier])
+	mastery_item.set_meta("type", ItemType.MASTERY)
 
 
 ## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the a single [code]stage[/code].
@@ -80,15 +101,18 @@ func add_stage(stage: Stage, parent_item: TreeItem) -> void:
 	stage_item.set_text(0, stage.full_name)
 	stage_item.set_tooltip_text(0, " ")
 	stage_item.collapsed = true
+	stage_item.set_meta("type", ItemType.STAGE)
 	
 	var stage_enter_item := stage_item.create_child()
 	stage_enter_item.set_text(0, "Enter")
 	stage_enter_item.set_tooltip_text(0, " ")
 	stage_enter_item.collapsed = true
+	stage_enter_item.set_meta("type", ItemType.STAGE_ENTER)
 	
 	var stats_item := stage_enter_item.create_child()
 	stats_item.set_text(0, str(stage.enter.stats))
 	stats_item.set_tooltip_text(0, " ")
+	stats_item.set_meta("type", ItemType.PLAYER_STATS)
 	
 	add_inventory(stage.enter.inventory, stage_enter_item)
 	
@@ -97,6 +121,7 @@ func add_stage(stage: Stage, parent_item: TreeItem) -> void:
 		stage_exit_item.set_text(0, "Exit")
 		stage_exit_item.set_tooltip_text(0, " ")
 		stage_exit_item.collapsed = true
+		stage_exit_item.set_meta("type", ItemType.STAGE_EXIT)
 		
 		add_inventory(stage.exit.inventory, stage_exit_item)
 	if stage.death:
@@ -104,12 +129,14 @@ func add_stage(stage: Stage, parent_item: TreeItem) -> void:
 		stage_death_item.set_text(0, "Death")
 		stage_death_item.set_tooltip_text(0, " ")
 		stage_death_item.collapsed = true
+		stage_death_item.set_meta("type", ItemType.STAGE_DEATH)
 		
 		add_inventory(stage.death.inventory, stage_death_item)
 	if not stage.time_spent.is_empty():
 		var time_spent_item := stage_item.create_child(0)
 		time_spent_item.set_text(0, "Time spent: %s" % stage.time_spent)
 		time_spent_item.set_tooltip_text(0, " ")
+		time_spent_item.set_meta("type", ItemType.TIME_SPENT)
 
 
 ## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the player's [code]inventory[/code].
@@ -121,6 +148,7 @@ func add_inventory(inventory: Inventory, parent_item: TreeItem, add_item_list: b
 	inventory_item.set_tooltip_text(0, " ")
 	inventory_item.set_meta("inventory", inventory)
 	inventory_item.collapsed = true
+	inventory_item.set_meta("type", ItemType.INVENTORY)
 	
 	if add_item_list:
 		for i in inventory.items.size():
@@ -137,21 +165,38 @@ func _on_filters_saved(filters: Dictionary) -> void:
 
 
 func _on_tree_item_collapsed(item: TreeItem) -> void:
-	if not item.get_text(0) == "Inventory":
-		return
 	if item.collapsed:
 		return
-	
-	var inventory: Inventory = item.get_meta("inventory")
-	for index in item.get_child_count():
-		var item_item := item.get_child(index)
-		var item_name := inventory.items[index]
-		
-		DemonCrawlWiki.request_item_data(item_name, func(data: ItemDataSource):
-			var icon: ImageTexture = data.icon.duplicate()
-			icon.set_size_override(Vector2i(16, 16))
-			item_item.set_icon(0, icon)
-		)
+	match item.get_meta("type"):
+		ItemType.INVENTORY:
+			var inventory: Inventory = item.get_meta("inventory")
+			for index in item.get_child_count():
+				var item_item := item.get_child(index)
+				var item_name := inventory.items[index]
+				
+				DemonCrawlWiki.request_item_data(item_name, func(data: ItemDataSource):
+					var icon: ImageTexture = data.icon.duplicate()
+					icon.set_size_override(Vector2i(16, 16))
+					item_item.set_icon(0, icon)
+				)
+		ItemType.QUEST:
+			var stages: Array[Stage] = item.get_meta("stages")
+			for stage in stages:
+				var items: PackedStringArray = []
+				for item_name in stage.enter.inventory.items:
+					if not item_name in items and not item_name.is_empty() and not DemonCrawlWiki.is_item_in_cache(item_name):
+						items.append(item_name)
+				if stage.exit:
+					for item_name in stage.exit.inventory.items:
+						if not item_name in items and not item_name.is_empty() and not DemonCrawlWiki.is_item_in_cache(item_name):
+							items.append(item_name)
+				if stage.death:
+					for item_name in stage.death.inventory.items:
+						if not item_name in items and not item_name.is_empty() and not DemonCrawlWiki.is_item_in_cache(item_name):
+							items.append(item_name)
+				
+				for item_name in items:
+					DemonCrawlWiki.client_request_item_data(item_name, func(_data: ItemDataSource): pass)
 
 
 func _on_tree_cell_selected() -> void:

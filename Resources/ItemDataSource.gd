@@ -1,4 +1,4 @@
-extends RefCounted
+extends DataSource
 class_name ItemDataSource
 
 # ==============================================================================
@@ -17,6 +17,7 @@ var icon: ImageTexture :
 		icon = value
 		if is_complete():
 			completed.emit()
+var icon_source := ""
 var type := DemonCrawlWiki.ItemType.UNKNOWN :
 	set(value):
 		type = value
