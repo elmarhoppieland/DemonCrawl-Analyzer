@@ -12,7 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_sl1la")
 
-[node name="HBoxContainer" type="HSplitContainer" parent="."]
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,7 +23,7 @@ theme_override_constants/separation = 4
 split_offset = -186
 dragger_visibility = 1
 
-[node name="Tree" type="Tree" parent="HBoxContainer"]
+[node name="Tree" type="Tree" parent="HSplitContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -32,15 +32,15 @@ columns = 2
 hide_root = true
 scroll_horizontal_enabled = false
 
-[node name="InventoryPanel" type="PanelContainer" parent="HBoxContainer"]
+[node name="InventoryPanel" type="PanelContainer" parent="HSplitContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="InventoryScreen" parent="HBoxContainer/InventoryPanel" instance=ExtResource("2_vr8r3")]
+[node name="InventoryScreen" parent="HSplitContainer/InventoryPanel" instance=ExtResource("2_vr8r3")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 
-[connection signal="cell_selected" from="HBoxContainer/Tree" to="." method="_on_tree_cell_selected"]
-[connection signal="item_collapsed" from="HBoxContainer/Tree" to="." method="_on_tree_item_collapsed"]
-[connection signal="ready" from="HBoxContainer/Tree" to="HBoxContainer/Tree" method="set_column_expand" binds= [1, false]]
+[connection signal="cell_selected" from="HSplitContainer/Tree" to="." method="_on_tree_cell_selected"]
+[connection signal="item_collapsed" from="HSplitContainer/Tree" to="." method="_on_tree_item_collapsed"]
+[connection signal="ready" from="HSplitContainer/Tree" to="HSplitContainer/Tree" method="set_column_expand" binds= [1, false]]
