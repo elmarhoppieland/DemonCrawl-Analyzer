@@ -48,13 +48,6 @@ func request_item_type(type: ItemType, callable: Callable) -> void:
 	
 	await request_blocker.wait()
 	
-#	while not request_blocker.can_request:
-#		await request_blocker.lowered
-#
-#	request_blocker.block()
-	
-	print("Requesting %s items..." % type_string)
-	
 	while http_client.get_status() != HTTPClient.STATUS_CONNECTED:
 		http_client.poll()
 		await get_tree().process_frame
@@ -197,11 +190,6 @@ func request_item_data(item_name: String, callable: Callable, request_icon: bool
 
 func request_item_icon(icon_source: String, callable: Callable) -> void:
 	await request_blocker.wait()
-	
-#	while not request_blocker.can_request:
-#		await request_blocker.lowered
-#
-#	request_blocker.block()
 	
 	var error := http_client.request(HTTPClient.METHOD_GET, icon_source, [])
 	if error:
