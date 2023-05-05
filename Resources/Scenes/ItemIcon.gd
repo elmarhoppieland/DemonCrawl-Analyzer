@@ -34,21 +34,48 @@ func load_item(item_name: String, icon_size: Vector2i = Vector2i(16, 16)) -> voi
 	description_panel.size = Vector2(minimum_description_panel_width, 0)
 	item_data = null
 	
-	if not DemonCrawlWiki.is_item_in_cache(item_name):
-		mouse_default_cursor_shape = Control.CURSOR_ARROW
-		texture = load_atlas
-		animation_player.play("load")
+	mouse_default_cursor_shape = Control.CURSOR_ARROW
+	
+	if item_name.is_empty():
+		texture = null
+		return
+	
+	texture = load_atlas
+	animation_player.play("load")
+	
+	title_label.text = item_name
+	
+	if DemonCrawlWiki.is_item_in_cache(item_name):
+		item_data = DemonCrawlWiki.get_item_data_from_cache(item_name)
+		
+		description_label.text = item_data.description
+		
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		
+		if item_data.icon:
+			animation_player.stop()
+			texture = item_data.icon.duplicate()
+			texture.set_size_override(icon_size)
+			return
+		
+		DemonCrawlWiki.request_item_icon(item_data.icon_source, func(icon: ImageTexture):
+			animation_player.stop()
+			
+			texture = icon.duplicate()
+			texture.set_size_override(icon_size)
+			item_data.icon = icon
+		)
+		return
 	
 	DemonCrawlWiki.request_item_data(item_name, func(data: ItemDataSource):
 		animation_player.stop()
 		
 		item_data = data
 		
+		description_label.text = item_data.description
+		
 		texture = data.icon.duplicate()
 		texture.set_size_override(icon_size)
-		
-		title_label.text = item_name
-		description_label.text = data.description
 		
 		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	)

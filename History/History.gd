@@ -92,6 +92,7 @@ func add_quest(quest: Quest, parent_item: TreeItem) -> void:
 func add_mastery(mastery: String, tier: int, parent_item: TreeItem) -> void:
 	var mastery_item := parent_item.create_child()
 	mastery_item.set_text(0, "Mastery: %s tier %s" % [mastery, tier])
+	mastery_item.set_tooltip_text(0, " ")
 	mastery_item.set_meta("type", ItemType.MASTERY)
 
 
@@ -179,24 +180,6 @@ func _on_tree_item_collapsed(item: TreeItem) -> void:
 					icon.set_size_override(Vector2i(16, 16))
 					item_item.set_icon(0, icon)
 				)
-		ItemType.QUEST:
-			var stages: Array[Stage] = item.get_meta("stages")
-			for stage in stages:
-				var items: PackedStringArray = []
-				for item_name in stage.enter.inventory.items:
-					if not item_name in items and not item_name.is_empty() and not DemonCrawlWiki.is_item_in_cache(item_name):
-						items.append(item_name)
-				if stage.exit:
-					for item_name in stage.exit.inventory.items:
-						if not item_name in items and not item_name.is_empty() and not DemonCrawlWiki.is_item_in_cache(item_name):
-							items.append(item_name)
-				if stage.death:
-					for item_name in stage.death.inventory.items:
-						if not item_name in items and not item_name.is_empty() and not DemonCrawlWiki.is_item_in_cache(item_name):
-							items.append(item_name)
-				
-				for item_name in items:
-					DemonCrawlWiki.client_request_item_data(item_name, func(_data: ItemDataSource): pass)
 
 
 func _on_tree_cell_selected() -> void:
