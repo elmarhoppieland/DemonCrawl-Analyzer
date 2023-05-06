@@ -6,6 +6,13 @@ enum DataStatus {
 	NEW_DATA_FOUND,
 	OUTDATED_VERSION
 }
+enum Tab {
+	HISTORY,
+	WINS,
+	STATISTICS,
+	TIMELINE,
+	ERRORS
+}
 # ==============================================================================
 const SAVE_DATA_DIRECTORY := "user://Profiles"
 const SAVE_DATA_DIRECTORY_DEBUG := "user://Profiles_debug"
@@ -27,6 +34,11 @@ func _ready() -> void:
 
 func check_first_launch() -> void:
 	first_launch = not DirAccess.dir_exists_absolute(get_savedata_directory())
+
+
+func get_tab(tab: Tab) -> Control:
+	var tab_path: String = "/root/Statistics/" + Tab.find_key(tab).capitalize()
+	return get_node_or_null(tab_path)
 
 
 func save_setting(section: String, setting: String, value: Variant) -> void:

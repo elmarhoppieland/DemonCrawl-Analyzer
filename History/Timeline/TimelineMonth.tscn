@@ -9,7 +9,8 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 script = ExtResource("1_s02pu")
 
-[node name="Label" type="Label" parent="."]
+[node name="MonthLabel" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 text = "May 2023"
 horizontal_alignment = 1

@@ -47,26 +47,33 @@ func populate_tree(filters: Dictionary = {}) -> void:
 		if profile.quests.is_empty():
 			continue
 		
-		var profile_item := root.create_child()
-		profile_item.set_text(0, profile.name)
-		profile_item.collapsed = true
-		profile_item.set_tooltip_text(0, " ")
-		profile_item.set_meta("type", ItemType.PROFILE)
+		History.add_profile(profile, root, filters)
+
+
+## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the [code]profile[/code].
+## Applies the specified [code]filters[/code] to the [Profile]'s [Quest]s (see [method Quest.matches_filters].
+static func add_profile(profile: Profile, parent_item: TreeItem, filters: Dictionary = {}) -> void:
+	var profile_item := parent_item.create_child()
+	profile_item.set_text(0, profile.name)
+	profile_item.collapsed = true
+	profile_item.set_tooltip_text(0, " ")
+	profile_item.set_meta("type", ItemType.PROFILE)
+	
+	for quest in profile.quests:
+		if not quest.matches_filters(filters):
+			continue
 		
-		for quest in profile.quests:
-			if not quest.matches_filters(filters):
-				continue
-			
-			add_quest(quest, profile_item)
+		add_quest(quest, profile_item)
 
 
 ## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the [code]quest[/code].
-func add_quest(quest: Quest, parent_item: TreeItem) -> void:
+static func add_quest(quest: Quest, parent_item: TreeItem, show_quest_creation_timestamps: bool = true) -> void:
 	var quest_item := parent_item.create_child(0)
 	quest_item.set_text(0, quest.name)
 	quest_item.set_tooltip_text(0, " ")
-	quest_item.set_text(1, quest.creation_timestamp + "  ")
-	quest_item.set_tooltip_text(1, " ")
+	if show_quest_creation_timestamps:
+		quest_item.set_text(1, quest.creation_timestamp + "  ")
+		quest_item.set_tooltip_text(1, " ")
 	quest_item.set_meta("stages", quest.stages)
 	quest_item.collapsed = true
 	quest_item.set_meta("type", ItemType.QUEST)
@@ -89,7 +96,7 @@ func add_quest(quest: Quest, parent_item: TreeItem) -> void:
 
 
 ## Adds a new [TreeItem] to show the selected [code]mastery[/code] for a [Quest] as a child of [code]parent_item[/code].
-func add_mastery(mastery: String, tier: int, parent_item: TreeItem) -> void:
+static func add_mastery(mastery: String, tier: int, parent_item: TreeItem) -> void:
 	var mastery_item := parent_item.create_child()
 	mastery_item.set_text(0, "Mastery: %s tier %s" % [mastery, tier])
 	mastery_item.set_tooltip_text(0, " ")
@@ -97,7 +104,7 @@ func add_mastery(mastery: String, tier: int, parent_item: TreeItem) -> void:
 
 
 ## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the a single [code]stage[/code].
-func add_stage(stage: Stage, parent_item: TreeItem) -> void:
+static func add_stage(stage: Stage, parent_item: TreeItem) -> void:
 	var stage_item := parent_item.create_child()
 	stage_item.set_text(0, stage.full_name)
 	stage_item.set_tooltip_text(0, " ")
@@ -143,7 +150,7 @@ func add_stage(stage: Stage, parent_item: TreeItem) -> void:
 ## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the player's [code]inventory[/code].
 ## [br][br]If [code]add_item_list[/code] is [code]true[/code], also adds a list of the items as
 ## children of the newly created [TreeItem]. However, [b]this currently does not work[/b].
-func add_inventory(inventory: Inventory, parent_item: TreeItem, add_item_list: bool = false) -> void:
+static func add_inventory(inventory: Inventory, parent_item: TreeItem, add_item_list: bool = false) -> void:
 	var inventory_item := parent_item.create_child()
 	inventory_item.set_text(0, "Inventory")
 	inventory_item.set_tooltip_text(0, " ")
@@ -184,13 +191,17 @@ func _on_tree_item_collapsed(item: TreeItem) -> void:
 
 func _on_tree_cell_selected() -> void:
 	var item := tree.get_selected()
-	if item.get_text(0) == "Inventory":
+	if item.get_meta("type") == ItemType.INVENTORY:
 		var inventory: Inventory = item.get_meta("inventory")
 		inventory_panel.show()
 		inventory_screen.show_inventory(inventory)
 	else:
 		inventory_panel.hide()
 		tree.deselect_all()
+
+
+static func get_tab() -> History:
+	return Analyzer.get_tab(Analyzer.Tab.HISTORY)
 
 
 func _exit_tree() -> void:

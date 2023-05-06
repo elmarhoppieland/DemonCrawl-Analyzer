@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0uu81j66qufd"]
+[gd_scene load_steps=3 format=3 uid="uid://c0uu81j66qufd"]
 
-[ext_resource type="PackedScene" uid="uid://bwt4ioodfepbn" path="res://History/Timeline/TimelineMonth.tscn" id="1_dldj2"]
+[ext_resource type="Script" path="res://History/Timeline/Timeline.gd" id="1_q3bee"]
+[ext_resource type="PackedScene" uid="uid://dkb7ueasgk7bq" path="res://Resources/Scenes/InventoryScreen.tscn" id="2_5qp2o"]
 
 [node name="Timeline" type="Control"]
 layout_mode = 3
@@ -9,28 +10,55 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_q3bee")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 3
 
-[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="HSplitContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="HFlowContainer" type="HFlowContainer" parent="PanelContainer/ScrollContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HFlowContainer" type="HFlowContainer" parent="HSplitContainer/PanelContainer/ScrollContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TimelineMonth" parent="PanelContainer/ScrollContainer/HFlowContainer" instance=ExtResource("1_dldj2")]
+[node name="TreeSplitContainer" type="HSplitContainer" parent="HSplitContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+dragger_visibility = 1
+
+[node name="Tree" type="Tree" parent="HSplitContainer/TreeSplitContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+focus_mode = 0
+hide_root = true
+
+[node name="InventoryPanel" type="PanelContainer" parent="HSplitContainer/TreeSplitContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="TimelineMonth2" parent="PanelContainer/ScrollContainer/HFlowContainer" instance=ExtResource("1_dldj2")]
+[node name="InventoryScreen" parent="HSplitContainer/TreeSplitContainer/InventoryPanel" instance=ExtResource("2_5qp2o")]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 4
 
-[node name="TimelineMonth3" parent="PanelContainer/ScrollContainer/HFlowContainer" instance=ExtResource("1_dldj2")]
-layout_mode = 2
+[connection signal="hidden" from="HSplitContainer/TreeSplitContainer" to="HSplitContainer/TreeSplitContainer" method="hide"]
+[connection signal="cell_selected" from="HSplitContainer/TreeSplitContainer/Tree" to="." method="_on_tree_cell_selected"]
+[connection signal="hidden" from="HSplitContainer/TreeSplitContainer/Tree" to="HSplitContainer/TreeSplitContainer/Tree" method="hide"]
