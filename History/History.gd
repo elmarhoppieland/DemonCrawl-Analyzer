@@ -193,6 +193,10 @@ func _on_tree_cell_selected() -> void:
 		tree.deselect_all()
 
 
+static func get_tab() -> History:
+	return Analyzer.get_tab(Analyzer.Tab.HISTORY)
+
+
 func _exit_tree() -> void:
 	if load_thread.is_started():
 		load_thread.wait_to_finish()

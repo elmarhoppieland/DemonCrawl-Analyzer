@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://c0uu81j66qufd"]
 
-[ext_resource type="PackedScene" uid="uid://bwt4ioodfepbn" path="res://History/Timeline/TimelineMonth.tscn" id="1_dldj2"]
+[ext_resource type="Script" path="res://History/Timeline/Timeline.gd" id="1_q3bee"]
 
 [node name="Timeline" type="Control"]
 layout_mode = 3
@@ -9,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_q3bee")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -22,15 +23,7 @@ grow_vertical = 2
 layout_mode = 2
 
 [node name="HFlowContainer" type="HFlowContainer" parent="PanelContainer/ScrollContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="TimelineMonth" parent="PanelContainer/ScrollContainer/HFlowContainer" instance=ExtResource("1_dldj2")]
-layout_mode = 2
-
-[node name="TimelineMonth2" parent="PanelContainer/ScrollContainer/HFlowContainer" instance=ExtResource("1_dldj2")]
-layout_mode = 2
-
-[node name="TimelineMonth3" parent="PanelContainer/ScrollContainer/HFlowContainer" instance=ExtResource("1_dldj2")]
-layout_mode = 2
