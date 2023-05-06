@@ -230,81 +230,95 @@ func load_item(item_name: String, item_page_http_request: HTTPRequest, icon_page
 func parse_html(html: String, type: DocType) -> DataSource:
 	match type:
 		DocType.ITEM:
-			var data_source := ItemDataSource.new()
-			var icon_found := false
-			
-			for slice_index in html.get_slice_count("\n"):
-				var slice := html.get_slice("\n", slice_index)
-				if slice == "<TITLE> 508 Resource Limit Is Reached</TITLE>":
-					# we asked too much from the server
-					return null
-				if slice == "<p>There is currently no text in this page.":
-					data_source.description = "This item was not found on the DemonCrawl wiki."
-					data_source.icon = ImageTexture.create_from_image(preload("res://Sprites/Unknown.png"))
-					data_source.cost = 0
-					data_source.type = ItemType.CONSUMABLE
-					return data_source
-				if slice.match("\t<h1 id=\"firstHeading\" class=\"firstHeading mw-first-heading\">*</h1>"):
-					data_source.item = slice.get_slice(">", 1).get_slice("<", 0)
-				if slice.match("<td class=\"description\">*</td>"):
-					data_source.description = remove_html(slice)
-					continue
-				if slice.match("<div class=\"infobox-image\"><a href=\"*\" class=\"image\"><img alt=\"*\" src=\"*\" decoding=\"async\" width=\"*\" height=\"*\" /></a></div>"):
-					if not icon_found:
-						var source := slice.get_slice("src=\"", 1).get_slice("\"", 0)
-						data_source.icon_source = source
-						icon_found = true
-					continue
-				if slice.match("<td><img src=\"*\" /> <a href=\"*\" title=\"*\">*</a></td>"):
-					var string := slice.get_slice(">", 3).get_slice("<", 0)
-					if string.ends_with(" coins"):
-						data_source.cost = string.to_int()
-					else:
-						data_source.type = ItemType[string.to_upper()]
-					continue
-				if slice.begins_with("<div class=\"printfooter\">Retrieved from "):
-					break
-			
-			if data_source.description.is_empty():
-				data_source.description = "Unable to find the description of this item."
-			if not icon_found:
-				data_source.icon = ImageTexture.create_from_image(preload("res://Sprites/Unknown.png"))
-			
-			return data_source
+			return _html_parse_item(html)
 		DocType.ITEM_TYPE:
-			var data_source := ItemTypeDataSource.new()
-			
-			FileAccess.open("user://temp.txt", FileAccess.WRITE).store_string(html)
-			
-			var item_data_source: ItemDataSource
-			
-			for slice_index in html.get_slice_count("\n"):
-				var slice := html.get_slice("\n", slice_index)
-				
-				if slice.match("<td><a href=\"/wiki/index.php/File:*.png\" class=\"image\"><img alt=\"*.png\" src=\"/wiki/images/*.png\" decoding=\"async\" width=\"48\" height=\"48\" /></a>"):
-					item_data_source = ItemDataSource.new()
-					item_data_source.icon_source = slice.get_slice("src=\"", 1).get_slice("\"", 0)
-					
-					data_source.items.append(item_data_source)
-					continue
-				if not item_data_source:
-					continue
-				if slice.match("<td><a href=\"/wiki/index.php/*\" title=\"*\">*</a>"):
-					item_data_source.item = slice.get_slice(">", 2).get_slice("<", 0)
-					continue
-				if slice.match("<td><img src=\"//demoncrawl.com/wiki/images/coin.png\" /> <a href=\"/wiki/index.php/Coins\" title=\"Coins\">* coins</a>"):
-					item_data_source.cost = slice.to_int() # the only int in the line is the cost
-					item_data_source = null # this is the last value in this row of the table
-					continue
-				if slice.match("<td>*"):
-					item_data_source.description = remove_html(slice)
-					continue
-				if slice.match("</tbody></table>"):
-					break # the end of the table is reached
-			
-			return data_source
+			return _html_parse_item_type(html)
 	
 	return null
+
+
+func _html_parse_item(html: String) -> ItemDataSource:
+	var data_source := ItemDataSource.new()
+	var icon_found := false
+	
+	for slice_index in html.get_slice_count("\n"):
+		var slice := html.get_slice("\n", slice_index)
+		if slice == "<TITLE> 508 Resource Limit Is Reached</TITLE>":
+			# we asked too much from the server
+			return null
+		if slice == "<p>There is currently no text in this page.":
+			data_source.description = "This item was not found on the DemonCrawl wiki."
+			data_source.icon = ImageTexture.create_from_image(preload("res://Sprites/Unknown.png"))
+			data_source.cost = 0
+			data_source.type = ItemType.UNKNOWN
+			return data_source
+		if slice.match("\t<h1 id=\"firstHeading\" class=\"firstHeading mw-first-heading\">*</h1>"):
+			data_source.item = slice.get_slice(">", 1).get_slice("<", 0)
+		if slice.match("<td class=\"description\">*</td>"):
+			data_source.description = remove_html(slice)
+			continue
+		if slice.match("<div class=\"infobox-image\"><a href=\"*\" class=\"image\"><img alt=\"*\" src=\"*\" decoding=\"async\" width=\"*\" height=\"*\" /></a></div>"):
+			if not icon_found:
+				var source := slice.get_slice("src=\"", 1).get_slice("\"", 0)
+				data_source.icon_source = source
+				icon_found = true
+			continue
+		if slice.match("<td><img src=\"*\" /> <a href=\"*\" title=\"*\">*</a></td>"):
+			var string := slice.get_slice(">", 3).get_slice("<", 0)
+			if string.ends_with(" coins"):
+				data_source.cost = string.to_int()
+			else:
+				data_source.type = ItemType[string.to_upper()]
+			continue
+		if slice.begins_with("<div class=\"printfooter\">Retrieved from "):
+			break
+	
+	if data_source.description.is_empty():
+		data_source.description = "Unable to find the description of this item."
+	if not icon_found:
+		data_source.icon = ImageTexture.create_from_image(preload("res://Sprites/Unknown.png"))
+	
+	return data_source
+
+
+func _html_parse_item_type(html: String) -> ItemTypeDataSource:
+	var data_source := ItemTypeDataSource.new()
+	
+	var item_data_source: ItemDataSource
+	
+	for slice_index in html.get_slice_count("\n"):
+		var slice := html.get_slice("\n", slice_index)
+		
+		if slice.match("<td><a href=\"/wiki/index.php/File:*.png\" class=\"image\"><img alt=\"*.png\" src=\"/wiki/images/*.png\" decoding=\"async\" width=\"48\" height=\"48\" /></a>"):
+			item_data_source = ItemDataSource.new()
+			item_data_source.icon_source = _html_line_get_icon_source(slice)
+			
+			data_source.items.append(item_data_source)
+			continue
+		if not item_data_source:
+			continue
+		if slice.match("<td><a href=\"/wiki/index.php/*\" title=\"*\">*</a>"):
+			item_data_source.item = _html_line_get_item_name(slice)
+			continue
+		if slice.match("<td><img src=\"//demoncrawl.com/wiki/images/coin.png\" /> <a href=\"/wiki/index.php/Coins\" title=\"Coins\">* coins</a>"):
+			item_data_source.cost = slice.to_int() # the only int in the line is the cost
+			item_data_source = null # this is the last value in this row of the table
+			continue
+		if slice.match("<td>*"):
+			item_data_source.description = remove_html(slice)
+			continue
+		if slice.match("</tbody></table>"):
+			break # the end of the table is reached
+	
+	return data_source
+
+
+func _html_line_get_icon_source(html_line: String) -> String:
+	return html_line.get_slice("src=\"", 1).get_slice("\"", 0)
+
+
+func _html_line_get_item_name(html_line: String) -> String:
+	return html_line.get_slice(">", 2).get_slice("<", 0)
 
 
 func get_item_data_from_cache(item_name: String) -> ItemDataSource:
