@@ -54,6 +54,7 @@ libraries = {
 
 [node name="DescriptionPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
+visible = false
 layout_mode = 0
 offset_left = -74.0
 offset_top = -79.0

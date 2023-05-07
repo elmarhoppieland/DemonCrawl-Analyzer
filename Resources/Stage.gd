@@ -24,6 +24,12 @@ var death: StageExit
 var time_spent := ""
 # ==============================================================================
 
+## Exits the stage and returns the new [StageExit].
+func exit_stage() -> StageExit:
+	exit = StageExit.new()
+	return exit
+
+
 static func _from_dict(dict: Dictionary) -> Stage:
 	var stage := Stage.new()
 	
