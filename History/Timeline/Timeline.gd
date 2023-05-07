@@ -2,6 +2,8 @@ extends Control
 class_name TimeLine
 
 # ==============================================================================
+var load_thread := Thread.new()
+# ==============================================================================
 @onready var h_flow_container: HFlowContainer = %HFlowContainer
 @onready var tree: Tree = %Tree
 @onready var inventory_panel: PanelContainer = %InventoryPanel
@@ -14,6 +16,13 @@ func _ready() -> void:
 	inventory_panel.hide()
 	tree_split_container.hide()
 	
+	load_thread.start(populate_timeline)
+	while load_thread.is_alive():
+		await get_tree().process_frame
+	load_thread.wait_to_finish()
+
+
+func populate_timeline() -> void:
 	var start_unix: int = Analyzer.get_setting("-Data", "start_unix")
 	var start_datetime_dict := Time.get_datetime_dict_from_unix_time(start_unix)
 	

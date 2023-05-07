@@ -11,8 +11,6 @@ var profiles := {}
 var _current_profile: Profile
 
 var errors := []
-
-var used_profiles: Array[Profile] = [] : get = get_used_profiles
 # ==============================================================================
 signal profiles_loaded(used_profiles: Array[Profile])
 # ==============================================================================
@@ -301,7 +299,6 @@ func read_log(index: int) -> void:
 	
 	if end_timestamp.is_empty():
 		# the log file does not contain readable lines
-		# I don't know how this happens exactly but it's possible
 		save_data_to_disk(index, start_unix, end_unix)
 		return
 	
@@ -334,8 +331,7 @@ func get_profile(profile_name: String, allow_unused: bool = true) -> Profile:
 
 
 func get_used_profiles() -> Array[Profile]:
-	if not used_profiles.is_empty():
-		return used_profiles
+	var used_profiles: Array[Profile] = []
 	
 	for profile in profiles.values():
 		if profile is Profile and not profile.quests.is_empty():

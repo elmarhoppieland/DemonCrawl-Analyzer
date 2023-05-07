@@ -131,7 +131,6 @@ func exit_stage(stage_name: String = "") -> StageExit:
 	
 	var stage := stages[-1]
 	if not stage_name.is_empty() and stage.full_name != stage_name:
-		push_error("Attempted to exit a stage that has a different name than the last entered stage.")
 		return null
 	
 	var exit := stage.exit_stage()
