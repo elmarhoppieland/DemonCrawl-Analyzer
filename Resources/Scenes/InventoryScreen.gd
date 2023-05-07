@@ -28,8 +28,5 @@ func show_inventory(inventory: Inventory) -> void:
 	for index in inventory.items.size():
 		var item_name := inventory.items[index]
 		var item_icon := grid_container.get_child(index) as ItemIcon
-		if item_name.is_empty():
-			item_icon.texture = null
-			continue
 		
 		item_icon.load_item(item_name, icon_size)

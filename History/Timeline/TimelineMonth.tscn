@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwt4ioodfepbn"]
+
+[ext_resource type="Script" path="res://History/Timeline/TimelineMonth.gd" id="1_s02pu"]
+
+[node name="TimelineMonth" type="VBoxContainer"]
+offset_right = 213.0
+offset_bottom = 213.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("1_s02pu")
+
+[node name="MonthLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+text = "May 2023"
+horizontal_alignment = 1
+
+[node name="ButtonsContainer" type="GridContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 2
+columns = 7

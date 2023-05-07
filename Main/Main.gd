@@ -53,7 +53,8 @@ func _initialize_button_text() -> void:
 
 
 func _on_button_pressed() -> void:
-	load_thread.start(ProfileLoader.load_profiles)
+	if not load_thread.is_started():
+		load_thread.start(ProfileLoader.load_profiles)
 
 
 func _exit_tree() -> void:

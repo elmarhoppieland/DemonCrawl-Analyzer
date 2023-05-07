@@ -101,6 +101,59 @@ func finish(is_victory: bool = false) -> void:
 	victory = is_victory
 
 
+## Enters a new [Stage] with the given [code]stage_name[/code] and returns the [Stage].
+func enter_stage(stage_name: String) -> Stage:
+	var stage := Stage.new()
+	
+	stage.full_name = stage_name
+	
+	stages.append(stage)
+	
+	in_stage = true
+	
+	stage.enter = StageEnter.new()
+	stage.enter.inventory = inventory.duplicate()
+	
+	return stage
+
+
+## Exits the current [Stage] and returns the new [StageExit]. Returns [code]null[/code]
+## if the last entered stage does not have [code]full_name[/code] set to [code]stage_name[/code]
+## or if the player is not in a stage.
+func exit_stage(stage_name: String = "") -> StageExit:
+	if not in_stage:
+		push_error("Attempted to exit a stage while not in a stage.")
+		return null
+	
+	if stages.is_empty():
+		push_error("Attempted to exit a stage while no stage has been entered.")
+		return null
+	
+	var stage := stages[-1]
+	if not stage_name.is_empty() and stage.full_name != stage_name:
+		return null
+	
+	var exit := stage.exit_stage()
+	exit.inventory = inventory.duplicate()
+	
+	in_stage = false
+	
+	return stage.exit
+
+
+func die() -> StageExit:
+	if stages.is_empty():
+		return null
+	
+	var stage := stages[-1]
+	stage.death = StageExit.new()
+	stage.death.inventory = inventory.duplicate()
+	
+	finish()
+	
+	return stage.death
+
+
 func matches_filters(filters: Dictionary) -> bool:
 	var unix := TimeHelper.get_unix_time_from_timestamp(creation_timestamp)
 	if Statistics.Filter.TIME_AFTER in filters:

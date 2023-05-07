@@ -24,7 +24,11 @@
  This tab shows some statistics for all quests created in the last 100 sessions,
  split per profile. It shows the number of chests you opened, the number of artifacts
  collected, the number of items gained, the amount of lives restored and the amount
- of coins spent. Do note that it does not include anything done while in Arena.
+ of coins spent. Note that it does not include anything done while in Arena.
+### Timeline
+ This tab shows a calendar that shows your quests by their creation date. Each day
+ that has at least 1 created quest on that day is green, and can be clicked on to
+ show the quests created on that day, similar to the History tab.
 ### Filtering
  In the top-right corner, there is a button to filter quests based on when they
  were created or what kind of quest it is. You can specify a timeframe in which
@@ -40,10 +44,14 @@
 - The Analyzer cannot see all quests you created. It can only go back as far as
   the earliest log file. By default, this means it can go back 100 sessions. There
   is a DemonCrawl setting to change this number, but increasing it will increase
-  load times and disk space.
+  load times and disk space. Any data already collected will never be lost as long as
+  the Analyzer is run at least once every 100 sessions.
 - The Analyzer is currently **Windows-only**. This is simply because I don't know where
   log files are located on other platforms. If you are not on Windows, you can contact
   me to help me make the Analyzer available for other platforms as well.
 - I'm still actively working on the Analyzer. This means I'll be updating it regularly.
   Because I can't think of everything that people may want, I'm open to any suggestions
   you may have!
+- Whenever the Analyzer updates or parses new data, it first creates backups of the current
+  data. If there is an error with the data shown, create a copy of your Backups folder
+  (%appdata%\DemonCrawl Analyzer\Backups) and contact me about your issue.

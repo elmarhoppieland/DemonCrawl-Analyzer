@@ -87,5 +87,9 @@ func change_to_next_year():
 	year += 1
 
 
+func duplicate() -> Date:
+	return Date.new(day, month, year)
+
+
 func _to_string() -> String:
 	return date()

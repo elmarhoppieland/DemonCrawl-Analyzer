@@ -299,7 +299,6 @@ func read_log(index: int) -> void:
 	
 	if end_timestamp.is_empty():
 		# the log file does not contain readable lines
-		# I don't know how this happens exactly but it's possible
 		save_data_to_disk(index, start_unix, end_unix)
 		return
 	
@@ -332,13 +331,13 @@ func get_profile(profile_name: String, allow_unused: bool = true) -> Profile:
 
 
 func get_used_profiles() -> Array[Profile]:
-	var profile_array: Array[Profile] = []
+	var used_profiles: Array[Profile] = []
 	
 	for profile in profiles.values():
 		if profile is Profile and not profile.quests.is_empty():
-			profile_array.append(profile)
+			used_profiles.append(profile)
 	
-	return profile_array
+	return used_profiles
 
 
 func get_profiles() -> Array[Profile]:

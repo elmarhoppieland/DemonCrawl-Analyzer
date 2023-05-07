@@ -82,5 +82,16 @@ size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "Analyzer Version %s"
 
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 1
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect2" type="TextureRect" parent="."]
+texture_filter = 1
+offset_left = 89.0
+offset_right = 129.0
+offset_bottom = 40.0
+
 [connection signal="pressed" from="PanelContainer/VBoxContainer/StartButton" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/ForceUpdateButton" to="." method="_on_force_update_button_pressed"]

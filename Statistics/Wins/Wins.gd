@@ -47,6 +47,10 @@ func _on_filters_saved(filters: Dictionary) -> void:
 	load_thread.start(_create_tabs.bind(filters))
 
 
+static func get_tab() -> Wins:
+	return Analyzer.get_tab(Analyzer.Tab.WINS)
+
+
 func _exit_tree() -> void:
 	if load_thread.is_started():
 		load_thread.wait_to_finish()

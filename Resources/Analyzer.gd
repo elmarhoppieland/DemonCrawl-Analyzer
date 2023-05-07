@@ -6,6 +6,13 @@ enum DataStatus {
 	NEW_DATA_FOUND,
 	OUTDATED_VERSION
 }
+enum Tab {
+	HISTORY,
+	WINS,
+	STATISTICS,
+	TIMELINE,
+	ERRORS
+}
 # ==============================================================================
 const SAVE_DATA_DIRECTORY := "user://Profiles"
 const SAVE_DATA_DIRECTORY_DEBUG := "user://Profiles_debug"
@@ -16,7 +23,7 @@ const SAVE_DATA_FILENAME := "profiles%d.dcstat"
 const SETTINGS_FILE := "user://settings.cfg"
 
 ## The current version. Formatted as [code]MAJOR.minor.bugfix.debug[/code].
-const CURRENT_VERSION := "1.1.0.15"
+const CURRENT_VERSION := "1.2.0.15"
 # ==============================================================================
 var first_launch := false : get = is_first_launch
 # ==============================================================================
@@ -29,6 +36,11 @@ func check_first_launch() -> void:
 	first_launch = not DirAccess.dir_exists_absolute(get_savedata_directory())
 
 
+func get_tab(tab: Tab) -> Control:
+	var tab_path: String = "/root/Statistics/" + Tab.find_key(tab).capitalize()
+	return get_node_or_null(tab_path)
+
+
 func save_setting(section: String, setting: String, value: Variant) -> void:
 	SettingsFile.set_setting_static(section, setting, value)
 
@@ -39,7 +51,6 @@ func get_version(include_debug: bool = OS.is_debug_build()) -> String:
 	
 	var split := CURRENT_VERSION.split(".", false, 2)
 	split[-1] = split[-1].get_slice(".", 0)
-	print(split)
 	return ".".join(split)
 
 

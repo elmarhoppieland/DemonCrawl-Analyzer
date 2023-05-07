@@ -53,6 +53,9 @@ func populate_global_tree(profiles: Array[Profile], filters: Dictionary = {}) ->
 		mastery_item.set_text(3, "%d" % roundi(win_counts[mastery] / float(win_counts[mastery] + loss_counts[mastery]) * 100) + "%")
 		
 		mastery_item.set_tooltip_text(0, " ")
+		mastery_item.set_tooltip_text(1, " ")
+		mastery_item.set_tooltip_text(2, " ")
+		mastery_item.set_tooltip_text(3, " ")
 	
 	var total_item := root.create_child()
 	total_item.set_text(0, "Total")
@@ -65,3 +68,6 @@ func populate_global_tree(profiles: Array[Profile], filters: Dictionary = {}) ->
 		total_item.set_text(3, "%d" % roundi(total_wins / float(total_wins + total_losses) * 100) + "%")
 	
 	total_item.set_tooltip_text(0, " ")
+	total_item.set_tooltip_text(1, " ")
+	total_item.set_tooltip_text(2, " ")
+	total_item.set_tooltip_text(3, " ")
