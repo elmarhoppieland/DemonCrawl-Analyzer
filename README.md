@@ -41,3 +41,9 @@
   the earliest log file. By default, this means it can go back 100 sessions. There
   is a DemonCrawl setting to change this number, but increasing it will increase
   load times and disk space.
+- The Analyzer is currently **Windows-only**. This is simply because I don't know where
+  log files are located on other platforms. If you are not on Windows, you can contact
+  me to help me make the Analyzer available for other platforms as well.
+- I'm still actively working on the Analyzer. This means I'll be updating it regularly.
+  Because I can't think of everything that people may want, I'm open to any suggestions
+  you may have!
