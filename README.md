@@ -52,6 +52,6 @@
 - I'm still actively working on the Analyzer. This means I'll be updating it regularly.
   Because I can't think of everything that people may want, I'm open to any suggestions
   you may have!
-- Whenever the Analyzer updates or parser new data, it first creates backups of the current
+- Whenever the Analyzer updates or parses new data, it first creates backups of the current
   data. If there is an error with the data shown, create a copy of your Backups folder
   (%appdata%\DemonCrawl Analyzer\Backups) and contact me about your issue.
