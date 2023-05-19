@@ -85,7 +85,7 @@ func _exit_tree() -> void:
 
 
 func _on_force_update_button_pressed() -> void:
-	load_thread.start(ProfileLoader.update_profiles)
+	launch(LaunchMethod.REPARSE)
 
 
 func _on_launch_options_item_selected(index: LaunchMethod) -> void:

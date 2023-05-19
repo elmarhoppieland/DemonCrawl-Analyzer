@@ -190,7 +190,7 @@ func read_saved_data() -> int:
 			for log_index in range(DemonCrawl.get_logs_count(), 0, -1):
 				var log_file := DemonCrawl.open_log_file(log_index)
 				var start_timestamp := log_file.get_line().get_slice("]", 0).trim_prefix("[")
-				if start_timestamp < final_timestamp:
+				if TimeHelper.timestamp_is_before_timestamp(start_timestamp, final_timestamp):
 					# the next log file will contain new data
 					return log_index + 1
 			
@@ -350,7 +350,7 @@ func load_from_savedata(json: Dictionary) -> void:
 	
 	for profile in get_used_profiles():
 		quests.append_array(profile.quests)
-	quests.sort_custom(func(a: Quest, b: Quest): return a.creation_timestamp < b.creation_timestamp)
+	sort_quests()
 
 
 ## Moves all savedata files so that the file at index [code]new_zero_index[/code]
@@ -450,7 +450,7 @@ func parse_line(log_reader: LogFileReader) -> void:
 
 
 func sort_quests() -> void:
-	quests.sort_custom(func(a: Quest, b: Quest): return a.creation_timestamp < b.creation_timestamp)
+	quests.sort_custom(func(a: Quest, b: Quest): return TimeHelper.timestamp_is_before_timestamp(a.creation_timestamp, b.creation_timestamp))
 
 
 func get_profile(profile_name: String, allow_unused: bool = true) -> Profile:

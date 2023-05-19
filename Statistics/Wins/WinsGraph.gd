@@ -60,7 +60,7 @@ func get_quests() -> Array[Quest]:
 				quests.append(quest)
 	
 	quests.sort_custom(func(a: Quest, b: Quest) -> bool:
-		return TimeHelper.get_unix_time_from_timestamp(a.creation_timestamp) < TimeHelper.get_unix_time_from_timestamp(b.creation_timestamp)
+		return TimeHelper.timestamp_is_before_timestamp(a.creation_timestamp, b.creation_timestamp)
 	)
 	
 	return quests

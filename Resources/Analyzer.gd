@@ -183,7 +183,8 @@ func get_data_status() -> DataStatus:
 	
 	var log_file := DemonCrawl.open_log_file(DemonCrawl.get_logs_count())
 	var log_timestamp := log_file.get_line().get_slice("]", 0).trim_prefix("[")
-	if get_setting("-Data", "end_timestamp") < log_timestamp:
+#	if get_setting("-Data", "end_timestamp") < log_timestamp:
+	if TimeHelper.timestamp_is_before_timestamp(get_setting("-Data", "end_timestamp"), log_timestamp):
 		return DataStatus.NEW_DATA_FOUND
 	
 	return DataStatus.UP_TO_DATE
