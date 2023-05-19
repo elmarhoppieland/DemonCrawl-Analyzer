@@ -70,6 +70,9 @@ var statistics := {
 	Statistic.LIVES_RESTORED: 0, # the total number of lives restored
 	Statistic.COINS_SPENT: 0, # the total number of coins spent
 }
+
+## The errors that occured in this quest.
+var errors: Array[Dictionary] = []
 # ==============================================================================
 
 static func _from_dict(dict: Dictionary) -> Quest:
@@ -141,6 +144,8 @@ func exit_stage(stage_name: String = "") -> StageExit:
 	return stage.exit
 
 
+## Finishes the quest as a loss and returns the [StageExit] created. The [member Stage.death]
+## property will be updated automatically.
 func die() -> StageExit:
 	if stages.is_empty():
 		return null
@@ -201,6 +206,10 @@ func _import_inventory(json: Dictionary) -> void:
 func _import_statistics(statistics_json: Dictionary) -> void:
 	for statistic in statistics_json:
 		statistics[statistic.to_int()] = statistics_json[statistic]
+
+
+func _import_errors(errors_json: Array) -> void:
+	errors.append_array(errors_json)
 
 
 func _export_stages() -> Array[Dictionary]:
