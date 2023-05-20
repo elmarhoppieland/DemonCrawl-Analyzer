@@ -169,7 +169,11 @@ static func add_inventory(inventory: Inventory, parent_item: TreeItem, add_item_
 
 func _on_filters_saved(filters: Dictionary) -> void:
 #	populate_tree(filters)
+	tree.hide()
 	load_thread.start(populate_tree.bind(filters))
+	while load_thread.is_alive():
+		await get_tree().process_frame
+	tree.show()
 
 
 func _on_tree_item_collapsed(item: TreeItem) -> void:

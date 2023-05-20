@@ -50,10 +50,11 @@ func launch(method: LaunchMethod) -> void:
 			LaunchMethod.BLOCKING:
 				ProfileLoader.load_profiles()
 	
-	while load_thread.is_alive():
-		await get_tree().process_frame
+	if load_thread.is_started():
+		while load_thread.is_alive():
+			await get_tree().process_frame
+		load_thread.wait_to_finish()
 	
-	load_thread.wait_to_finish()
 	SceneHandler.switch_scene(preload("res://Statistics/Statistics.tscn"))
 
 
