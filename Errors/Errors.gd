@@ -20,7 +20,10 @@ func _process(_delta: float) -> void:
 
 
 func populate() -> void:
-	var errors := ProfileLoader.errors.duplicate()
+	var errors: Array[Dictionary] = []
+	for profile in ProfileLoader.get_used_profiles():
+		for quest in profile.quests:
+			errors.append_array(quest.errors)
 	errors.reverse() # make sure the most recent error is the first one in the list
 	for error in errors:
 		var message_instance := ERROR_MESSAGE.instantiate()
@@ -31,6 +34,8 @@ func populate() -> void:
 		message_instance.error_message = error.long_message
 		message_instance.error_stack_trace = error.stack_trace
 		message_instance.error_date = error.date
+		if "inventory" in error:
+			pass # add the inventory to the message_instance
 
 
 func _exit_tree() -> void:
