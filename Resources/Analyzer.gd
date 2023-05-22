@@ -1,5 +1,7 @@
 extends Node
 
+## Singleton for functions regarding the Analyzer.
+
 # ==============================================================================
 ## The status of the data. To obtain the status, use [method get_data_status].
 enum DataStatus {
@@ -7,28 +9,35 @@ enum DataStatus {
 	NEW_DATA_FOUND, ## The data is from the current Analyzer version, but new log files were created since the last Analyzer launch.
 	OUTDATED_VERSION ## The data was from a different (usually older) Analyzer version. New data may or may not be found.
 }
+## The tabs in the Analyzer. To obtain a tab, use [method get_tab] or [code]TabName.get_tab()[/code].
 enum Tab {
-	HISTORY,
-	WINS,
-	STATISTICS,
-	TIMELINE,
-	ERRORS
+	HISTORY, ## The [History] tab.
+	WINS, ## The [Wins] tab.
+	STATISTICS, ## The [GlobalStatistics] tab.
+	TIMELINE, ## The [TimeLine] tab.
+	ERRORS ## The [Errors] tab.
 }
 # ==============================================================================
-const SAVE_DATA_DIRECTORY := "user://Profiles"
-const SAVE_DATA_DIRECTORY_DEBUG := "user://Profiles_debug"
-const SAVE_DATA_BACKUPS_DIRECTORY := "user://Backups"
-const SAVE_DATA_BACKUPS_DIRECTORY_DEBUG := "user://Backups_debug"
-const SAVE_DATA_FILENAME := "profiles%d.dcstat"
+const _SAVE_DATA_DIRECTORY := "user://Profiles"
+const _SAVE_DATA_DIRECTORY_DEBUG := "user://Profiles_debug"
+const _SAVE_DATA_FILENAME := "profiles%d.dcstat"
 
-## The path to the quests file while not in debug mode.
+## The path to the quests file.
 const QUESTS_FILE := "user://quests.dca"
 ## The path to the quests file while in debug mode.
 const QUESTS_FILE_DEBUG := "user://quests-debug.dca"
-## The path to the profiles file while not in debug mode.
+## The path to the backup of quests file.
+const QUESTS_BACKUP_FILE := "user://quests-backup.dca"
+## The path to the backup of quests file while in debug mode.
+const QUESTS_BACKUP_FILE_DEBUG := "user://quests-debug-backup.dca"
+## The path to the profiles file.
 const PROFILES_FILE := "user://profiles.dca"
 ## The path to the profiles file while in debug mode.
 const PROFILES_FILE_DEBUG := "user://profiles-debug.dca"
+## The path to the backup of the profiles file.
+const PROFILES_BACKUP_FILE := "user://profiles-backup.dca"
+## The path to the backup of the profiles file while in debug mode.
+const PROFILES_BACKUP_FILE_DEBUG := "user://profiles-debug-backup.dca"
 
 ## The path to the settings file.
 const SETTINGS_FILE := "user://settings.cfg"
@@ -99,29 +108,28 @@ func save_settings(new_settings: SettingsFile) -> void:
 	new_settings.save_settings()
 
 
-func get_backup_directory() -> String:
-	if OS.is_debug_build():
-		return SAVE_DATA_BACKUPS_DIRECTORY_DEBUG
-	
-	return SAVE_DATA_BACKUPS_DIRECTORY
-
-
+## Returns the path to the savedata directory.
+## [br][br][b]Note:[/b] This method is [b]deprecated[/b] as savedata files are no longer used.
 func get_savedata_directory() -> String:
 	if OS.is_debug_build():
-		return SAVE_DATA_DIRECTORY_DEBUG
+		return _SAVE_DATA_DIRECTORY_DEBUG
 	
-	return SAVE_DATA_DIRECTORY
+	return _SAVE_DATA_DIRECTORY
 
 
+## Returns the path to the savedata file with the given [code]index[/code].
+## [br][br][b]Note:[/b] This method is [b]deprecated[/b] as savedata files are no longer used.
 func get_savedata_path(index: int) -> String:
 	var dir_path := get_savedata_directory()
 	
 	if index < 0:
 		index += DirAccess.get_files_at(dir_path).size()
 	
-	return dir_path.path_join(SAVE_DATA_FILENAME % index)
+	return dir_path.path_join(_SAVE_DATA_FILENAME % index)
 
 
+## Opens the savedata file at the given [code]index[/code], using [constant FileAccess.WRITE].
+## [br][br][b]Note:[/b] This method is [b]deprecated[/b] as savedata files are no longer used.
 func open_savedata_file(index: int, allow_create: bool = false) -> FileAccess:
 	var path := get_savedata_path(index)
 	if allow_create and not FileAccess.file_exists(path):
@@ -135,10 +143,8 @@ func open_savedata_file(index: int, allow_create: bool = false) -> FileAccess:
 	return file
 
 
-func savedata_file_exists(index: int) -> bool:
-	return FileAccess.file_exists(get_savedata_path(index))
-
-
+## Returns the savedata in the file in the given [code]index[/code] as a [Dictionary].
+## [br][br][b]Note:[/b] This method is [b]deprecated[/b] as savedata files are no longer used.
 func get_savedata(index: int) -> Dictionary:
 	var file := open_savedata_file(index)
 	var json = JSON.parse_string(file.get_as_text())
@@ -146,6 +152,12 @@ func get_savedata(index: int) -> Dictionary:
 		return {}
 	
 	return json
+
+
+## Returns the path to the backup file of the quests file (i.e. [constant QUESTS_BACKUP_FILE] or
+## [constant QUESTS_BACKUP_FILE_DEBUG]).
+func get_quests_backup_file_path(debug: bool = OS.is_debug_build()) -> String:
+	return QUESTS_BACKUP_FILE_DEBUG if debug else QUESTS_BACKUP_FILE
 
 
 ## Returns the path to the quests file (i.e. [constant QUESTS_FILE] or
@@ -157,6 +169,12 @@ func get_quests_file_path(debug: bool = OS.is_debug_build()) -> String:
 ## Opens the quests file at path [constant QUESTS_FILE] and returns it.
 func open_quests_file(flags: FileAccess.ModeFlags = FileAccess.READ) -> FileAccess:
 	return FileAccess.open(get_quests_file_path(), flags)
+
+
+## Returns the path to the backup file of the profiles file (i.e. [constant PROFILES_BACKUP_FILE]
+## or [constant PROFILES_BACKUP_FILE_DEBUG]).
+func get_profiles_backup_file_path(debug: bool = OS.is_debug_build()) -> String:
+	return PROFILES_BACKUP_FILE_DEBUG if debug else PROFILES_BACKUP_FILE
 
 
 ## Returns the path to the profiles file (i.e. [constant PROFILES_FILE] or
