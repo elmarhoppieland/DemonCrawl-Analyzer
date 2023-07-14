@@ -14,6 +14,10 @@ func _ready() -> void:
 	_initialize_tree()
 	
 	load_thread.start(populate_tree)
+	
+	ProfileLoader.profiles_updated.connect(func(_new_profiles):
+		populate_tree(Statistics.get_filters())
+	)
 
 
 func _process(_delta: float) -> void:

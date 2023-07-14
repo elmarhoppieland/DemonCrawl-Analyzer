@@ -15,7 +15,8 @@ enum Tab {
 	WINS, ## The [Wins] tab.
 	STATISTICS, ## The [GlobalStatistics] tab.
 	TIMELINE, ## The [TimeLine] tab.
-	ERRORS ## The [Errors] tab.
+	ERRORS, ## The [Errors] tab.
+	ADVANCED ## The [Advanced] tab.
 }
 # ==============================================================================
 const _SAVE_DATA_DIRECTORY := "user://Profiles"
@@ -44,6 +45,9 @@ const SETTINGS_FILE := "user://settings.cfg"
 
 ## The current version. Formatted as [code]MAJOR.minor.bugfix.debug[/code].
 const CURRENT_VERSION := "1.3.0.0"
+
+## The path to the backup file for save files.
+const SAVE_FILE_BACKUP_PATH := "user://save-backup.ini"
 # ==============================================================================
 ## Whether the Analzer was launched for the first time (i.e. no data was saved before this launch).
 var first_launch := false : get = is_first_launch
@@ -62,7 +66,7 @@ func check_first_launch() -> void:
 ## Returns the specified tab if it exists, or [code]null[/code] otherwise.
 ## See the [enum Tab] constants for more information about each tab.
 func get_tab(tab: Tab) -> Control:
-	var tab_path: String = "/root/Statistics/" + Tab.find_key(tab).capitalize()
+	var tab_path: String = "/root/Statistics/TabContainer/" + Tab.find_key(tab).capitalize()
 	return get_node_or_null(tab_path)
 
 
@@ -201,7 +205,6 @@ func get_data_status() -> DataStatus:
 	
 	var log_file := DemonCrawl.open_log_file(DemonCrawl.get_logs_count())
 	var log_timestamp := log_file.get_line().get_slice("]", 0).trim_prefix("[")
-#	if get_setting("-Data", "end_timestamp") < log_timestamp:
 	if TimeHelper.timestamp_is_before_timestamp(get_setting("-Data", "end_timestamp"), log_timestamp):
 		return DataStatus.NEW_DATA_FOUND
 	

@@ -11,11 +11,15 @@ var profile_tabs := {}
 var load_thread := Thread.new()
 # ==============================================================================
 @onready var _global: WinsProfile = %Global
-@onready var main: Statistics = owner
+@onready var graph: WinsGraph = %Graph
 # ==============================================================================
 
 func _ready() -> void:
 	load_thread.start(_create_tabs)
+	
+	ProfileLoader.profiles_updated.connect(func(_new_profiles):
+		_create_tabs(Statistics.get_filters())
+	)
 
 
 func _process(_delta: float) -> void:
@@ -45,6 +49,8 @@ func _create_tabs(filters: Dictionary = {}) -> void:
 
 func _on_filters_saved(filters: Dictionary) -> void:
 	load_thread.start(_create_tabs.bind(filters))
+	
+	graph._on_filters_saved(filters)
 
 
 static func get_tab() -> Wins:

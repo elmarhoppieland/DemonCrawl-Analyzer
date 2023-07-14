@@ -11,12 +11,13 @@ var profiles := {}
 var quests: Array[Quest] = []
 
 var _current_profile: Profile
-
-var errors := []
+# ==============================================================================
+signal profiles_updated(new_profiles: Array[Profile])
 # ==============================================================================
 
 ## Forces an update of the data, essentially reparsing all the data. Any data
 ## that is from log files that no longer exist will not be reparsed.
+## [br][br][b]Note:[/b] This method is intended to be called from a [Thread].
 func update_profiles() -> void:
 	if Analyzer.is_first_launch():
 		LoadingScreen.start(DemonCrawl.get_logs_count(), "Initializing...")
@@ -49,11 +50,14 @@ func update_profiles() -> void:
 	LoadingScreen.progress_increment()
 	
 	read_logs_dir(1)
+	
+	profiles_updated.emit(get_used_profiles())
 
 
 ## Loads the profiles stored in the user's data directory, and parses new data
 ## if able.
 ## [br][br]To retrieve the profiles, use [method get_profiles] or [method get_used_profiles].
+## [br][br][b]Note:[/b] This method is intended to be called from a [Thread].
 func load_profiles(freeze_data: bool = false) -> void:
 	if Analyzer.is_first_launch():
 		LoadingScreen.start(DemonCrawl.get_logs_count(), "Initializing...")
@@ -103,7 +107,47 @@ func load_profiles(freeze_data: bool = false) -> void:
 	
 	save_data_to_disk()
 	
+	profiles_updated.emit(get_used_profiles())
+	
 	# LoadingScreen should be finished automatically
+
+
+## Renames the profile that is currently known as [code]old_name[/code] to [code]new_name[/code].
+## [br][br][b]Note:[/b] This method is intended to be called from a [Thread].
+func rename_profile(old_name: String, new_name: String) -> void:
+	if not old_name in profiles:
+		LoadingScreen.start(1, "Renaming save file...")
+		var old_path := DemonCrawl.get_save_file_path(old_name)
+		DirAccess.copy_absolute(old_path, Analyzer.SAVE_FILE_BACKUP_PATH)
+		var new_path := old_path.get_base_dir().path_join(new_name + ".ini")
+		DirAccess.rename_absolute(old_path, new_path)
+		LoadingScreen.progress_increment()
+		return
+	
+	LoadingScreen.start(5, "Duplicating profile...")
+	profiles[new_name] = profiles[old_name]
+	LoadingScreen.progress_increment()
+	
+	LoadingScreen.set_message("Renaming profile...")
+	get_profile(new_name).name = new_name
+	LoadingScreen.progress_increment()
+	
+	LoadingScreen.set_message("Erasing the old profile...")
+	profiles.erase(old_name)
+	LoadingScreen.progress_increment()
+	
+	LoadingScreen.set_message("Saving new data...")
+	save_data_to_disk()
+	LoadingScreen.progress_increment()
+	
+	LoadingScreen.set_message("Renaming save file...")
+	var old_path := DemonCrawl.get_save_file_path(old_name)
+	DirAccess.copy_absolute(old_path, Analyzer.SAVE_FILE_BACKUP_PATH)
+	var new_path := old_path.get_base_dir().path_join(new_name + ".ini")
+	DirAccess.rename_absolute(old_path, new_path)
+	LoadingScreen.progress_increment()
+	
+	profiles_updated.emit(get_used_profiles())
 
 
 ## Initializes the Analyzer, for the first launch (when the data files do not yet exist).
@@ -246,8 +290,6 @@ func load_from_json(json: Dictionary) -> void:
 			"profiles":
 				for profile in json.profiles:
 					profiles[profile] = HistoryData.from_json(json.profiles[profile], Profile)
-			"errors":
-				errors = json[property]
 
 
 func load_from_savedata(json: Dictionary) -> void:
@@ -281,8 +323,6 @@ func read_log(index: int) -> void:
 		push_error("Error occurred when attempting to read log file at index %s: %s" % [index, error_string(FileAccess.get_open_error())])
 #		DirAccess.copy_absolute(Analyzer.get_savedata_path(index - 1), Analyzer.get_savedata_path(index))
 		return
-	
-	errors.append_array(log_reader.errors)
 	
 	log_reader.next_line()
 	
@@ -367,6 +407,10 @@ func find_quests() -> Array[Quest]:
 	for profile in get_used_profiles():
 		quests.append_array(profile.quests)
 	return quests
+
+
+func get_profile_names() -> PackedStringArray:
+	return profiles.keys()
 
 
 # ------------------------------------------------------------------------------

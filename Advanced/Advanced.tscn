@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3 uid="uid://bxj3wybndvf0k"]
+
+[ext_resource type="Script" path="res://Advanced/Advanced.gd" id="1_3rayp"]
+[ext_resource type="PackedScene" uid="uid://cxrjndkw5ilgj" path="res://Advanced/Migrate/Migrate.tscn" id="2_7teqw"]
+
+[node name="Advanced" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3rayp")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Profile Management"
+
+[node name="MigrateProfileButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Rename Profile..."
+
+[node name="Migrate" parent="PanelContainer/MarginContainer/VBoxContainer/MigrateProfileButton" instance=ExtResource("2_7teqw")]
+unique_name_in_owner = true
+visible = false
+
+[node name="DeleteProfileButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer"]
+modulate = Color(1, 0, 0, 1)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Delete Profile..."
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/MigrateProfileButton" to="." method="_on_migrate_profile_button_pressed"]

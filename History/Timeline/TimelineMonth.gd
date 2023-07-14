@@ -39,6 +39,7 @@ func update_calendar_buttons(selected_date: Date) -> void:
 		
 		var date := "%s-%s-%s" % [year, month, i + 1]
 		if date in quest_dates_dict:
+			btn_node.focus_mode = Control.FOCUS_ALL
 			btn_node.modulate = QUEST_COLOR
 			btn_node.set_meta("quests", quest_dates_dict[date])
 			btn_node.pressed.connect(func():
@@ -57,8 +58,6 @@ func update_calendar_buttons(selected_date: Date) -> void:
 							continue
 						History.add_quest(quest, profile_item, false)
 			)
-		else:
-			btn_node.focus_mode = Control.FOCUS_NONE
 		
 		# If the day entered is "today"
 		if i + 1 == Calendar.day() and selected_date.year == Calendar.year() and selected_date.month == Calendar.month():
@@ -72,6 +71,7 @@ func _clear_calendar_buttons() -> void:
 		var btn_node := get_day_button(i)
 		btn_node.text = ""
 		btn_node.disabled = true
+		btn_node.focus_mode = Control.FOCUS_NONE
 		btn_node.flat = false
 
 
