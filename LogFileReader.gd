@@ -7,32 +7,27 @@ class_name LogFileReader
 enum Line {
 	NONE = 0, ## Line does not match any other [enum Line] constant.
 	PROFILE_LOAD = 1, ## A [Profile] was loaded in the line.
-	QUEST_CREATE = PROFILE_LOAD << 1, ## A [Quest] was created in the line.
-	STAGE_BEGIN = QUEST_CREATE << 1, ## A [Stage] was entered in the line.
-	STAGE_FINISH = STAGE_BEGIN << 1, ## A [Stage] has been finished in the line (the FINISH button pops up).
-	STAGE_LEAVE = STAGE_FINISH << 1, ## A [Stage] was exited in the line.
-	ITEM_GAIN = STAGE_LEAVE << 1, ## An item was gained in the line.
-	ITEM_LOSE = ITEM_GAIN << 1, ## An item was lost in the line.
+	QUEST_CREATE = 2 * PROFILE_LOAD, ## A [Quest] was created in the line.
+	STAGE_BEGIN = 2 * QUEST_CREATE, ## A [Stage] was entered in the line.
+	STAGE_FINISH = 2 * STAGE_BEGIN, ## A [Stage] has been finished in the line (the FINISH button pops up).
+	STAGE_LEAVE = 2 * STAGE_FINISH, ## A [Stage] was exited in the line.
+	ITEM_GAIN = 2 * STAGE_LEAVE, ## An item was gained in the line.
+	ITEM_LOSE = 2 * ITEM_GAIN, ## An item was lost in the line.
 	ITEM_GAIN_LOSE = ITEM_GAIN | ITEM_LOSE, ## Allow gaining and losing items.
-	CHEST_OPENED = ITEM_LOSE << 1, ## A chest was opened in the line.
-	ARTIFACT_COLLECTED = CHEST_OPENED << 1, ## An artifact was collected in the line.
-	LIVES_RESTORED = ARTIFACT_COLLECTED << 1, ## The player restored 1 or more lives in the line.
-	COINS_SPENT = LIVES_RESTORED << 1, ## The player spent coins in the line.
-	PLAYER_DEATH = COINS_SPENT << 1, ## The player was killed in the line.
-	LEADERBOARD_SUBMIT = PLAYER_DEATH << 1, ## The player's score was submitted to the leaderboards in the line.
-	PLAYER_STATS = LEADERBOARD_SUBMIT << 1, ## The line shows the player's stats.
-	MASTERY_SELECTED = PLAYER_STATS << 1, ## The player's mastery is selected in the line.
-	QUEST_ABORT = MASTERY_SELECTED << 1, ## The [Quest] was aborted in the line.
-	DEMONCRAWL_STARTED = QUEST_ABORT << 1, ## DemonCrawl was launched in the line.
-	DEMONCRAWL_CLOSED = DEMONCRAWL_STARTED << 1, ## DemonCrawl was closed in the line.
-	ARENA_CONNECT = DEMONCRAWL_CLOSED << 1, ## The player connected to arena in the line.
-	ERROR_CODE_ALERT = ARENA_CONNECT << 1, ## DemonCrawl threw an error in the line. The next lines will contain the error message.
-	ERROR_CODE_SHORT_MESSAGE = ERROR_CODE_ALERT << 1, ## The short message from the error that was thrown. This is not used, but is needed to distinguish it from [constant ERROR_CODE_INFO].
-	ERROR_CODE_LONG_MESSAGE = ERROR_CODE_SHORT_MESSAGE << 1, ## The message from the error that was thrown.
-	ERROR_CODE_SCRIPT = ERROR_CODE_LONG_MESSAGE << 1, ## The script the error occured in.
-	ERROR_CODE_STACK_TRACE = ERROR_CODE_SCRIPT << 1, ## The stack trace of the error.
-	ERROR_CODE_INFO = ERROR_CODE_STACK_TRACE << 1, ## Additional info of the error.
-	ALL = 2 * ERROR_CODE_INFO - 1, ## Allow all (useful) lines.
+	CHEST_OPENED = 2 * ITEM_LOSE, ## A chest was opened in the line.
+	ARTIFACT_COLLECTED = 2 * CHEST_OPENED, ## An artifact was collected in the line.
+	LIVES_RESTORED = 2 * ARTIFACT_COLLECTED, ## The player restored 1 or more lives in the line.
+	COINS_SPENT = 2 * LIVES_RESTORED, ## The player spent coins in the line.
+	PLAYER_DEATH = 2 * COINS_SPENT, ## The player was killed in the line.
+	LEADERBOARD_SUBMIT = 2 * PLAYER_DEATH, ## The player's score was submitted to the leaderboards in the line.
+	PLAYER_STATS = 2 * LEADERBOARD_SUBMIT, ## The line shows the player's stats.
+	MASTERY_SELECTED = 2 * PLAYER_STATS, ## The player's mastery is selected in the line.
+	QUEST_ABORT = 2 * MASTERY_SELECTED, ## The [Quest] was aborted in the line.
+	DEMONCRAWL_STARTED = 2 * QUEST_ABORT, ## DemonCrawl was launched in the line.
+	DEMONCRAWL_CLOSED = 2 * DEMONCRAWL_STARTED, ## DemonCrawl was closed in the line.
+	ARENA_CONNECT = 2 * DEMONCRAWL_CLOSED, ## The player connected to arena in the line.
+	ERROR_CODE_ALERT = 2 * ARENA_CONNECT, ## DemonCrawl threw an error in the line. The next lines will contain the error message.
+	ALL = 2 * ERROR_CODE_ALERT - 1, ## Allow all (useful) lines.
 }
 const _LINE_FILTERS := {
 	Line.PROFILE_LOAD: "Profile loaded: *",
@@ -55,11 +50,6 @@ const _LINE_FILTERS := {
 	Line.DEMONCRAWL_CLOSED: "DemonCrawl closed",
 	Line.ARENA_CONNECT: "Connected to DemonCrawl Arena",
 	Line.ERROR_CODE_ALERT: "Alert: Error Code * - check log for details",
-	Line.ERROR_CODE_SHORT_MESSAGE: "ERROR * message: *",
-	Line.ERROR_CODE_LONG_MESSAGE: "ERROR * longMessage: ERROR in*",
-	Line.ERROR_CODE_SCRIPT: "ERROR * script: *",
-	Line.ERROR_CODE_STACK_TRACE: "ERROR * stracktrace[*]: * (line *)",
-	Line.ERROR_CODE_INFO: "ERROR * *: *",
 }
 # ==============================================================================
 ## The path to the log file.
@@ -90,26 +80,83 @@ static func read(log_path: String) -> LogFileReader:
 	var file_text := reader.file.get_as_text()
 	var split := file_text.split("\n")
 	for line_index in split.size():
-		var line := split[line_index].strip_escapes()
+		var line := split[line_index]
 		var line_trimmed := line.get_slice("] ", 1)
-		var line_type := get_line_type(line_trimmed)
+		var line_type := get_line_type(line)
 		if line_type == Line.NONE:
 			continue
 		
-		if line_type == Line.ERROR_CODE_LONG_MESSAGE:
-			var long_message := line
+		if line_type == Line.ERROR_CODE_ALERT:
+			var error := {
+				"code": line_trimmed.get_slice(" ", 3),
+				"short_message": "",
+				"long_message": "",
+				"script": "",
+				"stack_trace": PackedStringArray(),
+				"info": PackedStringArray(),
+				"date": ""
+			}
+			reader.errors.append(error)
+			
+			error.date = line.get_slice("]", 0).trim_prefix("[")
+			
 			var plus_index := 1
+			var error_line_full := split[line_index + 1]
+			var error_line := error_line_full.get_slice("] ", 1)
+			
+			# short message
+			error.short_message = error_line.get_slice(": ", 1)
+			
+			plus_index += 1
+			
+			# long message
 			while true:
-				var message_line_full := split[line_index + plus_index]
-				if message_line_full.begins_with("["):
-					break
-				long_message += "\n" + message_line_full.strip_edges()
 				plus_index += 1
-			reader._lines.append(long_message.strip_edges())
+				if plus_index > 15:
+					break # the message shouldn't be this long so there's probably some kind of bug
+				
+				error_line_full = split[line_index + plus_index]
+				if error_line_full.begins_with("["):
+					break
+				if error.long_message.is_empty():
+					error.long_message = error_line_full.strip_edges()
+				else:
+					error.long_message += "\n" + error_line_full.strip_edges()
+			
+			error_line = error_line_full.get_slice("] ", 1).strip_edges()
+			
+			# script
+			var script := error_line.get_slice(" ", error_line.get_slice_count(" ") - 1)
+			error.script = script
+			
+			# stack trace
+			while true:
+				plus_index += 1
+				error_line_full = split[line_index + plus_index]
+				error_line = error_line_full.get_slice("] ", 1).strip_edges()
+				if not error_line.match("ERROR * stracktrace[*]: * (line *)"):
+					break
+				
+				var trace_index := error_line.get_slice("stracktrace[", 1).get_slice("]", 0).to_int()
+				var trace_message := error_line.get_slice("]: ", 1)
+				var error_stack_trace: PackedStringArray = error.stack_trace
+				if error_stack_trace.size() <= trace_index:
+					error_stack_trace.resize(trace_index + 1)
+				error_stack_trace[trace_index] = trace_message
+			
+			# extra info
+			while true:
+				if not error_line.begins_with("ERROR"):
+					break
+				
+				error.info.append(error_line.trim_prefix("ERROR %s " % error.code))
+				
+				plus_index += 1
+				error_line_full = split[line_index + plus_index]
+				error_line = error_line_full.get_slice("] ", 1).strip_edges()
+			
+			
 			continue
-		
-		if line_type == Line.ERROR_CODE_STACK_TRACE:
-			print("Stack trace during read() at _lines idx %s." % reader._lines.size())
 		
 		reader._lines.append(line.strip_edges())
 	
@@ -280,8 +327,6 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 	if line.is_empty():
 		return null
 	
-	if position == 118:
-		print(JSON.stringify(line))
 	
 	var line_type := LogFileReader.get_line_type(line)
 	if not allowed_line_types & line_type:
@@ -368,24 +413,6 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 			return null
 		Line.ARENA_CONNECT:
 			profile.in_arena = true
-			return null
-		Line.ERROR_CODE_LONG_MESSAGE:
-			quest.errors.append({
-				"code": line.get_slice("ERROR ", 1).get_slice(" longMessage", 0),
-				"long_message": line.get_slice(" in\n", 1),
-				"stack_trace": PackedStringArray(),
-				"info": PackedStringArray(),
-				"date": get_timestamp(),
-				"inventory": quest.inventory.duplicate()
-			})
-			return null
-		Line.ERROR_CODE_STACK_TRACE:
-			print("Stack trace")
-			quest.errors[-1].stack_trace.append(line.get_slice(": ", 1))
-			return null
-		Line.ERROR_CODE_INFO:
-			var error = quest.errors[-1]
-			error.info.append(line.get_slice("ERROR %s " % error.code, 1))
 			return null
 	
 	return null
@@ -647,7 +674,7 @@ func get_current_line() -> String:
 	if _last_line.is_empty():
 		return ""
 	
-	return _last_line.get_slice("] ", 1).strip_edges()
+	return _last_line.get_slice("]", 1).strip_edges()
 
 
 ## Returns the timestamp of the line returned by [method get_line].

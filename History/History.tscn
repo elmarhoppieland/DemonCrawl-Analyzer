@@ -1,9 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://6le4rjsq7xnf"]
+[gd_scene load_steps=3 format=3 uid="uid://6le4rjsq7xnf"]
 
 [ext_resource type="Script" path="res://History/History.gd" id="1_sl1la"]
 [ext_resource type="PackedScene" uid="uid://dkb7ueasgk7bq" path="res://Resources/Scenes/InventoryScreen.tscn" id="2_vr8r3"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nfr6g"]
 
 [node name="History" type="Control"]
 layout_mode = 3
@@ -25,16 +23,11 @@ theme_override_constants/separation = 4
 split_offset = -186
 dragger_visibility = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="HSplitContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Tree" type="Tree" parent="HSplitContainer/PanelContainer"]
+[node name="Tree" type="Tree" parent="HSplitContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 0
-theme_override_styles/panel = SubResource("StyleBoxEmpty_nfr6g")
 columns = 2
 hide_root = true
 scroll_horizontal_enabled = false
@@ -48,6 +41,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 
-[connection signal="cell_selected" from="HSplitContainer/PanelContainer/Tree" to="." method="_on_tree_cell_selected"]
-[connection signal="item_collapsed" from="HSplitContainer/PanelContainer/Tree" to="." method="_on_tree_item_collapsed"]
-[connection signal="ready" from="HSplitContainer/PanelContainer/Tree" to="HSplitContainer/PanelContainer/Tree" method="set_column_expand" binds= [1, false]]
+[connection signal="cell_selected" from="HSplitContainer/Tree" to="." method="_on_tree_cell_selected"]
+[connection signal="item_collapsed" from="HSplitContainer/Tree" to="." method="_on_tree_item_collapsed"]
+[connection signal="ready" from="HSplitContainer/Tree" to="HSplitContainer/Tree" method="set_column_expand" binds= [1, false]]

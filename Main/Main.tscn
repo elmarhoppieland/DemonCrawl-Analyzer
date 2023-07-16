@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://hbp6gbjwf4qx"]
+[gd_scene load_steps=6 format=3 uid="uid://hbp6gbjwf4qx"]
 
 [ext_resource type="Script" path="res://Main/Main.gd" id="1_cbrcg"]
 [ext_resource type="Texture2D" uid="uid://cwafubdri0xva" path="res://Sprites/Icon.png" id="2_5tcmd"]
@@ -8,24 +8,6 @@ font_size = 48
 font_color = Color(0.839216, 0.0666667, 0.14902, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_h3hhy"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_g3v5p"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h2hqo"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.101961, 0.101961, 0.101961, 0.815686)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-corner_detail = 5
-
-[sub_resource type="Theme" id="Theme_pe1en"]
-ItemList/styles/focus = SubResource("StyleBoxEmpty_g3v5p")
-ItemList/styles/panel = SubResource("StyleBoxFlat_h2hqo")
 
 [sub_resource type="LabelSettings" id="LabelSettings_0mlam"]
 font_color = Color(0, 1, 1, 1)
@@ -65,34 +47,13 @@ size_flags_vertical = 4
 theme_override_constants/separation = 8
 theme_override_styles/separator = SubResource("StyleBoxEmpty_h3hhy")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="StartButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
+[node name="StartButton" type="Button" parent="PanelContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 24
 text = "Text set by script"
-
-[node name="LaunchOptionsButton" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-toggle_mode = true
-text = "..."
-
-[node name="LaunchOptions" type="ItemList" parent="PanelContainer/VBoxContainer/HBoxContainer/LaunchOptionsButton"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = -78.0
-offset_top = -66.0
-offset_right = 99.0
-offset_bottom = -4.0
-theme = SubResource("Theme_pe1en")
-item_count = 2
-item_0/text = "Re-parse data"
-item_1/text = "Freeze data"
 
 [node name="SaveStatusLabel" type="Label" parent="PanelContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -132,7 +93,5 @@ offset_left = 89.0
 offset_right = 129.0
 offset_bottom = 40.0
 
-[connection signal="pressed" from="PanelContainer/VBoxContainer/HBoxContainer/StartButton" to="." method="_on_button_pressed"]
-[connection signal="toggled" from="PanelContainer/VBoxContainer/HBoxContainer/LaunchOptionsButton" to="PanelContainer/VBoxContainer/HBoxContainer/LaunchOptionsButton/LaunchOptions" method="set_visible"]
-[connection signal="item_selected" from="PanelContainer/VBoxContainer/HBoxContainer/LaunchOptionsButton/LaunchOptions" to="." method="_on_launch_options_item_selected"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/StartButton" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="PanelContainer/VBoxContainer/ForceUpdateButton" to="." method="_on_force_update_button_pressed"]
