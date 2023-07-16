@@ -19,10 +19,6 @@ func _ready() -> void:
 		profile_select_button.add_item(profile.name)
 	
 	show_graph(get_quests())
-	
-	ProfileLoader.profiles_updated.connect(func(_new_profiles):
-		show_graph(get_quests())
-	)
 
 
 func convert_to_win_percentages(quests: Array[Quest], time_adjusted: bool) -> Array[Vector2]:
@@ -64,7 +60,7 @@ func get_quests() -> Array[Quest]:
 				quests.append(quest)
 	
 	quests.sort_custom(func(a: Quest, b: Quest) -> bool:
-		return TimeHelper.timestamp_is_before_timestamp(a.creation_timestamp, b.creation_timestamp)
+		return TimeHelper.get_unix_time_from_timestamp(a.creation_timestamp) < TimeHelper.get_unix_time_from_timestamp(b.creation_timestamp)
 	)
 	
 	return quests

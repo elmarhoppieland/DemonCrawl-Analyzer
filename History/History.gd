@@ -17,7 +17,8 @@ enum ItemType {
 	MASTERY
 }
 # ==============================================================================
-@onready var load_thread := AutoThread.new(self)
+var load_thread := Thread.new()
+# ==============================================================================
 @onready var main: Statistics = owner
 @onready var tree: Tree = %Tree
 @onready var inventory_panel: PanelContainer = %InventoryPanel
@@ -25,33 +26,28 @@ enum ItemType {
 # ==============================================================================
 
 func _ready() -> void:
-	populate_tree()
-	
+	load_thread.start(populate_tree)
 	inventory_panel.hide()
-	
-	ProfileLoader.profiles_updated.connect(func(_new_profiles: Array[Profile]):
-		populate_tree(Statistics.get_filters())
-	)
+
+
+func _process(_delta: float) -> void:
+	if load_thread.is_started() and not load_thread.is_alive():
+		load_thread.wait_to_finish()
 
 
 ## Populates the [member tree] with [TreeItem]s to show the player's history.
 ## Applies the specified [code]filters[/code] to the [Quest]s (see [method Quest.matches_filters].
 func populate_tree(filters: Dictionary = {}) -> void:
-	var thread := AutoThread.new(self)
-	tree.hide()
 	tree.clear()
-	thread.start_execution(func():
-		var root := tree.create_item()
+	
+	var root := tree.create_item()
+	
+	var profiles: Array[Profile] = ProfileLoader.get_used_profiles()
+	for profile in profiles:
+		if profile.quests.is_empty():
+			continue
 		
-		var profiles := ProfileLoader.get_used_profiles()
-		for profile in profiles:
-			if profile.quests.is_empty():
-				continue
-			
-			History.add_profile(profile, root, filters)
-	)
-	thread.finished.connect(func(): tree.show())
-
+		History.add_profile(profile, root, filters)
 
 
 ## Adds a new [TreeItem] as a child of [code]parent_item[/code] to show the [code]profile[/code].
@@ -172,7 +168,8 @@ static func add_inventory(inventory: Inventory, parent_item: TreeItem, add_item_
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
-	populate_tree(filters)
+#	populate_tree(filters)
+	load_thread.start(populate_tree.bind(filters))
 
 
 func _on_tree_item_collapsed(item: TreeItem) -> void:
@@ -190,6 +187,11 @@ func _on_tree_item_collapsed(item: TreeItem) -> void:
 					icon.set_size_override(Vector2i(16, 16))
 					item_item.set_icon(0, icon)
 				)
+
+
+func _exit_tree() -> void:
+	if load_thread.is_started():
+		load_thread.wait_to_finish()
 
 
 func _on_tree_cell_selected() -> void:

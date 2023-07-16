@@ -63,14 +63,14 @@ static func from_json(json: Dictionary, data_type: GDScript) -> HistoryData:
 
 
 ## Converts the data into json format.
-func to_json() -> Dictionary:
+func to_json() -> Variant:
 	var dict := {}
 	
 	for property in get_script().get_script_property_list():
 		if not property.usage & PROPERTY_USAGE_SCRIPT_VARIABLE:
 			continue
 		
-		var value = export_property(property.name)
+		var value: Variant = export_property(property.name)
 		if not value is String or value != NO_EXPORT:
 			dict[property.name] = value
 	
