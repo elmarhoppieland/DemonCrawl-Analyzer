@@ -32,10 +32,11 @@ DemonCrawlWiki="*res://Resources/DemonCrawlWiki.gd"
 [custom]
 
 demoncrawl/logs_directory.windows="%localappdata%/demoncrawl/logs"
+demoncrawl/saves_directory.windows="%localappdata%/demoncrawl/saves"
 
 [debug]
 
-gdscript/warnings/native_method_override=1
+gdscript/warnings/native_method_override=0
 
 [editor_plugins]
 
