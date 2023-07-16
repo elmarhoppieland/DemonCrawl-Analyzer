@@ -147,6 +147,7 @@ func rename_profile(old_name: String, new_name: String) -> void:
 	DirAccess.rename_absolute(old_path, new_path)
 	LoadingScreen.progress_increment()
 	
+	print("Emitting...")
 	profiles_updated.emit(get_used_profiles())
 
 

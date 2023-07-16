@@ -17,6 +17,27 @@ func _ready() -> void:
 	tree_split_container.hide()
 	
 	load_thread.start_execution(populate_timeline)
+	
+	ProfileLoader.profiles_updated.connect(func(_new_profiles):
+		for child in h_flow_container.get_children():
+			child.queue_free()
+		
+		print("Waiting for children to free...")
+		
+		h_flow_container.child_exiting_tree.connect(func(child: Node):
+			if h_flow_container.get_child_count() > 1:
+				return
+			
+			await child.tree_exited
+			
+			if load_thread.is_alive():
+				return
+			
+			print("All children have been freed. Repopulating the timeline...")
+			load_thread.start_execution(populate_timeline)
+		)
+		
+	)
 
 
 func populate_timeline() -> void:

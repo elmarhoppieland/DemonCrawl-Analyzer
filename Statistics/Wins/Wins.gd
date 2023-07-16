@@ -18,6 +18,7 @@ func _ready() -> void:
 	load_thread.start(_create_tabs)
 	
 	ProfileLoader.profiles_updated.connect(func(_new_profiles):
+		print("Recieved.")
 		_create_tabs(Statistics.get_filters())
 	)
 
@@ -28,21 +29,25 @@ func _process(_delta: float) -> void:
 
 
 func _create_tabs(filters: Dictionary = {}) -> void:
-	var profiles: Array[Profile] = ProfileLoader.get_used_profiles()
+	var profiles := ProfileLoader.get_used_profiles()
+	
+	for child in $TabContainer.get_children():
+		if not child in [_global, graph]:
+			child.queue_free()
+			profile_tabs.erase(child.name)
 	
 	for profile in profiles:
-		if not profile.quests.is_empty():
-			var profile_tab: WinsProfile
-			if profile.name in profile_tabs:
-				profile_tab = profile_tabs[profile.name]
-			else:
-				profile_tab = _WINS_PROFILE_SCENE.instantiate()
-				profile_tabs[profile.name] = profile_tab
-				$TabContainer.add_child(profile_tab)
-			
-			profile_tab.name = profile.name
-			
-			profile_tab.populate_tree(profile, filters)
+		var profile_tab: WinsProfile
+		if profile.name in profile_tabs:
+			profile_tab = profile_tabs[profile.name]
+		else:
+			profile_tab = _WINS_PROFILE_SCENE.instantiate()
+			profile_tabs[profile.name] = profile_tab
+			$TabContainer.add_child.call_deferred(profile_tab)
+		
+		profile_tab.name = profile.name
+		
+		profile_tab.populate_tree.call_deferred(profile, filters)
 	
 	_global.populate_global_tree(profiles, filters)
 

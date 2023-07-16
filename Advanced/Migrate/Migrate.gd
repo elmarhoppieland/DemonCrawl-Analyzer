@@ -72,6 +72,8 @@ func _on_button_pressed() -> void:
 	
 	var thread := AutoThread.new(self)
 	thread.start_execution(ProfileLoader.rename_profile.bind(old_name, new_name))
+	profile_names[profile_names.find(old_name)] = new_name
+	option_button.set_item_text(option_button.get_selected_id(), new_name)
 
 
 func _on_option_button_item_selected(index: int) -> void:
