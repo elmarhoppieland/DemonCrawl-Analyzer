@@ -2,8 +2,8 @@ extends Control
 class_name TimeLine
 
 # ==============================================================================
-var load_thread := Thread.new()
-# ==============================================================================
+@onready var load_thread := AutoThread.new(self)
+
 @onready var h_flow_container: HFlowContainer = %HFlowContainer
 @onready var tree: Tree = %Tree
 @onready var inventory_panel: PanelContainer = %InventoryPanel
@@ -16,10 +16,28 @@ func _ready() -> void:
 	inventory_panel.hide()
 	tree_split_container.hide()
 	
-	load_thread.start(populate_timeline)
-	while load_thread.is_alive():
-		await get_tree().process_frame
-	load_thread.wait_to_finish()
+	load_thread.start_execution(populate_timeline)
+	
+	ProfileLoader.profiles_updated.connect(func(_new_profiles):
+		for child in h_flow_container.get_children():
+			child.queue_free()
+		
+		print("Waiting for children to free...")
+		
+		h_flow_container.child_exiting_tree.connect(func(child: Node):
+			if h_flow_container.get_child_count() > 1:
+				return
+			
+			await child.tree_exited
+			
+			if load_thread.is_alive():
+				return
+			
+			print("All children have been freed. Repopulating the timeline...")
+			load_thread.start_execution(populate_timeline)
+		)
+		
+	)
 
 
 func populate_timeline() -> void:
@@ -43,7 +61,8 @@ func populate_timeline() -> void:
 
 
 static func get_tab() -> TimeLine:
-	return Analyzer.get_tab(Analyzer.Tab.TIMELINE)
+	var tab := Analyzer.get_tab(Analyzer.Tab.TIMELINE)
+	return tab
 
 
 func _on_filters_saved(filters: Dictionary) -> void:
