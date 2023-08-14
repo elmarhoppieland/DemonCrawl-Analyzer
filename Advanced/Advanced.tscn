@@ -44,10 +44,4 @@ text = "Rename Profile..."
 unique_name_in_owner = true
 visible = false
 
-[node name="DeleteProfileButton" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer"]
-modulate = Color(1, 0, 0, 1)
-layout_mode = 2
-size_flags_horizontal = 0
-text = "Delete Profile..."
-
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/MigrateProfileButton" to="." method="_on_migrate_profile_button_pressed"]

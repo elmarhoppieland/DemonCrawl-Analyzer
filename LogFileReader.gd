@@ -89,12 +89,53 @@ static func read(log_path: String) -> LogFileReader:
 	
 	var file_text := reader.file.get_as_text()
 	var split := file_text.split("\n")
+	
+	var buffer: PackedStringArray = []
+	var buffer_time := ""
+	
+	var inventory_size := 0
 	for line_index in split.size():
 		var line := split[line_index].strip_escapes()
 		var line_trimmed := line.get_slice("] ", 1)
+		var line_timestamp := line.get_slice("[", 0).trim_prefix("]")
+		
 		var line_type := get_line_type(line_trimmed)
 		if line_type == Line.NONE:
 			continue
+		
+		if buffer_time != line_timestamp:
+			buffer_time = line_timestamp
+			reader._lines.append_array(buffer)
+			buffer = []
+		
+		buffer.append(line)
+		
+		if line_type == Line.ITEM_GAIN:
+			if inventory_size >= line_trimmed.to_int():
+				# there is some kind of error; we need to reverse order of some lines
+				
+				var new_buffer := buffer.duplicate()
+				for i in buffer.size():
+					var buffer_line := buffer[i]
+					var buffer_line_trimmed := buffer_line.get_slice("] ", 1)
+					var buffer_line_type := LogFileReader.get_line_type(buffer_line)
+					
+					if buffer_line_type == Line.ITEM_LOSE \
+					and buffer_line.get_slice("#", 1).to_int() == line_trimmed.to_int() \
+					and buffer_line_trimmed.get_slice(" was ", 0) == line_trimmed.get_slice(" was ", 0):
+						new_buffer.remove_at(i)
+						new_buffer.append(buffer_line)
+					
+					if buffer_line_type == Line.ITEM_GAIN \
+					and buffer_line.get_slice("#", 1).to_int() == line_trimmed.to_int():
+						new_buffer.remove_at(i)
+						new_buffer.append(buffer_line)
+						break
+			else:
+				inventory_size += 1
+		if line_type == Line.ITEM_LOSE:
+			if line_trimmed.to_int() <= inventory_size:
+				inventory_size -= 1
 		
 		if line_type == Line.ERROR_CODE_LONG_MESSAGE:
 			var long_message := line
@@ -110,8 +151,6 @@ static func read(log_path: String) -> LogFileReader:
 		
 		if line_type == Line.ERROR_CODE_STACK_TRACE:
 			print("Stack trace during read() at _lines idx %s." % reader._lines.size())
-		
-		reader._lines.append(line.strip_edges())
 	
 	return reader
 
