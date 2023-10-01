@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://d211650qwttr8"]
+
+[ext_resource type="Texture2D" uid="uid://cfxvkwxhmwobk" path="res://Sprites/Masteries.png" id="1_d38ra"]
+[ext_resource type="Script" path="res://HistoryView/ProfileDisplay.gd" id="1_rfrev"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tccn5"]
+atlas = ExtResource("1_d38ra")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="LabelSettings" id="LabelSettings_xg15v"]
+font_size = 8
+
+[node name="ProfileDisplay" type="MarginContainer"]
+offset_right = 31.0
+offset_bottom = 26.0
+script = ExtResource("1_rfrev")
+profile_name = "Bolghro151"
+background_color = Color(0.457031, 0.457031, 0.457031, 1)
+
+[node name="BackgroundColorRect" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+color = Color(0.457031, 0.457031, 0.457031, 1)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="IconRect" type="TextureRect" parent="HBoxContainer"]
+unique_name_in_owner = true
+texture_filter = 1
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+texture = SubResource("AtlasTexture_tccn5")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Bolghro151"
+label_settings = SubResource("LabelSettings_xg15v")
+vertical_alignment = 1

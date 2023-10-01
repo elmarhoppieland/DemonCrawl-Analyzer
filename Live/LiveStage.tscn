@@ -1,0 +1,110 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcmayr75wk56e"]
+
+[ext_resource type="Script" path="res://Live/LiveStage.gd" id="1_4vo1b"]
+[ext_resource type="Texture2D" uid="uid://c55ihkw0kbmjf" path="res://Sprites/getaway.png" id="1_vlx0q"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_7lres"]
+font_size = 64
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_jgstv"]
+font_size = 40
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="LiveStage" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4vo1b")
+
+[node name="Border" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer"]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("1_vlx0q")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+mouse_filter = 2
+
+[node name="NameLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Getaway"
+label_settings = SubResource("LabelSettings_7lres")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PointsLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Points: %d"
+label_settings = SubResource("LabelSettings_jgstv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ChestsLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Chests: %d"
+label_settings = SubResource("LabelSettings_jgstv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LivesLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Lives Restored: %d"
+label_settings = SubResource("LabelSettings_jgstv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CoinsGainedLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Coins Gained: %d"
+label_settings = SubResource("LabelSettings_jgstv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CoinsSpentLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Coins Spent: %d"
+label_settings = SubResource("LabelSettings_jgstv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ArtifactsLabel" type="Label" parent="MarginContainer/ScrollContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Artifacts: %d"
+label_settings = SubResource("LabelSettings_jgstv")
+horizontal_alignment = 1
+vertical_alignment = 1

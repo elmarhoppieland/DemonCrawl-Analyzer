@@ -40,6 +40,10 @@ func _ready() -> void:
 		request_item_type(type, func(_data: ItemTypeDataSource): pass)
 
 
+func open(page_name: String = "Welcome_to_the_Official_DemonCrawl_Wiki!") -> void:
+	OS.shell_open("https://demoncrawl.com/wiki/index.php/%s" % page_name)
+
+
 ## Request data for all items with the specified [code]type[/code].
 ## [br][br][b]Note:[/b] Does [b]not[/b] request each item's icon. To obtain an item's
 ## icon, use [method request_item_icon].

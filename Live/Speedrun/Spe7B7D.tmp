@@ -1,0 +1,84 @@
+[gd_scene load_steps=7 format=3 uid="uid://cinioereh4vn3"]
+
+[ext_resource type="Texture2D" uid="uid://dt7g8bjdtd7gl" path="res://Sprites/codex.png" id="1_4b18e"]
+[ext_resource type="Theme" uid="uid://ba5x5sja0rngo" path="res://Resources/Theme.tres" id="1_e27x6"]
+[ext_resource type="Script" path="res://Live/Speedrun/Speedrun.gd" id="2_hdfex"]
+[ext_resource type="PackedScene" uid="uid://cgvv3xq604bq7" path="res://Live/Speedrun/LiveSplit/Splits.tscn" id="2_pgwbu"]
+[ext_resource type="PackedScene" uid="uid://jnny044ub7uq" path="res://Live/Speedrun/Leaderboard/Leaderboard.tscn" id="4_iwhxr"]
+[ext_resource type="PackedScene" uid="uid://udfeph21bncq" path="res://Live/Speedrun/LiveSplit/LiveSplitEditor.tscn" id="4_qo7lf"]
+
+[node name="Speedrun" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_e27x6")
+script = ExtResource("2_hdfex")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_4b18e")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" parent="HBoxContainer/MarginContainer" instance=ExtResource("4_iwhxr")]
+layout_mode = 2
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="LiveSplitEditor" parent="HBoxContainer/VBoxContainer3" instance=ExtResource("4_qo7lf")]
+layout_mode = 2
+size_flags_horizontal = 1
+size_flags_vertical = 3
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/VBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="StartButton" type="Button" parent="HBoxContainer/VBoxContainer3/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = "Start Session"
+
+[node name="Splits" parent="HBoxContainer/VBoxContainer3/VBoxContainer2" instance=ExtResource("2_pgwbu")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 3
+
+[node name="ReturnInstructions" parent="HBoxContainer/VBoxContainer3/VBoxContainer2/Splits/VBoxContainer" index="7"]
+visible = false
+
+[connection signal="attempt_count_changed" from="HBoxContainer/VBoxContainer3/LiveSplitEditor" to="." method="_on_live_split_editor_attempt_count_changed"]
+[connection signal="category_changed" from="HBoxContainer/VBoxContainer3/LiveSplitEditor" to="." method="_on_live_split_editor_category_changed"]
+[connection signal="title_changed" from="HBoxContainer/VBoxContainer3/LiveSplitEditor" to="." method="_on_live_split_editor_title_changed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer3/VBoxContainer2/StartButton" to="." method="_on_start_button_pressed"]
+
+[editable path="HBoxContainer/VBoxContainer3/VBoxContainer2/Splits"]

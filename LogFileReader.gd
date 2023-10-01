@@ -17,8 +17,10 @@ enum Line {
 	CHEST_OPENED = ITEM_LOSE << 1, ## A chest was opened in the line.
 	ARTIFACT_COLLECTED = CHEST_OPENED << 1, ## An artifact was collected in the line.
 	LIVES_RESTORED = ARTIFACT_COLLECTED << 1, ## The player restored 1 or more lives in the line.
-	COINS_SPENT = LIVES_RESTORED << 1, ## The player spent coins in the line.
-	PLAYER_DEATH = COINS_SPENT << 1, ## The player was killed in the line.
+	COINS_GAINED = LIVES_RESTORED << 1, ## The player gained coins in the line.
+	COINS_SPENT = COINS_GAINED << 1, ## The player spent coins in the line.
+	POINTS_GAINED = COINS_SPENT << 1, ## The player spent coins in the line.
+	PLAYER_DEATH = POINTS_GAINED << 1, ## The player was killed in the line.
 	LEADERBOARD_SUBMIT = PLAYER_DEATH << 1, ## The player's score was submitted to the leaderboards in the line.
 	PLAYER_STATS = LEADERBOARD_SUBMIT << 1, ## The line shows the player's stats.
 	MASTERY_SELECTED = PLAYER_STATS << 1, ## The player's mastery is selected in the line.
@@ -45,16 +47,18 @@ const _LINE_FILTERS := {
 	Line.CHEST_OPENED: "Opening chest",
 	Line.ARTIFACT_COLLECTED: "Collected artifact: *",
 	Line.LIVES_RESTORED: "* li*e* restored! You now have */* lives.",
+	Line.COINS_GAINED: "Gained * coin*",
 	Line.COINS_SPENT: "* coins spent. You now have * coins.",
+	Line.POINTS_GAINED: "Gained * points, total score: *",
 	Line.PLAYER_DEATH: "* was killed!",
-	Line.LEADERBOARD_SUBMIT: "Alert: Submitting score to Leaderboard...",
+	Line.LEADERBOARD_SUBMIT: "Submitting score to Leaderboard...",
 	Line.PLAYER_STATS: "Player stats: *",
 	Line.MASTERY_SELECTED: "Mastery selected: *",
 	Line.QUEST_ABORT: "Quest aborted",
 	Line.DEMONCRAWL_STARTED: "DemonCrawl started",
 	Line.DEMONCRAWL_CLOSED: "DemonCrawl closed",
 	Line.ARENA_CONNECT: "Connected to DemonCrawl Arena",
-	Line.ERROR_CODE_ALERT: "Alert: Error Code * - check log for details",
+	Line.ERROR_CODE_ALERT: "Error Code * - check log for details",
 	Line.ERROR_CODE_SHORT_MESSAGE: "ERROR * message: *",
 	Line.ERROR_CODE_LONG_MESSAGE: "ERROR * longMessage: ERROR in*",
 	Line.ERROR_CODE_SCRIPT: "ERROR * script: *",
@@ -75,6 +79,11 @@ var position := -1
 var _last_line := ""
 
 var errors: Array[Dictionary] = []
+
+var current_profile: Profile
+var current_quest: Quest
+var current_inventory: Inventory
+var current_stage: Stage
 # ==============================================================================
 
 ## Returns a new [LogFileReader] that reads the file at [code]log_path[/code].
@@ -159,7 +168,7 @@ static func read(log_path: String) -> LogFileReader:
 ## any [enum Line] constant, returns [constant NONE].
 static func get_line_type(line: String) -> Line:
 	if line.match("[*-*-* @ *:*:*] *"):
-		line = line.get_slice("]", 1).strip_edges()
+		line = line.get_slice("]", 1).strip_edges().trim_prefix("Alert: ")
 	
 	if line.is_empty():
 		return Line.NONE
@@ -175,31 +184,6 @@ static func get_line_type(line: String) -> Line:
 					return line_type
 	
 	return Line.NONE
-
-
-## Advances to the next [Profile] declaration and returns it.
-func get_next_profile() -> Profile:
-	var line := get_current_line()
-	
-	while not line.begins_with("Profile loaded: "):
-		line = get_line()
-		if line.is_empty():
-			return null
-	
-	return handle_profile_load()
-
-
-## Advances to the creation of the next [Quest] and returns a new [Quest] for that quest.
-## If [code]profile[/code] is not [code]null[/code], adds the new quest to the [Profile].
-func get_next_quest(profile: Profile = null) -> Quest:
-	var line := get_current_line()
-	
-	while not line.begins_with("Quest started: "):
-		line = get_line()
-		if line.is_empty():
-			return null
-	
-	return handle_quest_create(profile)
 
 
 ## Advances to the next [Stage] enter and returns a new [Stage] for that stage.
@@ -297,7 +281,7 @@ func look_for(filters: int, handle_line_types: int = Line.NONE, profile: Profile
 ## and [code]stage[/code] if [code]profile[/code] is not [code]null[/code]. They
 ## can still be passed into the method call to override their defaults.
 func handle_current_line(allowed_line_types: int, profile: Profile = null, quest: Quest = null, inventory: Inventory = null, stage: Stage = null) -> HistoryData:
-	if LogFileReader.get_line_type(get_current_line()) == Line.ITEM_GAIN:
+	if false and LogFileReader.get_line_type(get_current_line()) == Line.ITEM_GAIN:
 		# if the player starts a Beyond quest with an emblem that gives items,
 		# the items are gained before starting the quest so we'll have to swap
 		# the lines around so that the quest is created first
@@ -319,9 +303,6 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 	if line.is_empty():
 		return null
 	
-	if position == 118:
-		print(JSON.stringify(line))
-	
 	var line_type := LogFileReader.get_line_type(line)
 	if not allowed_line_types & line_type:
 		# we aren't allowed to handle the current line
@@ -334,11 +315,17 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 	if quest and not inventory:
 		inventory = quest.inventory
 	
+	current_profile = profile
+	current_quest = quest
+	current_stage = stage
+	current_inventory = inventory
+	
+	var key := Line.find_key(line_type) as String
+	var method_name := "_handle_" + key.to_lower()
+	if has_method(method_name):
+		return call(method_name)
+	
 	match line_type:
-		Line.PROFILE_LOAD:
-			return handle_profile_load(profile)
-		Line.QUEST_CREATE:
-			return handle_quest_create(profile)
 		Line.STAGE_BEGIN:
 			return handle_stage_enter(inventory, profile, quest)
 		Line.STAGE_FINISH:
@@ -392,8 +379,7 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 				return null
 			if quest:
 				quest.mastery = line.trim_prefix("Mastery selected: ").get_slice(" ", 0).capitalize()
-				@warning_ignore("int_as_enum_without_cast")
-				quest.mastery_tier = line[-1].to_int()
+				quest.mastery_tier = line[-1].to_int() as Quest.MasteryTier
 			
 			return null
 		Line.QUEST_ABORT:
@@ -430,12 +416,15 @@ func handle_current_line(allowed_line_types: int, profile: Profile = null, quest
 	return null
 
 
-## Handles loading of a [Profile] and returns the new [Profile].
-func handle_profile_load(old_profile: Profile = null) -> Profile:
+func _handle_profile_load() -> Profile:
+	var old_profile := current_profile
+	
 	if old_profile:
-		old_profile.in_arena = false
+		old_profile.arena_enter()
 	
 	var profile := Profile.new()
+	
+	current_profile = profile
 	
 	profile.name = get_current_line().trim_prefix("Profile loaded: ")
 	if profile.name.is_empty():
@@ -446,9 +435,9 @@ func handle_profile_load(old_profile: Profile = null) -> Profile:
 
 ## Handles creation of a [Quest] and returns the new [Quest].
 ## If [code]profile[/code] is not [code]null[/code], adds the new quest to the [Profile].
-func handle_quest_create(profile: Profile = null) -> Quest:
-	if profile and not profile.quests.is_empty():
-		var old_quest := profile.quests[-1]
+func _handle_quest_create() -> Quest:
+	if current_profile and not current_profile.quests.is_empty():
+		var old_quest := current_profile.quests[-1]
 		
 		if not old_quest.finished:
 			old_quest.finish()
@@ -465,12 +454,112 @@ func handle_quest_create(profile: Profile = null) -> Quest:
 	
 	quest.creation_timestamp = get_timestamp()
 	
-	if profile:
-		profile.quests.append(quest)
+	if current_profile:
+		current_profile.quests.append(quest)
 	
-	profile.in_quest = true
+	current_profile.in_quest = true
 	
 	return quest
+
+
+func _handle_stage_begin() -> HistoryData:
+	return null
+
+
+func _handle_stage_finish() -> HistoryData:
+	return null
+
+
+func _handle_stage_leave() -> HistoryData:
+	return null
+
+
+func _handle_item_gain() -> HistoryData:
+	return null
+
+
+func _handle_item_lose() -> HistoryData:
+	return null
+
+
+func _handle_chest_opened() -> HistoryData:
+	return null
+
+
+func _handle_artifact_collected() -> HistoryData:
+	return null
+
+
+func _handle_lives_restored() -> HistoryData:
+	return null
+
+
+func _handle_coins_gained() -> HistoryData:
+	return null
+
+
+func _handle_coins_spent() -> HistoryData:
+	return null
+
+
+func _handle_points_gained() -> HistoryData:
+	return null
+
+
+func _handle_player_death() -> HistoryData:
+	return null
+
+
+func _handle_leaderboard_submit() -> HistoryData:
+	return null
+
+
+func _handle_player_stats() -> HistoryData:
+	return null
+
+
+func _handle_mastery_selected() -> HistoryData:
+	return null
+
+
+func _handle_quest_abort() -> HistoryData:
+	return null
+
+
+func _handle_demoncrawl_started() -> HistoryData:
+	return null
+
+
+func _handle_demoncrawl_closed() -> HistoryData:
+	return null
+
+
+func _handle_arena_connect() -> HistoryData:
+	return null
+
+
+func _handle_error_code_alert() -> HistoryData:
+	return null
+
+
+func _handle_error_code_short_message() -> HistoryData:
+	return null
+
+
+func _handle_error_code_long_message() -> HistoryData:
+	return null
+
+
+func _handle_error_code_script() -> HistoryData:
+	return null
+
+
+func _handle_error_code_stack_trace() -> HistoryData:
+	return null
+
+
+func _handle_error_code_info() -> HistoryData:
+	return null
 
 
 ## Handles gaining of an item. Adds the item gained in [code]line[/code] to [code]inventory[/code].
@@ -686,7 +775,7 @@ func get_current_line() -> String:
 	if _last_line.is_empty():
 		return ""
 	
-	return _last_line.get_slice("] ", 1).strip_edges()
+	return _last_line.get_slice("] ", 1).trim_prefix("Alert: ").strip_edges()
 
 
 ## Returns the timestamp of the line returned by [method get_line].

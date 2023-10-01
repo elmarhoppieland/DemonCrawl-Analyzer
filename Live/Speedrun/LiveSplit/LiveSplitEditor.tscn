@@ -1,0 +1,186 @@
+[gd_scene load_steps=4 format=3 uid="uid://udfeph21bncq"]
+
+[ext_resource type="Script" path="res://Live/Speedrun/LiveSplit/LiveSplitEditor.gd" id="1_fmgsc"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_adi2w"]
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_mlcju"]
+font_size = 20
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
+
+[node name="LiveSplitEditor" type="ScrollContainer"]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 347.0
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 6
+horizontal_scroll_mode = 0
+script = ExtResource("1_fmgsc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Title"
+label_settings = SubResource("LabelSettings_adi2w")
+
+[node name="TitleEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+text = "DemonCrawl"
+select_all_on_focus = true
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Category"
+label_settings = SubResource("LabelSettings_mlcju")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Difficulty"
+label_settings = SubResource("LabelSettings_adi2w")
+
+[node name="DifficultySelect" type="OptionButton" parent="VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 4
+selected = 0
+popup/item_0/text = "Casual"
+popup/item_0/id = 0
+popup/item_1/text = "Casual (Random)"
+popup/item_1/id = 1
+popup/item_2/text = "Normal"
+popup/item_2/id = 2
+popup/item_3/text = "Hard"
+popup/item_3/id = 3
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Type"
+label_settings = SubResource("LabelSettings_adi2w")
+
+[node name="TypeSelect" type="OptionButton" parent="VBoxContainer/HBoxContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 7
+selected = 0
+popup/item_0/text = "Fresh File"
+popup/item_0/id = 0
+popup/item_1/text = "All Quests"
+popup/item_1/id = 1
+popup/item_2/text = "Glory Days"
+popup/item_2/id = 2
+popup/item_3/text = "Respite's End"
+popup/item_3/id = 3
+popup/item_4/text = "Another Way"
+popup/item_4/id = 4
+popup/item_5/text = "Around The Bend"
+popup/item_5/id = 5
+popup/item_6/text = "Shadowman"
+popup/item_6/id = 6
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer4"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Allow HDFS
+(Heirlooms, Divines, Favors and Sigils)"
+label_settings = SubResource("LabelSettings_adi2w")
+
+[node name="HDFSSelect" type="CheckButton" parent="VBoxContainer/HBoxContainer4"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 0
+disabled = true
+flat = true
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer5"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Version"
+label_settings = SubResource("LabelSettings_adi2w")
+
+[node name="VersionSelect" type="OptionButton" parent="VBoxContainer/HBoxContainer5"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 2
+selected = 1
+popup/item_0/text = "1.87"
+popup/item_0/id = 0
+popup/item_1/text = "1.88+"
+popup/item_1/id = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Other"
+label_settings = SubResource("LabelSettings_mlcju")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer6"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Split Frequency"
+label_settings = SubResource("LabelSettings_adi2w")
+
+[node name="SplitFrequencySelect" type="OptionButton" parent="VBoxContainer/HBoxContainer6"]
+unique_name_in_owner = true
+layout_mode = 2
+item_count = 2
+selected = 0
+popup/item_0/text = "Each Stage"
+popup/item_0/id = 0
+popup/item_1/text = "Each Quest"
+popup/item_1/id = 1
+
+[node name="HBoxContainer7" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer7"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Attempt Count"
+label_settings = SubResource("LabelSettings_adi2w")
+
+[node name="AttemptCountEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer7"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/TitleEdit" to="." method="_on_title_edit_text_changed"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer2/DifficultySelect" to="." method="_on_difficulty_select_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer3/TypeSelect" to="." method="_on_type_select_item_selected"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer4/HDFSSelect" to="." method="_on_hdfs_select_toggled"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer5/VersionSelect" to="." method="_on_version_select_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer6/SplitFrequencySelect" to="." method="_on_split_frequency_select_item_selected"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer7/AttemptCountEdit" to="." method="_on_attempt_count_edit_text_changed"]
+[connection signal="text_submitted" from="VBoxContainer/HBoxContainer7/AttemptCountEdit" to="." method="_on_attempt_count_edit_text_submitted"]

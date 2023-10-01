@@ -28,7 +28,7 @@ enum Type {
 	HERO_TRIALS = 24, # 110__
 	BEYOND = 28 # 111__
 }
-enum mastery_tiers {
+enum MasteryTier {
 	UNSET,
 	TIER_I,
 	TIER_II,
@@ -42,7 +42,7 @@ var type := Difficulty.CASUAL | Type.GLORY_DAYS
 ## The name of the mastery used.
 var mastery := ""
 ## The tier of the mastery.
-var mastery_tier := mastery_tiers.UNSET
+var mastery_tier := MasteryTier.UNSET
 ## The duration of the quest.
 var duration := ""
 

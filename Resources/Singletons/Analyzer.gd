@@ -55,6 +55,8 @@ var first_launch := false : get = is_first_launch
 
 func _ready() -> void:
 	check_first_launch()
+	
+	Packages.initialize()
 
 
 ## Checks whether this launch was the first launch and sets [member first_launch]
@@ -213,3 +215,19 @@ func get_data_status() -> DataStatus:
 
 func is_first_launch() -> bool:
 	return first_launch
+
+
+func get_active_window_pids(image_name: String) -> PackedInt32Array:
+	var output := []
+	var result := OS.execute("tasklist", ["/FO", "LIST", "/FI", "ImageName eq " + image_name], output)
+	if result:
+		push_error("There was an error with command '%s'." % ("tasklist /FO LIST /FI \"ImageName eq " + image_name + "\""))
+		return []
+	
+	var pids: PackedInt32Array = []
+	
+	for line in output[0].split("\r\n"):
+		if line.begins_with("PID"):
+			pids.append(line.to_int())
+	
+	return pids

@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://dnxdofttqyenm"]
+
+[ext_resource type="Theme" uid="uid://ba5x5sja0rngo" path="res://Resources/Theme.tres" id="1_t8kv0"]
+[ext_resource type="Script" path="res://Live/Speedrun/LiveSplit/LiveSplit.gd" id="2_nse7n"]
+[ext_resource type="PackedScene" uid="uid://cgvv3xq604bq7" path="res://Live/Speedrun/LiveSplit/Splits.tscn" id="3_40dyn"]
+
+[node name="LiveSplit" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_t8kv0")
+script = ExtResource("2_nse7n")
+
+[node name="Splits" parent="." instance=ExtResource("3_40dyn")]
+unique_name_in_owner = true
+layout_mode = 1
+offset_bottom = 277.0

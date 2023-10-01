@@ -1,0 +1,129 @@
+[gd_scene load_steps=4 format=3 uid="uid://jnny044ub7uq"]
+
+[ext_resource type="PackedScene" uid="uid://4nod4a5gqte6" path="res://Live/Speedrun/Leaderboard/LeaderboardCategory.tscn" id="1_77c0w"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_7uai6"]
+font_size = 32
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_vrl5f"]
+font_size = 24
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[node name="VBoxContainer" type="VBoxContainer"]
+theme_override_constants/separation = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer"]
+layout_mode = 2
+color = Color(0.2, 0, 0, 1)
+
+[node name="Label" type="Label" parent="MarginContainer"]
+layout_mode = 2
+text = "Leaderboards"
+label_settings = SubResource("LabelSettings_7uai6")
+horizontal_alignment = 1
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer2"]
+layout_mode = 2
+color = Color(0.15, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer2"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer2/MarginContainer"]
+layout_mode = 2
+color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer2/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer2/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer2/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+color = Color(0.25098, 0, 0, 1)
+
+[node name="Label" type="Label" parent="MarginContainer2/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+text = "Your Categories"
+label_settings = SubResource("LabelSettings_vrl5f")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Button" type="Button" parent="MarginContainer2/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+mouse_default_cursor_shape = 2
+text = "Select"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer2/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" parent="MarginContainer2/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_77c0w")]
+layout_mode = 2
+category = 784
+category_flags = 768
+
+[node name="VBoxContainer2" parent="MarginContainer2/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_77c0w")]
+layout_mode = 2
+category = 272
+category_flags = 256
+
+[node name="VBoxContainer3" parent="MarginContainer2/MarginContainer/VBoxContainer/HBoxContainer" instance=ExtResource("1_77c0w")]
+layout_mode = 2
+category = 787
+single_quest = 3
+category_flags = 768
+
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer2/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer2/MarginContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+color = Color(0.25098, 0, 0, 1)
+
+[node name="Label" type="Label" parent="MarginContainer2/MarginContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+text = "Recent Categories"
+label_settings = SubResource("LabelSettings_vrl5f")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer2/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer3" parent="MarginContainer2/MarginContainer/VBoxContainer/HBoxContainer2" instance=ExtResource("1_77c0w")]
+layout_mode = 2
+category = 160
+difficulty = 32
+category_flags = 128
+
+[node name="VBoxContainer4" parent="MarginContainer2/MarginContainer/VBoxContainer/HBoxContainer2" instance=ExtResource("1_77c0w")]
+layout_mode = 2
+category = 151
+single_quest = 7
+category_flags = 128
+
+[node name="VBoxContainer5" parent="MarginContainer2/MarginContainer/VBoxContainer/HBoxContainer2" instance=ExtResource("1_77c0w")]
+layout_mode = 2
+category = 195
+difficulty = 64
+single_quest = 3
+category_flags = 128

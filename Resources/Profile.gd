@@ -29,6 +29,14 @@ func new_quest() -> Quest:
 	return quest
 
 
+func arena_enter() -> void:
+	in_arena = true
+
+
+func arena_exit() -> void:
+	in_arena = false
+
+
 static func _from_dict(dict: Dictionary) -> Profile:
 	if ["name", "in_quest", "quests"].any(func(key: String): return not key in dict):
 		return null

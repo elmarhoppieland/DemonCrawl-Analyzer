@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Globals" load_steps=2 format=3 uid="uid://bdeqmvrel0ox0"]
+
+[ext_resource type="Script" path="res://Resources/Globals/Globals.gd" id="1_t3at3"]
+
+[resource]
+script = ExtResource("1_t3at3")
+"Prestige Colors/0" = Color(0.0627451, 0.87451, 0.501961, 1)
+"Prestige Colors/1" = Color(0.976471, 0.701961, 0.0745098, 1)
+"Prestige Colors/2" = Color(1, 1, 1, 1)
+"Prestige Colors/3" = Color(1, 1, 1, 1)
+"Prestige Colors/4" = Color(1, 1, 1, 1)
+"Prestige Colors/5" = Color(0.380392, 0.239216, 0.984314, 1)
+"Prestige Colors/6" = Color(1, 1, 1, 1)
+"Prestige Colors/7" = Color(0.647059, 0.494118, 0.607843, 1)
+"Prestige Colors/8" = Color(0.647059, 0.494118, 0.607843, 1)
+"Prestige Colors/9" = Color(1, 1, 1, 1)
+"Prestige Colors/10" = Color(0.611765, 0.133333, 0.247059, 1)
