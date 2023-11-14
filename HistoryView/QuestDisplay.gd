@@ -5,7 +5,9 @@ class_name QuestDisplay
 # ==============================================================================
 const QUEST_TEXT := "%s on %s"
 # ==============================================================================
-@export var border_width := 8 :
+static var scene: PackedScene
+# ==============================================================================
+@export var border_width := 4 :
 	set(value):
 		border_width = value
 		if not border_visible:
@@ -39,11 +41,16 @@ const QUEST_TEXT := "%s on %s"
 		
 		if not stage_background_rect:
 			await ready
-		if not Stage.stage_exists(value):
-			stage_background_rect.texture = null
+		
+		stage_background_rect.texture = null
+		
+		if value.begins_with("$"):
+			stage_background_rect.texture = await DemonCrawl.get_quest_bg(value.to_int())
 			return
 		
-		stage_background_rect.texture = Stage.get_bg_texture_absolute(value)
+		if not Stage.stage_exists(value):
+			return
+		stage_background_rect.texture = await DemonCrawl.get_stage_bg(value)
 @export_group("Quest", "quest_")
 @export var quest_type := Quest.Type.GLORY_DAYS :
 	set(value):
@@ -91,3 +98,10 @@ func border_hide() -> void:
 func set_quest_int(quest_int: int) -> void:
 	quest_type = quest_int & 0b11100 as Quest.Type
 	quest_difficulty = quest_int & 0b00011 as Quest.Difficulty
+
+
+static func instantiate() -> QuestDisplay:
+	if not scene:
+		scene = load("res://HistoryView/QuestDisplay.tscn")
+	
+	return scene.instantiate()

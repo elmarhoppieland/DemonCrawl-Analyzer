@@ -2,8 +2,20 @@ extends RefCounted
 class_name DemonCrawl
 
 # ==============================================================================
-const LOG_FILE_NAME := "log%d.txt"
+static var log_files := []
+static var stage_bg_images := {}
+static var quest_bg_images := {}
 # ==============================================================================
+
+static func poll_logs_dir() -> void:
+	var files := DirAccess.get_files_at(get_user_data_dir().path_join("logs"))
+	log_files = Array(files).filter(func(a: String):
+		return not a.begins_with("_")
+	)
+	log_files.sort_custom(func(a: String, b: String):
+		return a.to_int() < b.to_int()
+	)
+
 
 static func get_user_data_dir() -> String:
 	return OS.get_data_dir().get_base_dir().path_join("Local/demoncrawl")
@@ -21,30 +33,37 @@ static func get_logs_dir() -> String:
 
 ## Returns the path to the log file at the given [code]index[/code].
 static func get_log_path(index: int) -> String:
-	return get_logs_dir().path_join(LOG_FILE_NAME % index)
+	return get_logs_dir().path_join(log_files[index])
 
 
 ## Returns the path to the last (most recent) log file.
 static func get_last_log_path() -> String:
-	var log_files := DirAccess.get_files_at(get_logs_dir()) as Array
-	log_files.sort_custom(func(a: String, b: String) -> bool:
-		return a.to_int() < b.to_int()
-	)
 	return get_logs_dir().path_join(log_files[-1])
+
+
+## Returns the index of the last (most recent) log file that starts after [code]after_unix[/code].
+## Returns [code]-1[/code] if no such log file exists.
+static func get_last_log_file_index_after(after_unix: int) -> int:
+	for i in get_logs_count():
+		var time := TimeHelper.get_unix_time_from_timestamp(get_log_start_timestamp(i))
+		if time > after_unix:
+			return i
+	
+	return -1
 
 
 ## Returns the number of log files used by the user.
 static func get_logs_count() -> int:
-	return DirAccess.get_files_at(DemonCrawl.get_logs_dir()).size() - 1 # substract 1 to exclude the _repairs.txt file
+	return log_files.size()
 
 
 ## Opens the log file at the given [code]index[/code] and returns the created [FileAccess],
 ## using the given [code]flags[/code] as a [enum FileAccess.ModeFlags] constant to open it.
 static func open_log_file(index: int, flags: FileAccess.ModeFlags = FileAccess.READ) -> FileAccess:
-	if index < 1:
+	if index < 0:
 		index += get_logs_count()
 	
-	var path := get_logs_dir().path_join(LOG_FILE_NAME % index)
+	var path := get_log_path(index)
 	
 	return FileAccess.open(path, flags)
 
@@ -95,3 +114,42 @@ static func open_settings_file() -> ConfigFile:
 	if error:
 		return null
 	return file
+
+
+## Returns the DemonCrawl-formatted timestamp in the first line in the log file at the given [code]index[/code].
+static func get_log_start_timestamp(index: int) -> String:
+	var file := open_log_file(index)
+	return file.get_line().trim_prefix("[").get_slice("]", 0)
+
+
+## Returns the background [ImageTexture] used for the given [code]stage[/code].
+## Creates a new [Image] if needed, but will load from the cache if able.
+static func get_stage_bg(stage: String) -> ImageTexture:
+	if not stage in stage_bg_images:
+		var thread := AutoThread.new()
+		thread.start_execution(func():
+			var image := Image.load_from_file(DemonCrawl.get_data_dir().path_join("assets/skins/%s/bg.png" % stage.to_lower()))
+			stage_bg_images[stage] = image
+		)
+	
+	while not stage_bg_images.get(stage):
+		await Analyzer.get_tree().process_frame
+	
+	return ImageTexture.create_from_image(stage_bg_images[stage])
+
+
+## Returns the background [ImageTexture] used for the quest with the given
+## [code]index[/code]. Creates a new [Image] if needed, but will load from the
+## cache if able.
+static func get_quest_bg(index: int) -> ImageTexture:
+	if not index in quest_bg_images:
+		var thread := AutoThread.new()
+		thread.start_execution(func():
+			var image := Image.load_from_file(DemonCrawl.get_data_dir().path_join("assets/bg/stages%d.png" % index))
+			quest_bg_images[index] = image
+		)
+	
+	while not quest_bg_images.get(index):
+		await Analyzer.get_tree().process_frame
+	
+	return ImageTexture.create_from_image(quest_bg_images[index])

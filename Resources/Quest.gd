@@ -219,3 +219,7 @@ func _export_stages() -> Array[Dictionary]:
 		stage_array.append(stage.to_json())
 	
 	return stage_array
+
+
+static func get_type_int(type_string: String) -> Type:
+	return Type[type_string.replace("Respite's", "Respites").to_upper().replace(" ", "_")]

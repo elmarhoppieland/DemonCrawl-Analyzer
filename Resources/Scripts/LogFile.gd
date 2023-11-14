@@ -21,6 +21,7 @@ enum Line {
 	PROFILE_LOADED,
 	QUEST_START,
 	QUEST_ABORT,
+	QUEST_MASTERY_SELECTED,
 	QUEST_STAGE_BEGIN,
 	QUEST_STAGE_COMPLETE,
 	QUEST_STAGE_LEAVE,
@@ -55,6 +56,7 @@ const LINE_FILTERS := {
 	Line.PROFILE_LOADED: "Profile loaded: *",
 	Line.QUEST_START: "Quest started: * on difficulty *",
 	Line.QUEST_ABORT: "Quest aborted",
+	Line.QUEST_MASTERY_SELECTED: "Mastery selected: * tier *",
 	Line.QUEST_STAGE_BEGIN: "Begin stage *",
 	Line.QUEST_STAGE_COMPLETE: "Completed stage * in * seconds",
 	Line.QUEST_STAGE_LEAVE: "Leaving stage *",
@@ -88,6 +90,7 @@ const LINE_PARAM_TYPES := {
 	Line.DAILY_MISSION_COMPLETE: [TYPE_INT],
 	Line.PROFILE_LOADED: [TYPE_STRING],
 	Line.QUEST_START: [TYPE_STRING, TYPE_INT],
+	Line.QUEST_MASTERY_SELECTED: [TYPE_STRING, TYPE_INT],
 	Line.QUEST_STAGE_BEGIN: [TYPE_STRING],
 	Line.QUEST_STAGE_COMPLETE: [TYPE_STRING, TYPE_INT],
 	Line.QUEST_STAGE_LEAVE: [TYPE_STRING],
@@ -134,9 +137,6 @@ func next_batch() -> Array[LineData]:
 			file.seek(old_position)
 			break
 		
-		if not line.begins_with("["):
-			breakpoint
-		
 		timestamp = LogFile.get_timestamp(line)
 		
 		var data := LineData.new()
@@ -147,8 +147,6 @@ func next_batch() -> Array[LineData]:
 		data.unix_time = Time.get_unix_time_from_datetime_string(timestamp.replace(" @ ", "T"))
 		
 		batch_data.append(data)
-	
-	# changing the order of lines will go here
 	
 	return batch_data
 
@@ -192,6 +190,8 @@ func save_compiled(to_path: String, override: bool = true) -> void:
 		
 		for param in line_data.params:
 			match typeof(param):
+				TYPE_NIL:
+					continue
 				TYPE_STRING:
 					save_file.store_16(param.length())
 					save_file.store_string(param)

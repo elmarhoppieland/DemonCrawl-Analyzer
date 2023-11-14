@@ -10,6 +10,7 @@ const RUNNING_CHECK_DELTA := 0.25
 @onready var open_wiki_button: Button = %OpenWikiButton
 @onready var settings_button: Button = %SettingsButton
 @onready var progress_bar: ProgressBar = %ProgressBar
+@onready var label: Label = %Label
 # ==============================================================================
 
 func _ready() -> void:
@@ -17,6 +18,7 @@ func _ready() -> void:
 	
 	HistoryLoader.load_history().progress_updated.connect(func(progress: int):
 		progress_bar.value = progress
+		label.text = str(progress) + "/" + str(HistoryLoader.get_progress().max_progress)
 	)
 	progress_bar.max_value = HistoryLoader.get_progress().max_progress
 	HistoryLoader.get_progress().max_progress_updated.connect(func(max_progress: int):
@@ -64,3 +66,7 @@ func _on_open_wiki_button_pressed() -> void:
 
 func _on_analyze_live_button_pressed() -> void:
 	SceneHandler.switch_scene(preload("res://Live/Live.tscn"))
+
+
+func _on_view_history_button_pressed() -> void:
+	SceneHandler.switch_scene(preload("res://HistoryView/HistoryView.tscn"))

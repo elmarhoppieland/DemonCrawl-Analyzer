@@ -303,7 +303,7 @@ func load_from_savedata(json: Dictionary) -> void:
 
 func read_logs_dir(starting_index: int) -> void:
 	for index in range(starting_index, DemonCrawl.get_logs_count() + 1):
-		LoadingScreen.set_message("Parsing %s..." % (DemonCrawl.LOG_FILE_NAME % index))
+		LoadingScreen.set_message("Parsing log%d.txt..." % index)
 		read_log(index)
 		LoadingScreen.progress_increment()
 

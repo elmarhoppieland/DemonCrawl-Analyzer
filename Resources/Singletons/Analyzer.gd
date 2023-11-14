@@ -57,6 +57,8 @@ func _ready() -> void:
 	check_first_launch()
 	
 	Packages.initialize()
+	
+	DemonCrawl.poll_logs_dir()
 
 
 ## Checks whether this launch was the first launch and sets [member first_launch]

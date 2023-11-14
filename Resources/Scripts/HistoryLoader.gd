@@ -3,10 +3,22 @@ extends Node
 # ==============================================================================
 const HISTORY_FILE := "user://logs.dch"
 # ==============================================================================
-static var _load_progress_ptr: Progress
+var _load_progress_ptr: Progress
 
-static var _history: Array[HistoryFile.LineData] = []
+var _history: Array[HistoryFile.LineData] = []
 # ==============================================================================
+
+func get_history() -> Array[HistoryFile.LineData]:
+	return _history
+
+
+func get_history_filtered(type: LogFile.Line) -> Array[HistoryFile.LineData]:
+	return _history.filter(func(a: HistoryFile.LineData): return a.type == type)
+
+
+func get_history_multifiltered(types: Array[LogFile.Line]) -> Array[HistoryFile.LineData]:
+	return _history.filter(func(a: HistoryFile.LineData): return a.type in types)
+
 
 func get_progress() -> Progress:
 	return _load_progress_ptr
@@ -17,6 +29,9 @@ func load_history() -> Progress:
 		return get_progress()
 	
 	var progress := Progress.new()
+	
+	if not FileAccess.file_exists(HISTORY_FILE):
+		_initialize_history_file()
 	
 	var file := FileAccess.open(HISTORY_FILE, FileAccess.READ)
 	if not file:
@@ -31,7 +46,20 @@ func load_history() -> Progress:
 	thread.start(func(): _load())
 	progress.finished.connect(func(): thread.wait_to_finish())
 	
+#	_load()
+	
 	return progress
+
+
+func _initialize_history_file() -> void:
+	var log_files: Array[LogFile] = []
+	
+	for i in DemonCrawl.get_logs_count():
+		log_files.append(LogFile.open(DemonCrawl.get_log_path(i)))
+	
+	var saver := HistorySaver.new()
+	saver.load_log_files(log_files)
+	saver.save(HISTORY_FILE, true)
 
 
 func _load() -> void:
@@ -64,14 +92,26 @@ func _save_event(event: HistoryFile.LineData) -> void:
 
 func _check_update() -> void:
 	var data_unix_time := FileAccess.get_modified_time(HISTORY_FILE)
-	var logs_unix_time := FileAccess.get_modified_time(DemonCrawl.get_log_path(1))
+	var logs_unix_time := FileAccess.get_modified_time(DemonCrawl.get_log_path(0))
 	
 	if logs_unix_time > data_unix_time:
 		_update()
 
 
 func _update() -> void:
-	pass
+	var last_update := FileAccess.get_modified_time(HISTORY_FILE)
+	
+	var first_index := DemonCrawl.get_last_log_file_index_after(last_update)
+	
+	var log_files: Array[LogFile] = []
+	for i in range(first_index, DemonCrawl.get_logs_count()):
+		log_files.append(LogFile.open(DemonCrawl.get_log_path(i)))
+	
+	var saver := HistorySaver.new()
+	
+	saver.load_log_files(log_files)
+	
+	saver.save(HISTORY_FILE)
 
 
 class Progress extends RefCounted:
@@ -79,7 +119,7 @@ class Progress extends RefCounted:
 	var max_progress := 0 :
 		set(value):
 			max_progress = value
-			(func(): max_progress_updated.emit()).call_deferred()
+			(func(): max_progress_updated.emit(max_progress)).call_deferred()
 			
 			if is_finished():
 				(func(): finished.emit()).call_deferred()
