@@ -44,9 +44,7 @@ func load_history() -> Progress:
 	
 	var thread := Thread.new()
 	thread.start(_load)
-	progress.finished.connect(func(): thread.wait_to_finish(), CONNECT_ONE_SHOT)
-	
-#	_load()
+	progress.finished.connect(thread.wait_to_finish, CONNECT_ONE_SHOT)
 	
 	return progress
 

@@ -144,13 +144,16 @@ static func load_user_package(path: String) -> void:
 	packages.append(package_data)
 
 
-static func call_method(method: StringName, args: Array = []) -> Array:
+static func call_method(method: StringName, args: Array = [], return_type: Variant.Type = TYPE_MAX) -> Array:
 	var returns := []
 	
 	for package in packages:
 		if not package.singleton.has_method(method):
 			continue
 		var r = package.singleton.callv(method, args)
+		if return_type != TYPE_MAX and typeof(r) != return_type:
+			push_error("Return type of %s is invalid: %s expected but returned %s." % [r, return_type, typeof(r)])
+			continue
 		returns.append(r)
 	
 	return returns

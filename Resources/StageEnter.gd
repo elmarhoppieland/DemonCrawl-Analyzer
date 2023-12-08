@@ -13,7 +13,7 @@ static func _from_dict(dict: Dictionary) -> StageEnter:
 	
 	var stage_enter := StageEnter.new()
 	
-	stage_enter.inventory = Inventory._from_array(dict.inventory.items)
+	stage_enter.inventory = Inventory.from_array(dict.inventory.items)
 	stage_enter.stats = PlayerStats.from_string(dict.stats)
 	
 	return stage_enter

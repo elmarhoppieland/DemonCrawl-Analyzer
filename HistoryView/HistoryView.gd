@@ -42,16 +42,12 @@ func build_recent_quests_list() -> void:
 
 
 func get_recent_quests_list() -> Array[QuestData]:
-	var r := Packages.call_method("get_recent_quests_list", [profile])
+	var r := Packages.call_method("get_recent_quests_list", [profile], TYPE_ARRAY)
 	
 	var quests: Array[QuestData] = []
 	var unix_timestamps: PackedInt32Array = []
-	for value in r:
-		if not value is Array:
-			continue
+	for value: Array[Dictionary] in r:
 		for data in value:
-			if not data is Dictionary:
-				continue
 			if not "start_unix_time" in data:
 				continue
 			if data.start_unix_time in unix_timestamps:

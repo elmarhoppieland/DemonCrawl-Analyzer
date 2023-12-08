@@ -37,6 +37,9 @@ demoncrawl/saves_directory.windows="%localappdata%/demoncrawl/saves"
 
 [debug]
 
+gdscript/warnings/confusable_identifier=0
+gdscript/warnings/confusable_local_declaration=0
+gdscript/warnings/confusable_local_usage=0
 gdscript/warnings/native_method_override=0
 
 [editor_plugins]

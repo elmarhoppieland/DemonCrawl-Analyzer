@@ -11,7 +11,7 @@ static func _from_dict(dict: Dictionary) -> StageExit:
 	
 	var stage_exit := StageExit.new()
 	
-	stage_exit.inventory = Inventory._from_array(dict.inventory.items)
+	stage_exit.inventory = Inventory.from_array(dict.inventory.items)
 	
 	return stage_exit
 

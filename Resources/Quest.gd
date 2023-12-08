@@ -97,7 +97,7 @@ static func _from_dict(dict: Dictionary) -> Quest:
 	for statistic in quest.statistics:
 		quest.statistics[statistic] = dict.statistics[str(statistic)]
 	
-	quest.inventory = Inventory._from_array(dict.inventory.items)
+	quest.inventory = Inventory.from_array(dict.inventory.items)
 	
 	return quest
 
