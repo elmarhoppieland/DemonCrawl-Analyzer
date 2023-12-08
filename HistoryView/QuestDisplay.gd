@@ -1,4 +1,3 @@
-@tool
 extends MarginContainer
 class_name QuestDisplay
 
@@ -51,6 +50,33 @@ static var scene: PackedScene
 		if not Stage.stage_exists(value):
 			return
 		stage_background_rect.texture = await DemonCrawl.get_stage_bg(value)
+@export var victory := false :
+	set(value):
+		const ALPHA := 0.6
+		const COLOR_INTENSITY := 0.2
+		
+		victory = value
+		if not panel:
+			await ready
+		
+		if not finished:
+			get_panel_stylebox().bg_color = Color(0, 0, 0, ALPHA)
+		
+		if value:
+			get_panel_stylebox().bg_color = Color(0, COLOR_INTENSITY, 0, ALPHA)
+		else:
+			get_panel_stylebox().bg_color = Color(COLOR_INTENSITY, 0, 0, ALPHA)
+@export var finished := true :
+	set(value):
+		finished = value
+		if not panel:
+			await ready
+		
+		if value:
+			victory = victory # call the setter
+		else:
+			get_panel_stylebox().bg_color.r = 0
+			get_panel_stylebox().bg_color.b = 0
 @export_group("Quest", "quest_")
 @export var quest_type := Quest.Type.GLORY_DAYS :
 	set(value):
@@ -80,6 +106,7 @@ static var scene: PackedScene
 @onready var panel: PanelContainer = %Panel
 @onready var stage_background_rect: TextureRect = %StageBackgroundRect
 @onready var quest_name_label: Label = %QuestNameLabel
+@onready var data_container: VFlowContainer = %DataContainer
 # ==============================================================================
 
 func _init() -> void:
@@ -98,6 +125,26 @@ func border_hide() -> void:
 func set_quest_int(quest_int: int) -> void:
 	quest_type = quest_int & 0b11100 as Quest.Type
 	quest_difficulty = quest_int & 0b00011 as Quest.Difficulty
+
+
+func reload_data() -> void:
+	if not data_container:
+		await ready
+	
+	for meta in get_meta_list():
+		if meta.begins_with("_"):
+			continue
+		
+		var label := Label.new()
+		label.text = "%s: %s" % [meta, get_meta(meta)]
+		data_container.add_child(label)
+
+
+func get_panel_stylebox() -> StyleBoxFlat:
+	if panel:
+		return panel.get_theme_stylebox("panel")
+	
+	return null
 
 
 static func instantiate() -> QuestDisplay:

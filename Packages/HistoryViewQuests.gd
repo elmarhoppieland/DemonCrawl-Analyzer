@@ -14,6 +14,7 @@ func load_history_view(selected_profile: String) -> void:
 	quests.clear()
 	
 	var profile := ""
+	var quest := {}
 	for line in get_history():
 		if line.type == LogFile.Line.PROFILE_LOADED:
 			profile = line.params[0]
@@ -22,16 +23,21 @@ func load_history_view(selected_profile: String) -> void:
 			continue
 		match line.type:
 			LogFile.Line.QUEST_START:
+				if not quest.is_empty():
+					quests.append(quest)
+				
 				var type_int := Quest.get_type_int(line.params[0])
-				var quest := {
+				quest = {
 					"start_unix_time": line.unix_time,
 					"type": type_int,
 					"difficulty": line.params[1] + 1,
-					"background_stage_name": "$%d" % int((type_int - int(type_int == Quest.Type.HERO_TRIALS)) / 4.0)
+					"background_stage_name": "$%d" % (type_int >> 2 if type_int != Quest.Type.HERO_TRIALS else 5),
+					"status": Quest.Status.UNFINISHED,
+					"test": 1
 				}
-				quests.append(quest)
 			LogFile.Line.QUEST_STAGE_BEGIN:
-				quests[-1].background_stage_name = line.params[0].split(" ")[-1]
+				if not quests.is_empty():
+					quests[-1].background_stage_name = line.params[0].split(" ")[-1]
 
 
 func get_recent_quests_list(_selected_profile: String) -> Array[Dictionary]:

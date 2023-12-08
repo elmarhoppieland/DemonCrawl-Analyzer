@@ -30,6 +30,13 @@ func build_recent_quests_list() -> void:
 		instance.quest_type = quest.type
 		instance.quest_difficulty = quest.difficulty
 		instance.custom_minimum_size.y = HEIGHT
+		instance.victory = quest.status == Quest.Status.VICTORY
+		instance.finished = quest.status & Quest.Status.FINISHED
+		
+		for meta in quest.get_meta_list():
+			instance.set_meta(meta, quest.get_meta(meta))
+		
+		instance.reload_data()
 		
 		recent_quests_container.add_child(instance)
 
@@ -83,19 +90,16 @@ class QuestData extends RefCounted:
 	var difficulty := Quest.Difficulty.NORMAL
 	var background_stage_name := ""
 	var start_unix_time := -1
-	
+	var status := Quest.Status.UNFINISHED
 	
 	static func from_dict(dict: Dictionary) -> QuestData:
 		var data := QuestData.new()
 		
-		if "type" in dict:
-			data.type = dict.type
-		if "difficulty" in dict:
-			data.difficulty = dict.difficulty
-		if "start_unix_time" in dict:
-			data.start_unix_time = dict.start_unix_time
-		if "background_stage_name" in dict:
-			data.background_stage_name = dict.background_stage_name
+		for prop in dict:
+			if prop in data:
+				data[prop] = dict[prop]
+			else:
+				data.set_meta(prop, dict[prop])
 		
 		return data
 

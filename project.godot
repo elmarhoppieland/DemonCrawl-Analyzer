@@ -41,7 +41,7 @@ gdscript/warnings/native_method_override=0
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/calendar_button/plugin.cfg")
+enabled=PackedStringArray()
 
 [input]
 

@@ -2,13 +2,30 @@ extends RefCounted
 class_name LogFile
 
 # ==============================================================================
+## All possible lines that DemonCrawl log files can have.
+## [br][br][b]Groups:[/b]
+## [br]- CLOUD_PROGRESS
+## [br]- VERIFACTION
+## [br]- SETTINGS
+## [br]- PROFILE
+## [br]- DAILY_MISSION
+## [br]- QUEST
+## [br]    - QUEST_STAGE
+## [br]    - QUEST_ALERT
+## [br]        - QUEST_ALERT_STAGE
+## [br]- HOLIDAY
+## [br]    - HOLIDAY_EASTER
+## [br]    - HOLIDAY_SUMMER
+## [br]    - HOLIDAY_HALLOWEEN
+## [br]    - HOLIDAY_BIRTHDAY
+## [br]    - HOLIDAY_CHRISTMAS
+## [br]- ERROR_MESSAGE
 enum Line {
 	UNKNOWN = -1,
 	NONE,
 	EOF,
 	DEMONCRAWL_STARTED,
 	DEMONCRAWL_CLOSED,
-	DEMONCRAWL_CLOSED_MISSING,
 	CLOUD_PROGRESS_CHECK,
 	CLOUD_PROGRESS_RESULT_LOCAL,
 	CLOUD_PROGRESS_RESULT_CLOUD,
@@ -16,9 +33,10 @@ enum Line {
 	VERIFACTION_SAVED_STEAM_ID,
 	VERIFACTION_DEVICE_ID_VALID,
 	SETTINGS_SOUND_DISABLED,
+	PROFILE_LOADED,
+	PROFILE_LOADED_ALERT,
 	DAILY_MISSION_NEW,
 	DAILY_MISSION_COMPLETE,
-	PROFILE_LOADED,
 	QUEST_START,
 	QUEST_ABORT,
 	QUEST_MASTERY_SELECTED,
@@ -51,9 +69,10 @@ const LINE_FILTERS := {
 	Line.VERIFACTION_SAVED_STEAM_ID: "Saved Steam ID... *",
 	Line.VERIFACTION_DEVICE_ID_VALID: "Device ID is valid - we can proceed.",
 	Line.SETTINGS_SOUND_DISABLED: "Sound disabled.",
+	Line.PROFILE_LOADED: "Profile loaded: *",
+	Line.PROFILE_LOADED_ALERT: "Profile loaded!",
 	Line.DAILY_MISSION_NEW: "New Daily Mission!",
 	Line.DAILY_MISSION_COMPLETE: "Daily Mission complete! +* Tokens",
-	Line.PROFILE_LOADED: "Profile loaded: *",
 	Line.QUEST_START: "Quest started: * on difficulty *",
 	Line.QUEST_ABORT: "Quest aborted",
 	Line.QUEST_MASTERY_SELECTED: "Mastery selected: * tier *",

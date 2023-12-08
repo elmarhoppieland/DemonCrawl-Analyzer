@@ -43,8 +43,8 @@ func load_history() -> Progress:
 	_load_progress_ptr = progress
 	
 	var thread := Thread.new()
-	thread.start(func(): _load())
-	progress.finished.connect(func(): thread.wait_to_finish())
+	thread.start(_load)
+	progress.finished.connect(func(): thread.wait_to_finish(), CONNECT_ONE_SHOT)
 	
 #	_load()
 	

@@ -156,13 +156,19 @@ static func call_method(method: StringName, args: Array = []) -> Array:
 	return returns
 
 
-static func get_single_return_value(method: StringName, return_type: Variant.Type, args: Array = []) -> Variant:
+## Calls the given [code]method[/code] on all [Package]s, and returns the first value returned by
+## a [Package]. If no value is ever returned, returns a default value that matches the
+## [code]return_type[/code], or [code]default[/code] if it is not [code]null[/code].
+static func get_single_return_value(method: StringName, return_type: Variant.Type, args: Array = [], default: Variant = null) -> Variant:
 	var r := call_method(method, args)
 	
 	for value in r:
 		if not typeof(value) == return_type:
 			continue
 		return value
+	
+	if default != null:
+		return default
 	
 	match return_type:
 		TYPE_INT:

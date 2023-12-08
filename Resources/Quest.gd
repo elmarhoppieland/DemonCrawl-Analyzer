@@ -34,6 +34,12 @@ enum MasteryTier {
 	TIER_II,
 	TIER_III
 }
+enum Status {
+	UNFINISHED = 0b00,
+	FINISHED = 0b10,
+	LOSS = 0b10,
+	VICTORY = 0b11,
+}
 # ==============================================================================
 ## The name of the quest.
 var name := ""
